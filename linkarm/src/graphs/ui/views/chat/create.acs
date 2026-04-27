@@ -1,0 +1,22 @@
+graph ui/views/chat/create {
+  meta: { description: "Chat view (logic)", type: "view", category: "chat", author: "AITOS Team" }
+
+  let execMessageList = execFile(file: "ui/components/message-list/create")
+  let execInputArea = execFile(file: "ui/components/chat-input/create")
+  let clearMessageList = clearElement(id: "messageList")
+  let getMessages = get(key: "messages")
+  let storeMessages = set(key: "_msgs", value: "{{getMessages}}")
+  let checkHasMessages = isArr(value: "{{getMessages}}")
+  let renderOrLoad = if checkHasMessages {
+    let getStoredMsgs = get(key: "_msgs")
+    let forEachMessage = forEach currentMessage, messageIndex in getStoredMsgs  {
+      let renderBubble = execFile(file: "ui/components/message-bubble/create")
+    }
+  } else {
+    let loadMessages = execFile(file: "manage-messages/load-messages")
+    let getLoadedMessages = get(key: "messages")
+    let forEachLoadedMessage = forEach currentMessage, messageIndex in getLoadedMessages  {
+      let renderBubble = execFile(file: "ui/components/message-bubble/create")
+    }
+  }
+}

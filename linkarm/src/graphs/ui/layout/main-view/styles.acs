@@ -1,0 +1,5 @@
+graph ui/layout/main-view/styles {
+  meta: { description: "Main view container appearance styles", type: "styles", category: "main-view", author: "AITOS Team" }
+
+  let setAppearanceStyles = setStyles(id: "mainViewContainer", styles: { backgroundColor: "#f1f1f1" })
+}

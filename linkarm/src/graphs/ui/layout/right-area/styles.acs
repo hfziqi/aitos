@@ -1,0 +1,5 @@
+graph ui/layout/right-area/styles {
+  meta: { description: "Right area appearance styles", type: "styles", category: "right-area", author: "AITOS Team" }
+
+  let setAppearanceStyles = setStyles(id: "rightArea", styles: { backgroundColor: "#f1f1f1" })
+}

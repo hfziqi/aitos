@@ -1,0 +1,20 @@
+graph ui/components/chat-input/create {
+  meta: { description: "Create chat input area (logic)", type: "component", category: "chat-input", author: "AITOS Team" }
+
+  let createInputContainer = createElement(tag: "div", id: "inputContainer")
+  let setContainerStyles = setStyles(id: "inputContainer", styles: { display: "flex", flexShrink: "0", width: "100%", padding: "0 16px 12px 16px", boxSizing: "border-box" })
+  let appendInputContainer = appendChild(parentId: "mainViewContainer", childId: "inputContainer")
+  let createInnerWrapper = createElement(tag: "div", id: "inputInnerWrapper")
+  let setInnerStyles = setStyles(id: "inputInnerWrapper", styles: { display: "flex", alignItems: "flex-start", flex: "1", backgroundColor: "#ffffff", border: "1px solid #e0e0e0", borderRadius: "20px", padding: "16px", minHeight: "60px", position: "relative" })
+  let appendInnerWrapper = appendChild(parentId: "inputContainer", childId: "inputInnerWrapper")
+  let execStyles = execFile(file: "ui/components/chat-input/styles")
+  let createInputBox = createElement(tag: "textarea", id: "inputBox")
+  let setInputBoxStyles = setStyles(id: "inputBox", styles: { flex: "1", border: "none", outline: "none", resize: "none", fontSize: "14px", lineHeight: "1.4", minHeight: "28px", maxHeight: "120px", padding: "0 40px 0 8px", backgroundColor: "transparent", boxSizing: "border-box", overflow: "hidden" })
+  let setInputBoxAttr = setAttribute(id: "inputBox", name: "placeholder", value: "")
+  let appendInputBox = appendChild(parentId: "inputInnerWrapper", childId: "inputBox")
+  let createSendButton = createElement(tag: "button", id: "sendButton")
+  let setSendButtonStyles = setStyles(id: "sendButton", styles: { width: "32px", height: "32px", minWidth: "32px", minHeight: "32px", borderRadius: "50%", backgroundColor: "#007aff", color: "#ffffff", border: "none", cursor: "default", display: "flex", alignItems: "center", justifyContent: "center", position: "absolute", right: "8px", bottom: "14px" })
+  let setSendButtonIcon = setInnerHTML(id: "sendButton", html: "<svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"currentColor\" stroke=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z\"/></svg>")
+  let appendSendButton = appendChild(parentId: "inputInnerWrapper", childId: "sendButton")
+  let listenInput = addEventListener(id: "inputBox", event: "input", storeKey: "inputValue")
+}

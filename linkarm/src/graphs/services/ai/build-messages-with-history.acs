@@ -1,0 +1,17 @@
+graph services/ai/build-messages-with-history {
+  meta: { description: "Load history messages and build messages array with current user message", type: "service", category: "ai", author: "AITOS Team" }
+
+  let getConversationId = get(key: "currentConversationId")
+  let buildMsgPath = set(key: "_msgPath", value: "chat/messages/{{getConversationId}}")
+  let loadHistoryMessages = getItem(key: "{{buildMsgPath}}")
+  let checkHistory = isArr(value: "{{loadHistoryMessages}}")
+  let buildMessages = if checkHistory {
+    let buildUserMsg = set(key: "_currentUserMsg", value: { role: "user", content: "{{userMessage}}" })
+    let pushUserMsg = push(array: "{{loadHistoryMessages}}", value: "{{buildUserMsg}}")
+    let buildSystemMsg = set(key: "_systemMsg", value: [{ role: "system", content: "{{systemPrompt}}" }])
+    let concatAll = concat(a: "{{buildSystemMsg}}", b: "{{pushUserMsg}}")
+    let saveMessages = set(key: "messages", value: "{{concatAll}}")
+  } else {
+    let buildNewMessages = set(key: "messages", value: [{ role: "system", content: "{{systemPrompt}}" }, { role: "user", content: "{{userMessage}}" }])
+  }
+}

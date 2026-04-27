@@ -1,0 +1,11 @@
+graph ui/layout/main-content/create {
+  meta: { description: "Create main content area (logic)", type: "layout", category: "main-content", author: "AITOS Team" }
+
+  let checkMainContent = getElementById(domId: "mainContent", storeId: "existingMainContent")
+  let shouldCreateMainContent = not(value: "{{checkMainContent}}")
+  let branchMainContent = if shouldCreateMainContent {
+    let createMainContent = createElement(tag: "div", id: "mainContent")
+    let setLayoutStyles = setStyles(id: "mainContent", styles: { display: "flex", flex: "1", overflow: "hidden", minHeight: "0" })
+    let appendMainContent = appendChild(parentId: "appContainer", childId: "mainContent")
+  }
+}

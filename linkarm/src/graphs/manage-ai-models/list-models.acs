@@ -1,0 +1,12 @@
+graph manage-ai-models/list-models {
+  meta: { description: "List all AI models", type: "action", category: "ai-models", author: "AITOS Team" }
+
+  let loadModels = getItem(key: "models/ai-models")
+  let storeModels = set(key: "_loadedModels", value: "{{loadModels}}")
+  let checkModels = if loadModels {
+    let getModels = get(key: "_loadedModels")
+    let doSet = set(key: "aiModelsList", value: "{{getModels}}")
+  } else {
+    let doSet = set(key: "aiModelsList", value: [])
+  }
+}

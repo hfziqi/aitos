@@ -1,0 +1,6 @@
+graph ui/layout/toolbar/styles {
+  meta: { description: "Toolbar appearance styles", type: "styles", category: "toolbar", author: "AITOS Team" }
+
+  let getToolW = get(key: "toolW")
+  let setAppearanceStyles = setStyles(id: "toolbarContainer", styles: { width: "{{getToolW}}px", backgroundColor: "#f7f7f7" })
+}

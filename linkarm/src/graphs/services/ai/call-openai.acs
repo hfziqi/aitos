@@ -1,0 +1,12 @@
+graph services/ai/call-openai {
+  meta: { description: "AI chat coordinator - coordinate model config retrieval, API calls and error handling", type: "service", category: "ai", author: "AITOS Team" }
+
+  let getModelConfig = execFile(file: "manage-ai-models/get-active-model")
+  let getConfig = get(key: "activeModelConfig")
+  let checkModel = if getConfig {
+    let callAI = execFile(file: "services/ai/chat-loop")
+  } else {
+    let setError = set(key: "aiError", value: "Warning: No model selected or model config not found\n\nPlease add and select a model in the model market first")
+    let showError = execFile(file: "services/ai/show-ai-error")
+  }
+}

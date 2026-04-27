@@ -1,0 +1,6 @@
+graph ui/layout/sidebar/styles {
+  meta: { description: "Sidebar appearance styles", type: "styles", category: "sidebar", author: "AITOS Team" }
+
+  let getSideW = get(key: "sideW")
+  let setAppearanceStyles = setStyles(id: "sidebarContainer", styles: { width: "{{getSideW}}px", backgroundColor: "#fcfcfc", padding: "8px" })
+}

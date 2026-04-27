@@ -1,0 +1,25 @@
+graph actions/newChat {
+  meta: { description: "Create new conversation with separate message file", type: "action", category: "chat", author: "AITOS Team" }
+
+  let getConversations = get(key: "conversations")
+  let setConversationsList = set(key: "conversationsList", value: "{{getConversations}}")
+  let getConversationsList = get(key: "conversationsList")
+  let getListLength = len(value: "{{getConversationsList}}")
+  let calcNewId = add(a: "{{getListLength}}", b: 1)
+  let buildNewId = set(key: "_newConvId", value: "conv_{{calcNewId}}")
+  let getNewConvId = get(key: "_newConvId")
+  let createConversationIndex = set(key: "newConversation", value: { id: "{{getNewConvId}}", title: "Chat {{calcNewId}}" })
+  let getNewConversation = get(key: "newConversation")
+  let getConversationsListAgain = get(key: "conversationsList")
+  let prependConversation = concat(a: ["{{getNewConversation}}"], b: "{{getConversationsListAgain}}")
+  let updateConversations = set(key: "conversations", value: "{{prependConversation}}")
+  let saveConversations = execFile(file: "core/save-conversations")
+  let getNewConvIdAgain = get(key: "_newConvId")
+  let buildMsgPath = set(key: "_msgPath", value: "chat/messages/{{getNewConvIdAgain}}")
+  let getMsgPath = get(key: "_msgPath")
+  let initMessagesFile = setItem(key: "{{getMsgPath}}", value: [])
+  let getNewConvIdForSet = get(key: "_newConvId")
+  let setCurrentId = set(key: "currentConversationId", value: "{{getNewConvIdForSet}}")
+  let clearMessages = set(key: "messages", value: null)
+  let execRender = execFile(file: "core/render")
+}

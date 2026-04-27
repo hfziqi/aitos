@@ -1,0 +1,5 @@
+graph manage-ai-models/provider-config {
+  meta: { description: "Provider configuration data", type: "data", category: "ai-models", author: "AITOS Team" }
+
+  let setProviders = set(key: "providerConfig", value: { providers: [{ id: "deepseek", name: "DeepSeek", baseUrl: "https://api.deepseek.com" }, { id: "kimi", name: "Kimi", baseUrl: "https://api.moonshot.cn/v1" }, { id: "glm", name: "GLM", baseUrl: "https://open.bigmodel.cn/api/paas/v4" }], providersMap: { deepseek: { name: "DeepSeek", baseUrl: "https://api.deepseek.com" }, kimi: { name: "Kimi", baseUrl: "https://api.moonshot.cn/v1" }, glm: { name: "GLM", baseUrl: "https://open.bigmodel.cn/api/paas/v4" } }, models: { deepseek: ["deepseek-chat"], kimi: ["kimi-k2.5"], glm: ["glm-5"] } })
+}

@@ -1,0 +1,23 @@
+graph ui/views/market/growth-card {
+  meta: { description: "Growth card for grid layout", type: "component", category: "market", author: "AITOS Team" }
+
+  let getGrowthItem = get(key: "growthItem")
+  let getGrowthName = getProp(obj: "{{getGrowthItem}}", key: "name")
+  let getGrowthPath = getProp(obj: "{{getGrowthItem}}", key: "path")
+  let readGrowthFile = getItem(key: "{{getGrowthPath}}")
+  let createCardId = concat(a: "growth_card_", b: "{{growthIndex}}")
+  let createCard = createElement(tag: "div", id: "{{createCardId}}")
+  let setCardStyles = setStyles(id: "{{createCardId}}", styles: { display: "flex", flexDirection: "column", alignItems: "center", padding: "12px", backgroundColor: "#fff", borderRadius: "8px", cursor: "pointer", transition: "all 0.2s" })
+  let createContent = createElement(tag: "div", id: "{{createCardId}}_content")
+  let setContentStyles = setStyles(id: "{{createCardId}}_content", styles: { width: "48px", height: "48px", display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "#e6f7ff", borderRadius: "8px", marginBottom: "8px" })
+  let createIcon = createElement(tag: "div", id: "{{createCardId}}_icon")
+  let setIconStyles = setStyles(id: "{{createCardId}}_icon", styles: { fontSize: "24px" })
+  let setIconText = setTextContent(id: "{{createCardId}}_icon", text: "🌱")
+  let createName = createElement(tag: "div", id: "{{createCardId}}_name")
+  let setNameStyles = setStyles(id: "{{createCardId}}_name", styles: { fontSize: "12px", textAlign: "center", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "80px" })
+  let setNameText = setTextContent(id: "{{createCardId}}_name", text: "{{getGrowthName}}")
+  let appendContent = appendChild(parentId: "{{createCardId}}", childId: "{{createCardId}}_content")
+  let appendIcon = appendChild(parentId: "{{createCardId}}_content", childId: "{{createCardId}}_icon")
+  let appendName = appendChild(parentId: "{{createCardId}}", childId: "{{createCardId}}_name")
+  let appendCard = appendChild(parentId: "growthsGrid", childId: "{{createCardId}}")
+}

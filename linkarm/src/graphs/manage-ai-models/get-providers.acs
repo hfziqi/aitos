@@ -1,0 +1,5 @@
+graph manage-ai-models/get-providers {
+  meta: { description: "Get AI model providers configuration", type: "service", category: "ai-models", author: "AITOS Team" }
+
+  let getProviders = set(key: "aiModelProviders", value: { OpenAI: { name: "OpenAI", baseUrl: "https://api.openai.com/v1", models: ["gpt-4", "gpt-4-turbo", "gpt-3.5-turbo"] }, DeepSeek: { name: "DeepSeek", baseUrl: "https://api.deepseek.com", models: ["deepseek-chat", "deepseek-coder", "deepseek-v3", "deepseek-reasoner"] }, Kimi: { name: "Kimi (Moonshot)", baseUrl: "https://api.moonshot.cn/v1", models: ["moonshot-v1-8k", "moonshot-v1-32k", "moonshot-v1-128k"] }, Gemini: { name: "Gemini (Google)", baseUrl: "https://generativelanguage.googleapis.com/v1beta", models: ["gemini-pro", "gemini-pro-vision"] }, GLM: { name: "GLM (Zhipu AI)", baseUrl: "https://open.bigmodel.cn/api/paas/v4", models: ["glm-4", "glm-4-flash", "glm-4v"] }, MiniMax: { name: "MiniMax", baseUrl: "https://api.minimaxi.com/v1/text", models: ["abab5.5-chat", "abab5.5s-chat"] }, Qwen: { name: "Qwen (Alibaba Tongyi)", baseUrl: "https://dashscope.aliyuncs.com/api/v1", models: ["qwen-turbo", "qwen-plus", "qwen-max"] } })
+}

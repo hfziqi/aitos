@@ -1,0 +1,7 @@
+graph ui/components/create-modal-overlay {
+  meta: { description: "Create modal overlay", type: "action", category: "ui", author: "AITOS Team" }
+
+  let createOverlay = createElement(tag: "div", id: "addModelOverlay")
+  let setOverlayClass = setAttribute(id: "addModelOverlay", name: "class", value: "overlay")
+  let appendOverlay = appendChild(parentId: "appContainer", childId: "addModelOverlay")
+}

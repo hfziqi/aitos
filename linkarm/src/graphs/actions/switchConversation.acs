@@ -1,0 +1,9 @@
+graph actions/switchConversation {
+  meta: { description: "Switch conversation", type: "action", category: "conversation", author: "AITOS Team" }
+
+  let getSwitchToConvId = get(key: "switchToConvId")
+  let setCurrentConvId = set(key: "currentConversationId", value: "{{getSwitchToConvId}}")
+  let clearMessages = set(key: "messages", value: null)
+  let setCurrentView = set(key: "currentView", value: "chat")
+  let execRender = execFile(file: "core/render")
+}

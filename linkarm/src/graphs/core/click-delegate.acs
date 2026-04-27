@@ -1,0 +1,109 @@
+graph core/click-delegate {
+  meta: { description: "Click event delegation", type: "core", category: "event", author: "AITOS Team" }
+
+  let getClickEvent = get(key: "appClick")
+  let getTargetId = getProp(obj: "{{getClickEvent}}", key: "targetId")
+  let storeTargetId = set(key: "_targetId", value: "{{getTargetId}}")
+  let checkTargetId = if getTargetId {
+  }
+  let routeAction = if getTargetId {
+    let getStoredTargetId = get(key: "_targetId")
+    let isModelsTab = eq(a: "{{getStoredTargetId}}", b: "modelsTab")
+    let branchModelsTab = if isModelsTab {
+      let setModelsTab = set(key: "currentMarketTab", value: "models")
+      let reRenderMarket = execFile(file: "core/render")
+    }
+    let isGrowthsTab = eq(a: "{{getStoredTargetId}}", b: "growthsTab")
+    let branchGrowthsTab = if isGrowthsTab {
+      let setGrowthsTab = set(key: "currentMarketTab", value: "growths")
+      let reRenderMarket2 = execFile(file: "core/render")
+    }
+    let isNewChat = eq(a: "{{getStoredTargetId}}", b: "newChatButton")
+    let branchNewChat = if isNewChat {
+      let execNewChat = execFile(file: "actions/newChat")
+    }
+    let isChatBtn = eq(a: "{{getStoredTargetId}}", b: "chatButton")
+    let branchChatBtn = if isChatBtn {
+      let execOpenChat = execFile(file: "actions/openChat")
+    }
+    let isAIBtn = eq(a: "{{getStoredTargetId}}", b: "aiButton")
+    let branchAIBtn = if isAIBtn {
+      let execOpenAI = execFile(file: "actions/openAI")
+    }
+    let isSendBtn = eq(a: "{{getStoredTargetId}}", b: "sendButton")
+    let branchSendBtn = if isSendBtn {
+      let execSendMsg = execFile(file: "actions/send-message")
+    }
+    let isAddModelBtn = eq(a: "{{getStoredTargetId}}", b: "addModelButton")
+    let branchAddModelBtn = if isAddModelBtn {
+      let execShowAddForm = execFile(file: "manage-ai-models/show-add-form")
+    }
+    let isSubmitAddModelBtn = eq(a: "{{getStoredTargetId}}", b: "submitAddModelButton")
+    let branchSubmitAddModelBtn = if isSubmitAddModelBtn {
+      let execSubmitAddForm = execFile(file: "manage-ai-models/submit-add-form")
+    }
+    let isCancelAddModelBtn = eq(a: "{{getStoredTargetId}}", b: "cancelAddModelButton")
+    let branchCancelAddModelBtn = if isCancelAddModelBtn {
+      let execHideForm1 = execFile(file: "ui/components/add-model-form/hide")
+    }
+    let isAddModelOverlay = eq(a: "{{getStoredTargetId}}", b: "addModelOverlay")
+    let branchAddModelOverlay = if isAddModelOverlay {
+      let execHideForm2 = execFile(file: "ui/components/add-model-form/hide")
+    }
+    let checkSelectBtn = if getStoredTargetId {
+      let getSuffix1 = slice(array: "{{getStoredTargetId}}", start: -7)
+      let checkSuffix1 = eq(a: "{{getSuffix1}}", b: "_select")
+      let handleSelect = if checkSuffix1 {
+        let getModelId1 = slice(array: "{{getStoredTargetId}}", start: 11, end: -7)
+        let setSelectedId = set(key: "selectedModelId", value: "{{getModelId1}}")
+        let execSelect = execFile(file: "manage-ai-models/select-model")
+      }
+    }
+    let checkDeleteBtn = if getStoredTargetId {
+      let getSuffix2 = slice(array: "{{getStoredTargetId}}", start: -7)
+      let checkSuffix2 = eq(a: "{{getSuffix2}}", b: "_delete")
+      let handleDelete = if checkSuffix2 {
+        let getModelId2 = slice(array: "{{getStoredTargetId}}", start: 11, end: -7)
+        let setDeleteId = set(key: "deleteModelId", value: "{{getModelId2}}")
+        let execDelete = execFile(file: "manage-ai-models/delete-model")
+        let reRender = execFile(file: "core/render")
+      }
+    }
+    let checkConvDelBtn = if getStoredTargetId {
+      let getConvDelPrefix = slice(array: "{{getStoredTargetId}}", start: 0, end: 11)
+      let checkConvDelPrefix = eq(a: "{{getConvDelPrefix}}", b: "convDelBtn-")
+      let handleConvDelete = if checkConvDelPrefix {
+        let getConvDelIdx = slice(array: "{{getStoredTargetId}}", start: 11)
+        let getConversations3 = get(key: "conversations")
+        let getConvByDelIdx = getProp(obj: "{{getConversations3}}", key: "{{getConvDelIdx}}")
+        let getConvIdForDel = getProp(obj: "{{getConvByDelIdx}}", key: "id")
+        let setDeleteConvId = set(key: "deleteConversationId", value: "{{getConvIdForDel}}")
+        let execDeleteConv = execFile(file: "manage-conversations/delete-conversation")
+      }
+    }
+    let checkConvItem = if getStoredTargetId {
+      let getItemPrefix = slice(array: "{{getStoredTargetId}}", start: 0, end: 9)
+      let checkItemPrefix = eq(a: "{{getItemPrefix}}", b: "convItem-")
+      let handleConvItemClick = if checkItemPrefix {
+        let getConvItemIdx = slice(array: "{{getStoredTargetId}}", start: 9)
+        let getConversations1 = get(key: "conversations")
+        let getConvByItemIdx = getProp(obj: "{{getConversations1}}", key: "{{getConvItemIdx}}")
+        let getConvIdFromItem = getProp(obj: "{{getConvByItemIdx}}", key: "id")
+        let saveConvId1 = set(key: "switchToConvId", value: "{{getConvIdFromItem}}")
+        let execSwitchConv1 = execFile(file: "actions/switchConversation")
+      }
+    }
+    let checkConvTitle = if getStoredTargetId {
+      let getTitlePrefix = slice(array: "{{getStoredTargetId}}", start: 0, end: 10)
+      let checkTitlePrefix = eq(a: "{{getTitlePrefix}}", b: "convTitle-")
+      let handleConvTitleClick = if checkTitlePrefix {
+        let getConvTitleIdx = slice(array: "{{getStoredTargetId}}", start: 10)
+        let getConversations2 = get(key: "conversations")
+        let getConvByTitleIdx = getProp(obj: "{{getConversations2}}", key: "{{getConvTitleIdx}}")
+        let getConvIdFromTitle = getProp(obj: "{{getConvByTitleIdx}}", key: "id")
+        let saveConvId2 = set(key: "switchToConvId", value: "{{getConvIdFromTitle}}")
+        let execSwitchConv2 = execFile(file: "actions/switchConversation")
+      }
+    }
+  }
+}

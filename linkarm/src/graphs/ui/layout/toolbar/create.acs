@@ -1,0 +1,26 @@
+graph ui/layout/toolbar/create {
+  meta: { description: "Create toolbar container (logic)", type: "layout", category: "toolbar", author: "AITOS Team" }
+
+  let checkToolbarContainer = getElementById(domId: "toolbarContainer", storeId: "existingToolbar")
+  let shouldCreateToolbar = not(value: "{{checkToolbarContainer}}")
+  let branchToolbarContainer = if shouldCreateToolbar {
+    let createToolbarContainer = createElement(tag: "div", id: "toolbarContainer")
+    let setLayoutStyles = setStyles(id: "toolbarContainer", styles: { display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "space-between", height: "100%" })
+    let execStyles = execFile(file: "ui/layout/toolbar/styles")
+    let appendToolbarContainer = appendChild(parentId: "mainContent", childId: "toolbarContainer")
+    let createTopSection = createElement(tag: "div", id: "toolbarTopSection")
+    let setTopSectionStyles = setStyles(id: "toolbarTopSection", styles: { display: "flex", flexDirection: "column", alignItems: "center", marginTop: "20px" })
+    let appendTopSection = appendChild(parentId: "toolbarContainer", childId: "toolbarTopSection")
+    let createChatButton = createElement(tag: "button", id: "chatButton")
+    let setChatButtonClass = setAttribute(id: "chatButton", name: "class", value: "toolbar-btn")
+    let setChatButtonSVG = setInnerHTML(id: "chatButton", html: "<svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17l-.59.59-.58.58V4h16v12z\" /></svg>")
+    let appendChatButton = appendChild(parentId: "toolbarTopSection", childId: "chatButton")
+    let createBottomSection = createElement(tag: "div", id: "toolbarBottomSection")
+    let setBottomSectionStyles = setStyles(id: "toolbarBottomSection", styles: { display: "flex", flexDirection: "column", alignItems: "center", paddingBottom: "16px" })
+    let appendBottomSection = appendChild(parentId: "toolbarContainer", childId: "toolbarBottomSection")
+    let createAIButton = createElement(tag: "button", id: "aiButton")
+    let setAIButtonClass = setAttribute(id: "aiButton", name: "class", value: "toolbar-btn")
+    let setAIButtonSVG = setInnerHTML(id: "aiButton", html: "<svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M4 4h4v4H4V4zm6 0h4v4h-4V4zm6 0h4v4h-4V4zM4 10h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4zM4 16h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4z\" /></svg>")
+    let appendAIButton = appendChild(parentId: "toolbarBottomSection", childId: "aiButton")
+  }
+}

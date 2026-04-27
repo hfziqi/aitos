@@ -1,0 +1,7 @@
+graph services/ai/show-ai-error {
+  meta: { description: "Show AI error message in chat window", type: "action", category: "ai", author: "AITOS Team" }
+
+  let getErrorMessage = get(key: "aiError")
+  let getStreamElement = get(key: "streamElementId")
+  let showError = setTextContent(id: "{{getStreamElement}}", text: "{{getErrorMessage}}")
+}

@@ -1,0 +1,5 @@
+graph core/init-conversations {
+
+  let initConversations = set(key: "conversations", value: [])
+  let initCurrentConversationId = set(key: "currentConversationId", value: null)
+}

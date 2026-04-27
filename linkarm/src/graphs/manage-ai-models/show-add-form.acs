@@ -1,0 +1,6 @@
+graph manage-ai-models/show-add-form {
+  meta: { description: "Show add model form (coordinator)", type: "action", category: "ai-models", author: "AITOS Team" }
+
+  let createOverlay = execFile(file: "ui/components/create-modal-overlay")
+  let createForm = execFile(file: "ui/components/add-model-form/create")
+}

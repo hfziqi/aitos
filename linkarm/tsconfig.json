@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "module": "ESNext",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "strict": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noFallthroughCasesInSwitch": true,
+    "baseUrl": ".",
+    "paths": {
+      "aitos": ["../aitos/src/index.ts"],
+      "@aitos/output": ["../packages/@aitos/output/index.ts"],
+      "@aitos/input": ["../packages/@aitos/input/index.ts"],
+      "@aitos/store": ["../packages/@aitos/store/index.ts"],
+      "@aitos/transfer": ["../packages/@aitos/transfer/index.ts"],
+      "@aitos/sense": ["../packages/@aitos/sense/index.ts"],
+      "@aitos/bridge": ["../packages/@aitos/bridge/index.ts"]
+    }
+  },
+  "include": ["src"]
+}

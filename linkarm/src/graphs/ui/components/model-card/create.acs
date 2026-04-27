@@ -1,0 +1,38 @@
+graph ui/components/model-card/create {
+  meta: { description: "Create model card for grid layout with actions", type: "component", category: "model-card", author: "AITOS Team" }
+
+  let getCurrentModel = get(key: "currentModel")
+  let getModelId = getProp(obj: "{{getCurrentModel}}", key: "id")
+  let getModelName = getProp(obj: "{{getCurrentModel}}", key: "name")
+  let getActiveModelId = get(key: "activeModelId")
+  let isSelected = eq(a: "{{getModelId}}", b: "{{getActiveModelId}}")
+  let createCardId = concat(a: "model_card_", b: "{{getModelId}}")
+  let createCard = createElement(tag: "div", id: "{{createCardId}}")
+  let setCardStyles = setStyles(id: "{{createCardId}}", styles: { display: "flex", flexDirection: "column", alignItems: "center", padding: "12px", backgroundColor: "#fff", borderRadius: "8px", cursor: "pointer", transition: "all 0.2s", position: "relative" })
+  let createContent = createElement(tag: "div", id: "{{createCardId}}_content")
+  let setContentStyles = setStyles(id: "{{createCardId}}_content", styles: { width: "48px", height: "48px", display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "#f0f0f0", borderRadius: "8px", marginBottom: "8px" })
+  let createIcon = createElement(tag: "div", id: "{{createCardId}}_icon")
+  let setIconStyles = setStyles(id: "{{createCardId}}_icon", styles: { fontSize: "24px" })
+  let setIconText = setTextContent(id: "{{createCardId}}_icon", text: "🤖")
+  let createName = createElement(tag: "div", id: "{{createCardId}}_name")
+  let setNameStyles = setStyles(id: "{{createCardId}}_name", styles: { fontSize: "12px", textAlign: "center", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "80px" })
+  let setNameText = setTextContent(id: "{{createCardId}}_name", text: "{{getModelName}}")
+  let createActions = createElement(tag: "div", id: "{{createCardId}}_actions")
+  let setActionsStyles = setStyles(id: "{{createCardId}}_actions", styles: { display: "flex", gap: "4px", marginTop: "8px" })
+  let createSelectBtn = createElement(tag: "button", id: "{{createCardId}}_select")
+  let setSelectBtnStyles = setStyles(id: "{{createCardId}}_select", styles: { padding: "4px 8px", fontSize: "10px", backgroundColor: "#1890ff", color: "#fff", border: "none", borderRadius: "4px", cursor: "pointer" })
+  let setSelectBtnText = setTextContent(id: "{{createCardId}}_select", text: "Select")
+  let createDeleteBtn = createElement(tag: "button", id: "{{createCardId}}_delete")
+  let setDeleteBtnStyles = setStyles(id: "{{createCardId}}_delete", styles: { padding: "4px 8px", fontSize: "10px", backgroundColor: "#ff4d4f", color: "#fff", border: "none", borderRadius: "4px", cursor: "pointer" })
+  let setDeleteBtnText = setTextContent(id: "{{createCardId}}_delete", text: "Del")
+  let appendContent = appendChild(parentId: "{{createCardId}}", childId: "{{createCardId}}_content")
+  let appendIcon = appendChild(parentId: "{{createCardId}}_content", childId: "{{createCardId}}_icon")
+  let appendName = appendChild(parentId: "{{createCardId}}", childId: "{{createCardId}}_name")
+  let appendCard = appendChild(parentId: "modelsGrid", childId: "{{createCardId}}")
+  let appendActions = appendChild(parentId: "{{createCardId}}", childId: "{{createCardId}}_actions")
+  let appendSelectBtn = appendChild(parentId: "{{createCardId}}_actions", childId: "{{createCardId}}_select")
+  let appendDeleteBtn = appendChild(parentId: "{{createCardId}}_actions", childId: "{{createCardId}}_delete")
+  let setSelectedBg = if isSelected {
+    let applySelectedStyle = setStyles(id: "{{createCardId}}", styles: { backgroundColor: "#e6f7ff" })
+  }
+}

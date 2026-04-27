@@ -1,0 +1,38 @@
+graph manage-conversations/delete-conversation {
+  meta: { description: "Delete a conversation", type: "action", category: "conversation", author: "AITOS Team" }
+
+  let getDeleteConvId = get(key: "deleteConversationId")
+  let storeDeleteConvId = set(key: "_delConvId", value: "{{getDeleteConvId}}")
+  let getConversations = get(key: "conversations")
+  let initFiltered = set(key: "_filteredConvs", value: [])
+  let forEachConv = forEach conv, convIdx in getConversations  {
+    let getConvId = getProp(obj: "{{conv}}", key: "id")
+    let getDelId = get(key: "_delConvId")
+    let compare = eq(a: "{{getConvId}}", b: "{{getDelId}}")
+    let shouldKeep = not(value: "{{compare}}")
+    let handleKeep = if shouldKeep {
+      let getFiltered = get(key: "_filteredConvs")
+      let pushConv = push(array: "{{getFiltered}}", value: "{{conv}}")
+      let saveFiltered = set(key: "_filteredConvs", value: "{{pushConv}}")
+    }
+  }
+  let getFilteredConvs = get(key: "_filteredConvs")
+  let saveConversations = setItem(key: "chat/conversations", value: "{{getFilteredConvs}}")
+  let updateStore = set(key: "conversations", value: "{{getFilteredConvs}}")
+  let deleteMessagesFile = removeItem(key: "chat/messages/{{getDeleteConvId}}")
+  let checkCurrentConv = get(key: "currentConversationId")
+  let isCurrentConvDeleted = eq(a: "{{checkCurrentConv}}", b: "{{getDeleteConvId}}")
+  let handleCurrentConv = if isCurrentConvDeleted {
+    let getFiltered = get(key: "_filteredConvs")
+    let getFilteredLen = len(value: "{{getFiltered}}")
+    let checkHasMore = gt(a: "{{getFilteredLen}}", b: 0)
+    let setNewCurrentConv = if checkHasMore {
+      let getFirst = getProp(obj: "{{getFiltered}}", key: 0)
+      let getFirstId = getProp(obj: "{{getFirst}}", key: "id")
+      let setCurrentId = set(key: "currentConversationId", value: "{{getFirstId}}")
+    } else {
+      let clearCurrentId = set(key: "currentConversationId", value: null)
+    }
+  }
+  let reRender = execFile(file: "core/render")
+}

@@ -1,0 +1,37 @@
+{
+  "name": "@aitos/store",
+  "version": "1.0.0",
+  "description": "AITOS Store Capability Package - Local and Remote storage atoms",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "keywords": [
+    "aitos",
+    "store",
+    "local",
+    "remote",
+    "storage",
+    "capability"
+  ],
+  "author": "AITOS Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hfziqi/aitos"
+  },
+  "peerDependencies": {
+    "@aitos/core": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}

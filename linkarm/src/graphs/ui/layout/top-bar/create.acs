@@ -1,0 +1,8 @@
+graph ui/layout/top-bar/create {
+  meta: { description: "Create top bar (logic)", type: "layout", category: "top-bar", author: "AITOS Team" }
+
+  let getTopH = get(key: "topH")
+  let setLayoutStyles = setStyles(id: "topBarContainer", styles: { display: "flex", flexDirection: "row", flexShrink: "0", width: "100%", height: "0px" })
+  let execStyles = execFile(file: "ui/layout/top-bar/styles")
+  let appendTopBarContainer = appendChild(parentId: "rightArea", childId: "topBarContainer")
+}

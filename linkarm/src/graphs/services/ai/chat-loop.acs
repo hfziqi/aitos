@@ -1,0 +1,71 @@
+graph services/ai/chat-loop {
+  meta: { description: "AI chat loop - supports tool calling multi-turn conversation", type: "service", category: "ai", author: "AITOS Team" }
+
+  let getModelConfig = get(key: "activeModelConfig")
+  let getUserMessage = get(key: "userMessage")
+  let getElementId = get(key: "streamElementId")
+  let getModelName = getProp(obj: "{{getModelConfig}}", key: "modelName")
+  let getApiKey = getProp(obj: "{{getModelConfig}}", key: "apiKey")
+  let getBaseUrl = getProp(obj: "{{getModelConfig}}", key: "baseUrl")
+  let storeModelName = set(key: "_modelName", value: "{{getModelName}}")
+  let storeApiKey = set(key: "_apiKey", value: "{{getApiKey}}")
+  let storeBaseUrl = set(key: "_baseUrl", value: "{{getBaseUrl}}")
+  let storeElementId = set(key: "_elementId", value: "{{getElementId}}")
+  let buildSystemPrompt = set(key: "systemPrompt", value: "You are a helpful AI assistant running in a web browser environment. You can help users with various tasks through conversation.")
+  let buildMessagesWithHistory = execFile(file: "services/ai/build-messages-with-history")
+  let initLoop = set(key: "continueLoop", value: true)
+  let chatLoop = loop cond: "continueLoop" {
+    let getMessages = get(key: "messages")
+    let storeMessages = set(key: "_msgs", value: "{{getMessages}}")
+    let getModelNameFromStore = get(key: "_modelName")
+    let getApiKeyFromStore = get(key: "_apiKey")
+    let getBaseUrlFromStore = get(key: "_baseUrl")
+    let getElementIdFromStore = get(key: "_elementId")
+    let buildBaseRequest = merge(a: { model: "{{getModelNameFromStore}}", messages: "{{getMessages}}", stream: true }, b: {  })
+    let buildToolsObj = merge(a: {  }, b: { tools: [{ type: "function", function: { name: "getSkillSet", description: "Get all available atoms list. Returns atom names, versions, input/output parameters. Use these atoms to compose graphs to complete tasks.", parameters: { type: "object", properties: {  } } } }, { type: "function", function: { name: "execGraph", description: "Execute a graph. Graph format: {\"order\": [\"nodeId1\", \"nodeId2\"], \"nodes\": {\"nodeId1\": {\"atom\": \"atomName\", ...params}, \"nodeId2\": {...}}}. Returns the result of the last node.", parameters: { type: "object", properties: { graph: { type: "object", description: "The graph to execute, contains order (execution order array) and nodes (node definition object)" } }, required: ["graph"] } } }] })
+    let buildRequest = merge(a: "{{buildBaseRequest}}", b: "{{buildToolsObj}}")
+    let buildApiUrl = concat(a: "{{getBaseUrlFromStore}}", b: "/chat/completions")
+    let callAPI = httpStreamRequest(url: "{{buildApiUrl}}", method: "POST", headers: { Authorization: "Bearer {{getApiKeyFromStore}}", "Content-Type": "application/json" }, body: "{{buildRequest}}", elementId: "{{getElementIdFromStore}}")
+    let getApiError = getProp(obj: "{{callAPI}}", key: "error")
+    let checkError = isNil(value: "{{getApiError}}")
+    let handleResult = if checkError {
+      let getToolCalls = getProp(obj: "{{callAPI}}", key: "toolCalls")
+      let getToolCallsLen = len(value: "{{getToolCalls}}")
+      let checkToolCalls = gt(a: "{{getToolCallsLen}}", b: 0)
+      let handleBranch = if checkToolCalls {
+        let getContent1 = getProp(obj: "{{callAPI}}", key: "content")
+        let buildAssistantMsg = merge(a: { role: "assistant", content: "{{getContent1}}" }, b: { tool_calls: "{{getToolCalls}}" })
+        let getMsgs1 = get(key: "_msgs")
+        let pushAssistantMsg = push(array: "{{getMsgs1}}", value: "{{buildAssistantMsg}}")
+        let handleTools = handleToolCalls(toolCalls: "{{getToolCalls}}")
+        let initToolMessages = set(key: "toolMessages", value: "{{pushAssistantMsg}}")
+        let appendToolMessagesLoop = forEach toolResult in handleTools  {
+          let getToolMessages = get(key: "toolMessages")
+          let getToolResult = get(key: "toolResult")
+          let getToolCallId = getProp(obj: "{{getToolResult}}", key: "toolCallId")
+          let getToolResultContent = getProp(obj: "{{getToolResult}}", key: "result")
+          let buildToolMsg = merge(a: { role: "tool", tool_call_id: "{{getToolCallId}}" }, b: { content: "{{getToolResultContent}}" })
+          let pushToolMsg = push(array: "{{getToolMessages}}", value: "{{buildToolMsg}}")
+          let saveToolMessages = set(key: "toolMessages", value: "{{pushToolMsg}}")
+        }
+        let getToolMessagesFinal = get(key: "toolMessages")
+        let saveMessagesContinue = set(key: "messages", value: "{{getToolMessagesFinal}}")
+        let setContinueTrue = set(key: "continueLoop", value: true)
+      } else {
+        let getContent2 = getProp(obj: "{{callAPI}}", key: "content")
+        let buildFinalMsg = merge(a: { role: "assistant" }, b: { content: "{{getContent2}}" })
+        let getMsgs2 = get(key: "_msgs")
+        let pushAssistantFinal = push(array: "{{getMsgs2}}", value: "{{buildFinalMsg}}")
+        let saveMessagesFinal = set(key: "messages", value: "{{pushAssistantFinal}}")
+        let saveFinalContent = set(key: "finalContent", value: "{{getContent2}}")
+        let setContinueFalse = set(key: "continueLoop", value: false)
+      }
+    } else {
+      let getElementIdForError = get(key: "_elementId")
+      let showError = setTextContent(id: "{{getElementIdForError}}", text: "API Error: {{getApiError}}")
+      let setContinueFalse = set(key: "continueLoop", value: false)
+    }
+  }
+  let getFinalContent = get(key: "finalContent")
+  let saveFinalResponse = set(key: "aiResponse", value: { role: "assistant", content: "{{getFinalContent}}" })
+}

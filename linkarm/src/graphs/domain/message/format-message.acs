@@ -1,0 +1,8 @@
+graph domain/message/format-message {
+  meta: { description: "Format message object", type: "domain", category: "message", author: "AITOS Team" }
+
+  let getContent = get(key: "messageContent")
+  let getRole = get(key: "messageRole")
+  let getTimestamp = timestampToDate(timestamp: 0)
+  let createMessage = merge(a: { role: "{{getRole}}", content: "{{getContent}}" }, b: { timestamp: "{{getTimestamp}}" })
+}

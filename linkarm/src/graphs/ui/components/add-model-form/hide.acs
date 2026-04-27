@@ -1,0 +1,5 @@
+graph ui/components/add-model-form/hide {
+  meta: { description: "Hide add model form", type: "component", category: "add-model-form", author: "AITOS Team" }
+
+  let removeOverlay = removeChild(parentId: "appContainer", childId: "addModelOverlay")
+}

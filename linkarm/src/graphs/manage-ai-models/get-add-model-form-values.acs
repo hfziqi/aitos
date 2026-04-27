@@ -1,0 +1,14 @@
+graph manage-ai-models/get-add-model-form-values {
+  meta: { description: "Get all input values from add model form", type: "action", category: "ai-models", author: "AITOS Team" }
+
+  let getProviderValue = getValue(id: "providerSelect")
+  let getModelNameValue = getValue(id: "modelNameSelect")
+  let getApiKeyInput = getValue(id: "apiKeyInput")
+  let getBaseUrlInput = getValue(id: "baseUrlInput")
+  let getConfig = get(key: "providerConfig")
+  let getProvidersMap = getProp(obj: "{{getConfig}}", key: "providersMap")
+  let getProviderInfo = getProp(obj: "{{getProvidersMap}}", key: "{{getProviderValue}}")
+  let getProviderName = getProp(obj: "{{getProviderInfo}}", key: "name")
+  let buildDisplayName = concat(a: "{{getProviderName}}", b: " - {{getModelNameValue}}")
+  let createInputObj = set(key: "newModelInput", value: { name: "{{buildDisplayName}}", provider: "{{getProviderValue}}", modelName: "{{getModelNameValue}}", apiKey: "{{getApiKeyInput}}", baseUrl: "{{getBaseUrlInput}}" })
+}

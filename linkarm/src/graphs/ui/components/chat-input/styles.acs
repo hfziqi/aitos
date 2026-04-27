@@ -1,0 +1,5 @@
+graph ui/components/chat-input/styles {
+  meta: { description: "Chat input appearance styles", type: "styles", category: "chat-input", author: "AITOS Team" }
+
+  let setInnerHoverStyles = setStyles(id: "inputInnerWrapper", styles: { transition: "border-color 0.15s ease" })
+}

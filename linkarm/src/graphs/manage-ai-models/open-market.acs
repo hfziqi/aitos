@@ -1,0 +1,6 @@
+graph manage-ai-models/open-market {
+  meta: { description: "Open AI model market", type: "action", category: "ai-models", author: "AITOS Team" }
+
+  let setView = set(key: "currentView", value: "market")
+  let render = execFile(file: "core/render")
+}

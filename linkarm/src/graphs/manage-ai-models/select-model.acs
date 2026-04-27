@@ -1,0 +1,6 @@
+graph manage-ai-models/select-model {
+  meta: { description: "Select AI model", type: "action", category: "ai-models", author: "AITOS Team" }
+
+  let getModelId = get(key: "selectedModelId")
+  let saveSelection = setItem(key: "models/active-model-id", value: "{{getModelId}}")
+}

@@ -1,0 +1,9 @@
+graph core/save-messages {
+  meta: { description: "Save single conversation messages to local storage", type: "core", category: "persistence", author: "AITOS Team" }
+
+  let getConversationId = get(key: "currentConversationId")
+  let getMessages = get(key: "currentMessages")
+  let buildPath = set(key: "_messagePath", value: "chat/messages/{{getConversationId}}")
+  let getPath = get(key: "_messagePath")
+  let saveMessages = setItem(key: "{{getPath}}", value: "{{getMessages}}")
+}

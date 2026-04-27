@@ -1,0 +1,21 @@
+graph core/render {
+  meta: { description: "Render layout (pure coordinator)", type: "core", category: "render", author: "AITOS Team" }
+
+  let clearClicks = set(key: "clickAreas", value: [])
+  let execMainContent = execFile(file: "ui/layout/main-content/create")
+  let execToolbar = execFile(file: "ui/layout/toolbar/create")
+  let execSidebar = execFile(file: "ui/layout/sidebar/create")
+  let execRightArea = execFile(file: "ui/layout/right-area/create")
+  let execInitTopBar = execFile(file: "actions/init-top-bar")
+  let execMainView = execFile(file: "ui/layout/main-view/create")
+  let clearMainViewContainer = clearElement(id: "mainViewContainer")
+  let getCurrentView = get(key: "currentView")
+  let setViewToRender = set(key: "viewToRender", value: "{{getCurrentView}}")
+  let getViewName = get(key: "viewToRender")
+  let isChatView = eq(a: "{{getViewName}}", b: "chat")
+  let execView = if isChatView {
+    let execChatView = execFile(file: "ui/views/chat/create")
+  } else {
+    let execMarketView = execFile(file: "ui/views/market/create")
+  }
+}

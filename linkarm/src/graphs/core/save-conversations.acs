@@ -1,0 +1,6 @@
+graph core/save-conversations {
+  meta: { description: "Save conversations index to local storage", type: "core", category: "persistence", author: "AITOS Team" }
+
+  let getConversations = get(key: "conversations")
+  let saveIndex = setItem(key: "chat/conversations", value: "{{getConversations}}")
+}

@@ -1,0 +1,23 @@
+graph ui/views/market/render-growths {
+  meta: { description: "Render growths list in market", type: "view", category: "market", author: "AITOS Team" }
+
+  let getGrowthsIndex = getItem(key: "growths/index")
+  let createListContainer = createElement(tag: "div", id: "growthsListContainer")
+  let setListContainerStyles = setStyles(id: "growthsListContainer", styles: { marginBottom: "16px" })
+  let appendListContainer = appendChild(parentId: "marketContent", childId: "growthsListContainer")
+  let hasGrowths = if getGrowthsIndex {
+    let storeIndex = set(key: "_growthsIndex", value: "{{getGrowthsIndex}}")
+    let checkIsArray = isArr(value: "{{getGrowthsIndex}}")
+    let handleGrowths = if checkIsArray {
+      let getIndex = get(key: "_growthsIndex")
+      let forEach = forEach growthItem, growthIndex in getIndex  {
+        let renderCard = execFile(file: "ui/views/market/growth-card")
+      }
+    }
+  } else {
+    let createEmptyMsg = createElement(tag: "div", id: "emptyGrowthsMsg")
+    let setEmptyMsgText = setTextContent(id: "emptyGrowthsMsg", text: "No growths yet. Ask AI to create new capabilities!")
+    let appendEmptyMsg = appendChild(parentId: "growthsListContainer", childId: "emptyGrowthsMsg")
+  }
+  let renderGrowths = set(key: "_placeholder", value: null)
+}

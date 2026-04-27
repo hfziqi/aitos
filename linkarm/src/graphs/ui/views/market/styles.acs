@@ -1,0 +1,5 @@
+graph ui/views/market/styles {
+  meta: { description: "Market appearance styles", type: "styles", category: "market", author: "AITOS Team" }
+
+  let setAppearanceStyles = setStyles(id: "marketContainer", styles: { padding: "24px", backgroundColor: "#f1f1f1" })
+}

@@ -1,0 +1,29 @@
+graph core/load-growths {
+  meta: { description: "Load growths (generated graphs) from index", type: "core", category: "graph", author: "AITOS Team" }
+
+  let checkGrowths = get(key: "growths")
+  let shouldLoadGrowths = not(value: "{{checkGrowths}}")
+  let branchLoad = if shouldLoadGrowths {
+    let readIndex = getItem(key: "growths/index")
+    let isIndexNil = isNil(value: "{{readIndex}}")
+    let hasIndex = not(value: "{{isIndexNil}}")
+    let handleIndex = if hasIndex {
+      let storeIndex = set(key: "_growthsIndex", value: "{{readIndex}}")
+      let checkIsArray = isArr(value: "{{readIndex}}")
+      let handleGrowths = if checkIsArray {
+        let getIndex = get(key: "_growthsIndex")
+        let forEachGrowth = forEach growthItem, growthIndex in getIndex  {
+          let getGrowthItem = get(key: "growthItem")
+          let getGrowthName = getProp(obj: "{{getGrowthItem}}", key: "name")
+          let getGrowthPath = getProp(obj: "{{getGrowthItem}}", key: "path")
+          let readGrowthFile = getItem(key: "{{getGrowthPath}}")
+          let isGrowthFileNil = isNil(value: "{{readGrowthFile}}")
+          let hasGrowthFile = not(value: "{{isGrowthFileNil}}")
+          let handleGrowthFile = if hasGrowthFile {
+            let registerGrowth = setGraph(name: "{{getGrowthName}}", graph: "{{readGrowthFile}}")
+          }
+        }
+      }
+    }
+  }
+}

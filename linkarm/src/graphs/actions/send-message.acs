@@ -1,0 +1,26 @@
+graph actions/send-message {
+  meta: { description: "Send message and get AI reply (streaming)", type: "action", category: "chat", author: "AITOS Team" }
+
+  let getInputValue = getValue(id: "inputBox")
+  let storeInputValue = set(key: "_userInput", value: "{{getInputValue}}")
+  let buildUserMessage = set(key: "_userMessageObj", value: { role: "user", content: "{{getInputValue}}", timestamp: "now" })
+  let storeUserMessage = set(key: "_savedUserMessage", value: "{{buildUserMessage}}")
+  let checkValue = if getInputValue {
+    let getUserMessage = get(key: "_savedUserMessage")
+    let setNewMessage = set(key: "newMessage", value: "{{getUserMessage}}")
+    let addUserMessageToConversation = execFile(file: "domain/conversation/add-message")
+    let clearInput = setValue(id: "inputBox", value: "")
+    let reRenderChat1 = execFile(file: "ui/views/chat/create")
+    let createAIMessageElement = execFile(file: "actions/create-ai-message-element")
+    let getUserInput = get(key: "_userInput")
+    let prepareAICall = set(key: "userMessage", value: "{{getUserInput}}")
+    let callAI = execFile(file: "services/ai/call-openai")
+    let getAIResponse = get(key: "aiResponse")
+    let getAIContent = getProp(obj: "{{getAIResponse}}", key: "content")
+    let buildAIMessage = set(key: "_aiMessageObj", value: { role: "assistant", content: "{{getAIContent}}", timestamp: "now" })
+    let storeAIMessage = set(key: "_savedAIMessage", value: "{{buildAIMessage}}")
+    let setNewMessage2 = set(key: "newMessage", value: "{{storeAIMessage}}")
+    let addAIMessageToConversation = execFile(file: "domain/conversation/add-message")
+    let reRenderChat2 = execFile(file: "ui/views/chat/create")
+  }
+}

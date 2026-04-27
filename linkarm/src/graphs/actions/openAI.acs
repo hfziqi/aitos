@@ -1,0 +1,5 @@
+graph actions/openAI {
+  meta: { description: "Open AI model market", type: "action", category: "ai-models", author: "AITOS Team" }
+
+  let openMarket = execFile(file: "manage-ai-models/open-market")
+}

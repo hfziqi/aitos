@@ -1,0 +1,12 @@
+graph ui/layout/right-area/create {
+  meta: { description: "Create right area container (logic)", type: "layout", category: "right-area", author: "AITOS Team" }
+
+  let checkRightArea = getElementById(domId: "rightArea", storeId: "existingRightArea")
+  let shouldCreateRightArea = not(value: "{{checkRightArea}}")
+  let branchRightArea = if shouldCreateRightArea {
+    let createRightArea = createElement(tag: "div", id: "rightArea")
+    let setLayoutStyles = setStyles(id: "rightArea", styles: { display: "flex", flexDirection: "column", flex: "1", overflow: "hidden", minHeight: "0" })
+    let execStyles = execFile(file: "ui/layout/right-area/styles")
+    let appendRightArea = appendChild(parentId: "mainContent", childId: "rightArea")
+  }
+}

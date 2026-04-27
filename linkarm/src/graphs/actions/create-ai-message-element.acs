@@ -1,0 +1,5 @@
+graph actions/create-ai-message-element {
+  meta: { description: "Create AI message element (action)", type: "action", category: "chat", author: "AITOS Team" }
+
+  let createAIMessageBubble = execFile(file: "ui/components/ai-message-bubble/create")
+}

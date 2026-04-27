@@ -1,0 +1,5 @@
+graph ui/layout/top-bar/styles {
+  meta: { description: "Top bar appearance styles", type: "styles", category: "top-bar", author: "AITOS Team" }
+
+  let setAppearanceStyles = setStyles(id: "topBarContainer", styles: { backgroundColor: "#f1f1f1" })
+}

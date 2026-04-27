@@ -1,0 +1,8 @@
+graph ui/components/ai-message-bubble/create {
+  meta: { description: "Create AI message bubble (UI)", type: "component", category: "ai-message-bubble", author: "AITOS Team" }
+
+  let createElement = createElement(tag: "div", id: "ai_stream_msg")
+  let setStyles = setStyles(id: "ai_stream_msg", styles: { display: "flex", alignSelf: "flex-start", maxWidth: "70%", marginBottom: "16px", padding: "8px 16px", borderRadius: "16px", fontSize: "14px", lineHeight: "1.4", backgroundColor: "#ffffff", color: "#333333" })
+  let appendElement = appendChild(parentId: "messageList", childId: "ai_stream_msg")
+  let setStreamElementId = set(key: "streamElementId", value: "ai_stream_msg")
+}

@@ -1,0 +1,9 @@
+graph core/init-messages {
+
+  let getMessages = get(key: "messages")
+  let checkIsArray = isArr(value: "{{getMessages}}")
+  let initIfNeeded = if checkIsArray {
+  } else {
+    let setEmptyMessages = set(key: "messages", value: [])
+  }
+}

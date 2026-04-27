@@ -1,0 +1,20 @@
+graph core/main {
+
+  let execGlobalStyles = execFile(file: "styles/global")
+  let getWinSize = getWindowSize()
+  let setWinW = set(key: "winW", value: "{{getWinSize.width}}")
+  let setWinH = set(key: "winH", value: "{{getWinSize.height}}")
+  let setToolW = set(key: "toolW", value: 48)
+  let setSideW = set(key: "sideW", value: 210)
+  let setTopH = set(key: "topH", value: 32)
+  let createAppContainer = createElement(tag: "div", id: "appContainer")
+  let setAppContainerStyles = setStyles(id: "appContainer", styles: { height: "100%", display: "flex", overflow: "hidden" })
+  let appendAppContainer = appendChild(parentId: "body", childId: "appContainer")
+  let listenAppClick = addEventListener(id: "appContainer", event: "click", storeKey: "appClick", action: "core/click-delegate")
+  let initCurrentView = set(key: "currentView", value: "chat")
+  let initMarketTab = set(key: "currentMarketTab", value: "models")
+  let initConversations = execFile(file: "core/load-conversations")
+  let initMessages = execFile(file: "core/init-messages")
+  let initModels = execFile(file: "core/load-models")
+  let execRender = execFile(file: "core/render")
+}

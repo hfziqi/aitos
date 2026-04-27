@@ -1,0 +1,5 @@
+graph ui/components/message-list/styles {
+  meta: { description: "Message list appearance styles", type: "styles", category: "message-list", author: "AITOS Team" }
+
+  let setAppearanceStyles = setStyles(id: "messageList", styles: { display: "flex", flexDirection: "column", padding: "20px", backgroundColor: "#f1f1f1", gap: "16px" })
+}

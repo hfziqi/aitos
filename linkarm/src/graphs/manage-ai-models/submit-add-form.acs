@@ -1,0 +1,8 @@
+graph manage-ai-models/submit-add-form {
+  meta: { description: "Submit add model form (coordinator)", type: "action", category: "ai-models", author: "AITOS Team" }
+
+  let getFormValues = execFile(file: "manage-ai-models/get-add-model-form-values")
+  let addModel = execFile(file: "manage-ai-models/add-model")
+  let hideForm = execFile(file: "ui/components/add-model-form/hide")
+  let render = execFile(file: "core/render")
+}

@@ -1,0 +1,12 @@
+graph ui/layout/main-view/create {
+  meta: { description: "Create main view container (logic)", type: "layout", category: "main-view", author: "AITOS Team" }
+
+  let checkMainViewContainer = getElementById(domId: "mainViewContainer", storeId: "existingMainViewContainer")
+  let shouldCreateMainView = not(value: "{{checkMainViewContainer}}")
+  let branchMainViewContainer = if shouldCreateMainView {
+    let createMainViewContainer = createElement(tag: "div", id: "mainViewContainer")
+    let setLayoutStyles = setStyles(id: "mainViewContainer", styles: { display: "flex", flexDirection: "column", flex: "1", overflow: "hidden", minHeight: "0" })
+    let execStyles = execFile(file: "ui/layout/main-view/styles")
+    let appendMainViewContainer = appendChild(parentId: "rightArea", childId: "mainViewContainer")
+  }
+}

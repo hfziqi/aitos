@@ -1,0 +1,25 @@
+graph manage-ai-models/add-model {
+  meta: { description: "Add AI model", type: "action", category: "ai-models", author: "AITOS Team" }
+
+  let getInput = get(key: "newModelInput")
+  let getInputName = getProp(obj: "{{getInput}}", key: "name")
+  let getInputProvider = getProp(obj: "{{getInput}}", key: "provider")
+  let getInputModelName = getProp(obj: "{{getInput}}", key: "modelName")
+  let getInputApiKey = getProp(obj: "{{getInput}}", key: "apiKey")
+  let getInputBaseUrl = getProp(obj: "{{getInput}}", key: "baseUrl")
+  let setIdPrefix = set(key: "idPrefix", value: "model")
+  let generateId = execFile(file: "manage-ai-models/generate-id")
+  let createModel = set(key: "newModel", value: { id: "{{generateId}}", name: "{{getInputName}}", provider: "{{getInputProvider}}", modelName: "{{getInputModelName}}", apiKey: "{{getInputApiKey}}", baseUrl: "{{getInputBaseUrl}}" })
+  let loadModels = getItem(key: "models/ai-models")
+  let storeModels = set(key: "_loadedModels", value: "{{loadModels}}")
+  let checkModels = if loadModels {
+    let getModel = get(key: "newModel")
+    let getModels = get(key: "_loadedModels")
+    let push = push(array: "{{getModels}}", value: "{{getModel}}")
+  } else {
+    let getModel = get(key: "newModel")
+    let createArray = push(array: [], value: "{{getModel}}")
+  }
+  let saveModels = setItem(key: "models/ai-models", value: "{{checkModels}}")
+  let setResult = set(key: "addedModel", value: "{{createModel}}")
+}

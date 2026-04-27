@@ -1,0 +1,6 @@
+graph core/save-models {
+  meta: { description: "Save AI models to local storage", type: "core", category: "persistence", author: "AITOS Team" }
+
+  let getModels = get(key: "aiModelsList")
+  let saveModels = setItem(key: "models/ai-models", value: "{{getModels}}")
+}

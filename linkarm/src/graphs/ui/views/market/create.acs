@@ -1,0 +1,48 @@
+graph ui/views/market/create {
+  meta: { description: "Market view with grid layout", type: "view", category: "market", author: "AITOS Team" }
+
+  let loadModels = execFile(file: "manage-ai-models/list-models")
+  let loadGrowths = execFile(file: "core/load-growths")
+  let getActiveModel = execFile(file: "manage-ai-models/get-active-model")
+  let createContainer = createElement(tag: "div", id: "marketContainer")
+  let setLayoutStyles = setStyles(id: "marketContainer", styles: { width: "100%", height: "100%", overflow: "auto", padding: "16px" })
+  let execStyles = execFile(file: "ui/views/market/styles")
+  let appendContainer = appendChild(parentId: "mainViewContainer", childId: "marketContainer")
+  let createModelsSection = createElement(tag: "div", id: "modelsSection")
+  let setModelsSectionStyles = setStyles(id: "modelsSection", styles: { marginBottom: "24px" })
+  let createModelsHeader = createElement(tag: "div", id: "modelsHeader")
+  let setModelsHeaderStyles = setStyles(id: "modelsHeader", styles: { display: "flex", justifyContent: "flex-end", alignItems: "center", marginBottom: "8px" })
+  let createAddModelBtn = createElement(tag: "button", id: "addModelButton")
+  let setAddModelBtnStyles = setStyles(id: "addModelButton", styles: { padding: "6px 12px", backgroundColor: "#1890ff", color: "#fff", border: "none", borderRadius: "4px", cursor: "pointer", fontSize: "12px" })
+  let setAddModelBtnText = setTextContent(id: "addModelButton", text: "+ Add")
+  let appendModelsSection = appendChild(parentId: "marketContainer", childId: "modelsSection")
+  let appendModelsHeader = appendChild(parentId: "modelsSection", childId: "modelsHeader")
+  let appendAddModelBtn = appendChild(parentId: "modelsHeader", childId: "addModelButton")
+  let createModelsGrid = createElement(tag: "div", id: "modelsGrid")
+  let setModelsGridStyles = setStyles(id: "modelsGrid", styles: { display: "grid", gridTemplateColumns: "repeat(8, 1fr)", gap: "12px" })
+  let appendModelsGrid = appendChild(parentId: "modelsSection", childId: "modelsGrid")
+  let getModelsList = get(key: "aiModelsList")
+  let renderModels = if getModelsList {
+    let getList = get(key: "aiModelsList")
+    let forEach = forEach currentModel, modelIndex in getList  {
+      let renderCard = execFile(file: "ui/components/model-card/create")
+    }
+  }
+  let createGrowthsSection = createElement(tag: "div", id: "growthsSection")
+  let setGrowthsSectionStyles = setStyles(id: "growthsSection", styles: { marginBottom: "24px" })
+  let appendGrowthsSection = appendChild(parentId: "marketContainer", childId: "growthsSection")
+  let createGrowthsGrid = createElement(tag: "div", id: "growthsGrid")
+  let setGrowthsGridStyles = setStyles(id: "growthsGrid", styles: { display: "grid", gridTemplateColumns: "repeat(8, 1fr)", gap: "12px" })
+  let appendGrowthsGrid = appendChild(parentId: "growthsSection", childId: "growthsGrid")
+  let getGrowthsIndex = getItem(key: "growths/index")
+  let renderGrowths = if getGrowthsIndex {
+    let storeIndex = set(key: "_growthsIndex", value: "{{getGrowthsIndex}}")
+    let checkIsArray = isArr(value: "{{getGrowthsIndex}}")
+    let handleGrowths = if checkIsArray {
+      let getIndex = get(key: "_growthsIndex")
+      let forEach = forEach growthItem, growthIndex in getIndex  {
+        let renderCard = execFile(file: "ui/views/market/growth-card")
+      }
+    }
+  }
+}

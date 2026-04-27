@@ -1,0 +1,8 @@
+graph manage-ai-models/generate-id {
+  meta: { description: "Generate unique ID", type: "service", category: "utils", author: "AITOS Team" }
+
+  let getPrefix = get(key: "idPrefix")
+  let genRandom = random(min: 100000, max: 999999)
+  let concatPrefix = concat(a: "{{getPrefix}}", b: "_")
+  let concatRandom = concat(a: "{{concatPrefix}}", b: "{{genRandom}}")
+}

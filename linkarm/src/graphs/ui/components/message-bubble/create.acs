@@ -1,0 +1,22 @@
+graph ui/components/message-bubble/create {
+  meta: { description: "Create message bubble (logic)", type: "component", category: "message-bubble", author: "AITOS Team" }
+
+  let getMsgIndex = get(key: "messageIndex")
+  let storeMsgIndex = set(key: "_msgIdx", value: "{{getMsgIndex}}")
+  let getCurrentMsg = get(key: "currentMessage")
+  let getMsgRole = getProp(obj: "{{getCurrentMsg}}", key: "role")
+  let getMsgContent = getProp(obj: "{{getCurrentMsg}}", key: "content")
+  let createMessageElement = createElement(tag: "div", id: "msg_{{getMsgIndex}}")
+  let setLayoutStyles = setStyles(id: "msg_{{getMsgIndex}}", styles: { display: "flex" })
+  let execStyles = execFile(file: "ui/components/message-bubble/styles")
+  let isUserMessage = eq(a: "{{getMsgRole}}", b: "user")
+  let checkMessageRole = if isUserMessage {
+    let getIdx1 = get(key: "_msgIdx")
+    let execUserStyles = setStyles(id: "msg_{{getIdx1}}", styles: { alignSelf: "flex-end", backgroundColor: "#007aff", color: "#ffffff" })
+  } else {
+    let getIdx2 = get(key: "_msgIdx")
+    let execAIStyles = setStyles(id: "msg_{{getIdx2}}", styles: { alignSelf: "flex-start", backgroundColor: "#ffffff", color: "#333333" })
+  }
+  let setMessageContent = setTextContent(id: "msg_{{getMsgIndex}}", text: "{{getMsgContent}}")
+  let appendToMessageList = appendChild(parentId: "messageList", childId: "msg_{{getMsgIndex}}")
+}

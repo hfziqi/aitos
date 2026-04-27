@@ -1,0 +1,18 @@
+graph ui/views/market/render-models {
+  meta: { description: "Render models list in market", type: "view", category: "market", author: "AITOS Team" }
+
+  let getModelsList = get(key: "aiModelsList")
+  let createListContainer = createElement(tag: "div", id: "modelsListContainer")
+  let setListContainerStyles = setStyles(id: "modelsListContainer", styles: { marginBottom: "16px" })
+  let appendListContainer = appendChild(parentId: "marketContent", childId: "modelsListContainer")
+  let renderModels = if getModelsList {
+    let getList = get(key: "aiModelsList")
+    let forEach = forEach currentModel, modelIndex in getList  {
+      let renderCard = execFile(file: "ui/components/model-card/create")
+    }
+  }
+  let createAddButton = createElement(tag: "button", id: "addModelButton")
+  let setAddButtonStyles = setStyles(id: "addModelButton", styles: { padding: "12px 24px", backgroundColor: "#1890ff", color: "#fff", border: "none", borderRadius: "4px", cursor: "pointer" })
+  let setAddButtonText = setTextContent(id: "addModelButton", text: "+ Add Model")
+  let appendAddButton = appendChild(parentId: "marketContent", childId: "addModelButton")
+}

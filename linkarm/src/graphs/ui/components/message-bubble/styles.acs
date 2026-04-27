@@ -1,0 +1,6 @@
+graph ui/components/message-bubble/styles {
+  meta: { description: "Message bubble appearance styles", type: "styles", category: "message-bubble", author: "AITOS Team" }
+
+  let getMsgIndex = get(key: "messageIndex")
+  let setAppearanceStyles = setStyles(id: "msg_{{getMsgIndex}}", styles: { maxWidth: "70%", marginBottom: "16px", padding: "8px 16px", borderRadius: "16px", fontSize: "14px", lineHeight: "1.4" })
+}

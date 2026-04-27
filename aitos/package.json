@@ -1,0 +1,34 @@
+{
+  "name": "@aitos/core",
+  "version": "2.0.0",
+  "description": "AITOS Core - AI Agent execution runtime with 100+ composable atoms",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest"
+  },
+  "keywords": [
+    "aitos",
+    "atomic",
+    "architecture",
+    "ai-friendly",
+    "capability-based"
+  ],
+  "author": "AITOS Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hfziqi/aitos"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}

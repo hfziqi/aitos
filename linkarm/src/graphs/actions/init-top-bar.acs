@@ -1,0 +1,10 @@
+graph actions/init-top-bar {
+  meta: { description: "Initialize top bar", type: "action", category: "top-bar", author: "AITOS Team" }
+
+  let checkTopBarContainer = getElementById(domId: "topBarContainer", storeId: "existingTopBar")
+  let shouldCreateTopBar = not(value: "{{checkTopBarContainer}}")
+  let branchTopBarContainer = if shouldCreateTopBar {
+    let createTopBarContainer = createElement(tag: "div", id: "topBarContainer")
+    let execTopBar = execFile(file: "ui/layout/top-bar/create")
+  }
+}

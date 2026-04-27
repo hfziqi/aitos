@@ -1,0 +1,21 @@
+graph core/save-growth {
+  meta: { description: "Save a growth (generated graph) to local storage and update index", type: "core", category: "persistence", author: "AITOS Team" }
+
+  let getGrowthName = get(key: "growthName")
+  let getGrowthData = get(key: "growthData")
+  let buildGrowthPath = concat(a: "growths/", b: "{{getGrowthName}}")
+  let saveGrowthFile = setItem(key: "{{buildGrowthPath}}", value: "{{getGrowthData}}")
+  let readIndex = getItem(key: "growths/index")
+  let isIndexNil = isNil(value: "{{readIndex}}")
+  let initIndex = if isIndexNil {
+    let setEmptyIndex = set(key: "_index", value: [])
+  } else {
+    let setReadIndex = set(key: "_index", value: "{{readIndex}}")
+  }
+  let getIndex = get(key: "_index")
+  let getNewEntryName = get(key: "growthName")
+  let getNewEntryPath = get(key: "buildGrowthPath")
+  let buildNewEntry = set(key: "_newEntry", value: { name: "{{getNewEntryName}}", path: "{{getNewEntryPath}}" })
+  let updateIndex = push(array: "{{getIndex}}", value: "{{buildNewEntry}}")
+  let saveIndex = setItem(key: "growths/index", value: "{{updateIndex}}")
+}
