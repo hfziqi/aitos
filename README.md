@@ -66,9 +66,11 @@ AI doesn't need React components, JSX, or build tools — it just composes atoms
 
 **Prerequisites**: Node.js 18+
 
+### Web Version
+
 ```bash
 # 1. Clone the repository
-git clone https://github.com/your-username/aitos.git
+git clone https://github.com/hfziqi/aitos.git
 cd aitos
 
 # 2. Build core package
@@ -79,6 +81,43 @@ cd linkarm && npm install && npm run dev
 ```
 
 Open http://localhost:5173 in your browser.
+
+### Windows Desktop Version
+
+**Prerequisites**: Node.js 18+, CMake 3.15+, Visual Studio 2022 (with C++ desktop development workload)
+
+```bash
+# 1. Build core package
+cd aitos && npm install && npm run build && cd ..
+
+# 2. Build web frontend
+cd linkarm && npm install && npm run build && cd ..
+
+# 3. Extract WebView2 SDK
+cd linkarm-desktop
+# Extract webview2.zip to current directory (skip if already extracted)
+
+# 4. CMake build
+mkdir build && cd build
+cmake ..
+cmake --build . --config Release
+
+# 5. Run
+cd bin/Release
+./LinkArm.exe
+```
+
+Or use the one-click script (automates steps 1-4):
+
+```bash
+cd linkarm && npm run desktop:build
+```
+
+**Development mode** (Vite hot reload + desktop window):
+
+```bash
+cd linkarm && npm run desktop:dev
+```
 
 **What you'll see**: LinkArm - an AI chat application built entirely with AITOS atoms. Add your AI model (OpenAI-compatible API) and start chatting.
 

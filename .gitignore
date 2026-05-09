@@ -5,7 +5,7 @@ dist/
 
 linkarm-desktop/build/
 linkarm-desktop/release/
-linkarm-desktop/app/assets/
+linkarm-desktop/app/
 linkarm-desktop/webview2/
 linkarm-desktop/webview2.zip
 
