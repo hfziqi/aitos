@@ -1,0 +1,29 @@
+graph create {
+  meta: { description: "Create model card for grid layout with actions", type: "component", category: "model-card", author: "AITOS Team" }
+
+  let getCurrentModel = get(key: "currentModel")
+  let getModelId = getProp(obj: "{{getCurrentModel}}", key: "id")
+  let getModelName = getProp(obj: "{{getCurrentModel}}", key: "name")
+  let getActiveModelId = get(key: "activeModelId")
+  let isSelected = eq(a: "{{getModelId}}", b: "{{getActiveModelId}}")
+  let createCardId = concat(a: "model_card_", b: "{{getModelId}}")
+  let execStyles = execFile(file: "ui/components/model-card/styles")
+  let createCard = createElement(tag: "div", id: "{{createCardId}}")
+  let setCardClass = if isSelected {
+    let setSelectedClass = setAttribute(id: "{{createCardId}}", name: "class", value: "model-card selected")
+  } else {
+    let setNormalClass = setAttribute(id: "{{createCardId}}", name: "class", value: "model-card")
+  }
+  let createIcon = createElement(tag: "div", id: "{{createCardId}}_icon")
+  let setIconClass = setAttribute(id: "{{createCardId}}_icon", name: "class", value: "model-card-icon")
+  let createName = createElement(tag: "div", id: "{{createCardId}}_name")
+  let setNameClass = setAttribute(id: "{{createCardId}}_name", name: "class", value: "model-card-name")
+  let setNameText = setTextContent(id: "{{createCardId}}_name", text: "{{getModelName}}")
+  let createDeleteBtn = createElement(tag: "button", id: "{{createCardId}}_delete")
+  let setDeleteBtnClass = setAttribute(id: "{{createCardId}}_delete", name: "class", value: "model-card-btn-delete")
+  let setDeleteBtnText = setTextContent(id: "{{createCardId}}_delete", text: "×")
+  let appendCard = appendChild(parentId: "modelsGrid", childId: "{{createCardId}}")
+  let appendDeleteBtn = appendChild(parentId: "{{createCardId}}", childId: "{{createCardId}}_delete")
+  let appendIcon = appendChild(parentId: "{{createCardId}}", childId: "{{createCardId}}_icon")
+  let appendName = appendChild(parentId: "{{createCardId}}", childId: "{{createCardId}}_name")
+}

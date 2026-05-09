@@ -1,0 +1,3 @@
+graph maximize-window {
+  let maximize = maximizeWindow()
+}

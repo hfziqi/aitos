@@ -1,0 +1,27 @@
+{
+  "name": "linkarm",
+  "version": "2.0.0",
+  "description": "LinkArm - Built with AITOS atomic architecture (AI-friendly capability-based packages)",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "desktop:dev": "node scripts/desktop-dev.js",
+    "desktop:build": "node scripts/desktop-build.js"
+  },
+  "dependencies": {
+    "@aitos/core": "file:../aitos",
+    "@aitos/output": "file:../packages/@aitos/output",
+    "@aitos/input": "file:../packages/@aitos/input",
+    "@aitos/transfer": "file:../packages/@aitos/transfer",
+    "@aitos/sense": "file:../packages/@aitos/sense",
+    "@aitos/store": "file:../packages/@aitos/store",
+    "@aitos/bridge": "file:../packages/@aitos/bridge",
+    "@aitos/bridge-desktop": "file:../packages/@aitos/bridge-desktop"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "vite": "^5.0.0"
+  }
+}

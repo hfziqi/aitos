@@ -1,0 +1,9 @@
+graph create {
+  meta: { description: "Create AI message bubble (UI)", type: "component", category: "ai-message-bubble", author: "AITOS Team" }
+
+  let execStyles = execFile(file: "ui/components/ai-message-bubble/styles")
+  let createElement = createElement(tag: "div", id: "ai_stream_msg")
+  let setClass = setAttribute(id: "ai_stream_msg", name: "class", value: "ai-msg-bubble")
+  let appendElement = appendChild(parentId: "messageList", childId: "ai_stream_msg")
+  let setStreamElementId = set(key: "streamElementId", value: "ai_stream_msg")
+}

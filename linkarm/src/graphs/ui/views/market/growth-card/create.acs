@@ -1,0 +1,31 @@
+graph create {
+  meta: { description: "Growth card for grid layout", type: "component", category: "market", author: "AITOS Team" }
+
+  let getGrowthName = getProp(obj: "{{growthItem}}", key: "name")
+  let getGrowthIcon = getProp(obj: "{{growthItem}}", key: "icon")
+  let isIconNil = isNil(value: "{{getGrowthIcon}}")
+  let resolveIcon = if isIconNil {
+    let setDefaultIcon = set(key: "_cardIcon", value: "🌱")
+  } else {
+    let setMetaIcon = set(key: "_cardIcon", value: "{{getGrowthIcon}}")
+  }
+  let getCardIcon = get(key: "_cardIcon")
+  let createCardId = concat(a: "growth_card_", b: "{{growthIndex}}")
+  let execStyles = execFile(file: "ui/views/market/growth-card/styles")
+  let createCard = createElement(tag: "div", id: "{{createCardId}}")
+  let setCardClass = setAttribute(id: "{{createCardId}}", name: "class", value: "growth-card")
+  let createIcon = createElement(tag: "div", id: "{{createCardId}}_icon")
+  let setIconClass = setAttribute(id: "{{createCardId}}_icon", name: "class", value: "growth-card-icon")
+  let setIconText = setTextContent(id: "{{createCardId}}_icon", text: "{{getCardIcon}}")
+  let createName = createElement(tag: "div", id: "{{createCardId}}_name")
+  let setNameClass = setAttribute(id: "{{createCardId}}_name", name: "class", value: "growth-card-name")
+  let setNameText = setTextContent(id: "{{createCardId}}_name", text: "{{getGrowthName}}")
+  let createDelBtnId = concat(a: "{{createCardId}}", b: "_delete")
+  let createDelBtn = createElement(tag: "button", id: "{{createDelBtnId}}")
+  let setDelBtnClass = setAttribute(id: "{{createDelBtnId}}", name: "class", value: "growth-card-btn-delete")
+  let setDelBtnText = setTextContent(id: "{{createDelBtnId}}", text: "×")
+  let appendCard = appendChild(parentId: "growthsGrid", childId: "{{createCardId}}")
+  let appendDelBtn = appendChild(parentId: "{{createCardId}}", childId: "{{createDelBtnId}}")
+  let appendIcon = appendChild(parentId: "{{createCardId}}", childId: "{{createCardId}}_icon")
+  let appendName = appendChild(parentId: "{{createCardId}}", childId: "{{createCardId}}_name")
+}

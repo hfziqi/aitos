@@ -1,0 +1,12 @@
+node_modules/
+dist/
+*.log
+.DS_Store
+
+linkarm-desktop/build/
+linkarm-desktop/release/
+linkarm-desktop/app/assets/
+linkarm-desktop/webview2/
+linkarm-desktop/webview2.zip
+
+*.tsbuildinfo

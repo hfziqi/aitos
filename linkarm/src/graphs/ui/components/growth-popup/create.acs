@@ -1,0 +1,42 @@
+graph create {
+  meta: { description: "Create growth popup for app-type growth", type: "component", category: "growth-popup", author: "AITOS Team" }
+
+  let getGrowthName = get(key: "clickedGrowthName")
+  let getGrowthIcon = get(key: "clickedGrowthIcon")
+  let isIconNil = isNil(value: "{{getGrowthIcon}}")
+  let resolveIcon = if isIconNil {
+    let setDefaultIcon = set(key: "_popupIcon", value: "🌱")
+  } else {
+    let setMetaIcon = set(key: "_popupIcon", value: "{{getGrowthIcon}}")
+  }
+  let getPopupIcon = get(key: "_popupIcon")
+  let execStyles = execFile(file: "ui/components/growth-popup/styles")
+  let createOverlay = createElement(tag: "div", id: "growthOverlay")
+  let setOverlayClass = setAttribute(id: "growthOverlay", name: "class", value: "growth-popup-overlay")
+  let appendOverlay = appendChild(parentId: "appContainer", childId: "growthOverlay")
+  let createPopup = createElement(tag: "div", id: "growthPopup")
+  let setPopupClass = setAttribute(id: "growthPopup", name: "class", value: "growth-popup")
+  let appendPopup = appendChild(parentId: "growthOverlay", childId: "growthPopup")
+  let createHeader = createElement(tag: "div", id: "growthPopupHeader")
+  let setHeaderClass = setAttribute(id: "growthPopupHeader", name: "class", value: "growth-popup-header")
+  let appendHeader = appendChild(parentId: "growthPopup", childId: "growthPopupHeader")
+  let createTitle = createElement(tag: "div", id: "growthPopupTitle")
+  let setTitleClass = setAttribute(id: "growthPopupTitle", name: "class", value: "growth-popup-title")
+  let appendTitle = appendChild(parentId: "growthPopupHeader", childId: "growthPopupTitle")
+  let createIcon = createElement(tag: "span", id: "growthPopupIcon")
+  let setIconClass = setAttribute(id: "growthPopupIcon", name: "class", value: "growth-popup-icon")
+  let setIconText = setTextContent(id: "growthPopupIcon", text: "{{getPopupIcon}}")
+  let appendIcon = appendChild(parentId: "growthPopupTitle", childId: "growthPopupIcon")
+  let createName = createElement(tag: "span", id: "growthPopupName")
+  let setNameText = setTextContent(id: "growthPopupName", text: "{{getGrowthName}}")
+  let appendName = appendChild(parentId: "growthPopupTitle", childId: "growthPopupName")
+  let createCloseBtn = createElement(tag: "button", id: "growthPopupClose")
+  let setCloseClass = setAttribute(id: "growthPopupClose", name: "class", value: "growth-popup-close")
+  let setCloseText = setTextContent(id: "growthPopupClose", text: "✕")
+  let appendCloseBtn = appendChild(parentId: "growthPopupHeader", childId: "growthPopupClose")
+  let createBody = createElement(tag: "div", id: "growthPopupBody")
+  let setBodyClass = setAttribute(id: "growthPopupBody", name: "class", value: "growth-popup-body")
+  let appendBody = appendChild(parentId: "growthPopup", childId: "growthPopupBody")
+  let setContainerId = set(key: "growthContainerId", value: "growthPopupBody")
+  let setActiveGrowth = set(key: "activeGrowthName", value: "{{getGrowthName}}")
+}

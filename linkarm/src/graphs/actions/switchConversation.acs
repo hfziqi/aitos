@@ -1,0 +1,22 @@
+graph switchConversation {
+  meta: { description: "Switch conversation - parses conversation ID from clickTargetId", type: "action", category: "conversation", author: "AITOS Team" }
+
+  let getTargetId = get(key: "clickTargetId")
+  let getItemPrefix = slice(array: "{{getTargetId}}", start: 0, end: 9)
+  let isConvItem = eq(a: "{{getItemPrefix}}", b: "convItem-")
+  let resolveConvId = if isConvItem {
+    let getIdx = slice(array: "{{getTargetId}}", start: 9)
+    let getConversations = get(key: "conversations")
+    let getConvByIdx = getProp(obj: "{{getConversations}}", key: "{{getIdx}}")
+    let getConvId = getProp(obj: "{{getConvByIdx}}", key: "id")
+  } else {
+    let getIdx = slice(array: "{{getTargetId}}", start: 10)
+    let getConversations = get(key: "conversations")
+    let getConvByIdx = getProp(obj: "{{getConversations}}", key: "{{getIdx}}")
+    let getConvId = getProp(obj: "{{getConvByIdx}}", key: "id")
+  }
+  let setCurrentConvId = set(key: "currentConversationId", value: "{{resolveConvId}}")
+  let clearMessages = set(key: "messages", value: null)
+  let setCurrentView = set(key: "currentView", value: "chat")
+  let execRender = execFile(file: "core/render")
+}

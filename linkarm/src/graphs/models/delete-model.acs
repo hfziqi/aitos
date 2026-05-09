@@ -1,0 +1,21 @@
+graph delete-model {
+  meta: { description: "Delete AI model - parses model ID from clickTargetId", type: "action", category: "ai-models", author: "AITOS Team" }
+
+  let getTargetId = get(key: "clickTargetId")
+  let getModelId = slice(array: "{{getTargetId}}", start: 11, end: -7)
+  let loadModels = readLocal(key: "models/ai-models.json")
+  let filterModels = filter currentModel index: modelIndex in loadModels {
+    let getCurrentId = getProp(obj: "{{currentModel}}", key: "id")
+    let isSameId = eq(a: "{{getCurrentId}}", b: "{{getModelId}}")
+    let compare = not(value: "{{isSameId}}")
+  }
+  let saveModels = writeLocal(key: "models/ai-models.json", value: "{{filterModels}}")
+  let getActiveId = readLocal(key: "models/active-model-id.json")
+  let isActiveModelDeleted = eq(a: "{{getActiveId}}", b: "{{getModelId}}")
+  let checkActiveModel = if isActiveModelDeleted {
+    let clearActiveModelFile = removeLocal(key: "models/active-model-id.json")
+    let clearActiveModelId = set(key: "activeModelId", value: null)
+    let clearActiveModelConfig = set(key: "activeModelConfig", value: null)
+  }
+  let reRender = execFile(file: "core/render")
+}

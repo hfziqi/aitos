@@ -1,0 +1,19 @@
+graph add-message {
+  meta: { description: "Add message to current conversation and save to separate file", type: "domain", category: "conversation", author: "AITOS Team" }
+
+  let getConversationId = get(key: "currentConversationId")
+  let getMessage = get(key: "newMessage")
+  let buildPath = set(key: "_msgPath", value: "chat/messages/{{getConversationId}}.json")
+  let readExistingMessages = readLocal(key: "{{buildPath}}")
+  let checkIsArray = isArr(value: "{{readExistingMessages}}")
+  let initOrSetMessages = if checkIsArray {
+    let addNewMessage = push(array: "{{readExistingMessages}}", value: "{{getMessage}}")
+    let saveMessages = writeLocal(key: "{{buildPath}}", value: "{{addNewMessage}}")
+    let updateStoreMessages = set(key: "messages", value: "{{addNewMessage}}")
+  } else {
+    let initEmpty = set(key: "_emptyArr", value: [])
+    let addFirstMessage = push(array: "{{initEmpty}}", value: "{{getMessage}}")
+    let saveMessages2 = writeLocal(key: "{{buildPath}}", value: "{{addFirstMessage}}")
+    let updateStoreMessages2 = set(key: "messages", value: "{{addFirstMessage}}")
+  }
+}

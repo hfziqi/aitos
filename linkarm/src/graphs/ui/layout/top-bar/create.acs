@@ -1,0 +1,27 @@
+graph create {
+  meta: { description: "Create top bar (logic)", type: "layout", category: "top-bar", author: "AITOS Team" }
+
+  let getTopH = get(key: "topH")
+  let setLayoutStyles = setStyles(id: "topBarContainer", styles: { display: "flex", flexDirection: "row", flexShrink: "0", width: "100%", height: "{{getTopH}}px" })
+  let execStyles = execFile(file: "ui/layout/top-bar/styles")
+  let appendTopBarContainer = appendChild(parentId: "rightArea", childId: "topBarContainer")
+  let createDragArea = createElement(tag: "div", id: "dragArea")
+  let setDragAreaLayoutStyles = setStyles(id: "dragArea", styles: { flex: "1", height: "100%" })
+  let appendDragArea = appendChild(parentId: "topBarContainer", childId: "dragArea")
+  let listenDrag = addEventListener(id: "dragArea", event: "mousedown", storeKey: "topBarDrag", action: "actions/start-window-drag")
+  let createMinButton = createElement(tag: "button", id: "minButton")
+  let setMinButtonClass = setAttribute(id: "minButton", name: "class", value: "window-btn")
+  let setMinButtonText = setTextContent(id: "minButton", text: "─")
+  let appendMinButton = appendChild(parentId: "topBarContainer", childId: "minButton")
+  let listenMinClick = addEventListener(id: "minButton", event: "click", storeKey: "minClick", action: "actions/minimize-window")
+  let createMaxButton = createElement(tag: "button", id: "maxButton")
+  let setMaxButtonClass = setAttribute(id: "maxButton", name: "class", value: "window-btn")
+  let setMaxButtonText = setTextContent(id: "maxButton", text: "□")
+  let appendMaxButton = appendChild(parentId: "topBarContainer", childId: "maxButton")
+  let listenMaxClick = addEventListener(id: "maxButton", event: "click", storeKey: "maxClick", action: "actions/maximize-window")
+  let createCloseButton = createElement(tag: "button", id: "closeButton")
+  let setCloseButtonClass = setAttribute(id: "closeButton", name: "class", value: "window-btn window-btn-close")
+  let setCloseButtonText = setTextContent(id: "closeButton", text: "✕")
+  let appendCloseButton = appendChild(parentId: "topBarContainer", childId: "closeButton")
+  let listenCloseClick = addEventListener(id: "closeButton", event: "click", storeKey: "closeClick", action: "actions/close-window")
+}

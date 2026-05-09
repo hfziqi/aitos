@@ -1,0 +1,7 @@
+graph create {
+  meta: { description: "Create chat view structure (logic)", type: "view", category: "chat", author: "AITOS Team" }
+
+  let execMessageList = execFile(file: "ui/components/message-list/create")
+  let execInputArea = execFile(file: "ui/components/chat-input/create")
+  let renderMessages = execFile(file: "ui/views/chat/render-messages")
+}

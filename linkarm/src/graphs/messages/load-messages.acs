@@ -1,0 +1,13 @@
+graph load-messages {
+  meta: { description: "Load messages for current conversation from separate file", type: "manage", category: "messages", author: "AITOS Team" }
+
+  let getCurrentConversationId = get(key: "currentConversationId")
+  let buildPath = set(key: "_msgPath", value: "chat/messages/{{getCurrentConversationId}}.json")
+  let readMessages = readLocal(key: "{{buildPath}}")
+  let checkIsArray = isArr(value: "{{readMessages}}")
+  let setOrInit = if checkIsArray {
+    let setMessages = set(key: "messages", value: "{{readMessages}}")
+  } else {
+    let initEmpty = set(key: "messages", value: [])
+  }
+}

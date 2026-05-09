@@ -1,0 +1,10 @@
+graph list-models {
+  meta: { description: "List all AI models", type: "action", category: "ai-models", author: "AITOS Team" }
+
+  let loadModels = readLocal(key: "models/ai-models.json")
+  let checkModels = if loadModels {
+    let doSet = set(key: "aiModelsList", value: "{{loadModels}}")
+  } else {
+    let doSet = set(key: "aiModelsList", value: [])
+  }
+}

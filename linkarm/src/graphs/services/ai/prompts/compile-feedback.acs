@@ -1,0 +1,19 @@
+graph compile-feedback {
+  meta: { description: "Compile feedback prompt from recent failures", type: "prompt", category: "ai", author: "AITOS Team" }
+
+  let readRecentFailures = readLocal(key: "growths/logs/recent-failures.json")
+  let isNilResult = isNil(value: "{{readRecentFailures}}")
+  let isEmpty = eq(a: "{{isNilResult}}", b: true)
+  let buildPrompt = if isEmpty {
+    let setNoFeedback = set(key: "_promptCompileFeedback", value: "")
+  } else {
+    let getLen = len(value: "{{readRecentFailures}}")
+    let hasEntries = gt(a: "{{getLen}}", b: 0)
+    let buildContent = if hasEntries {
+      let formatFailures = format(template: "## Recent Compilation Failures\n\nThe following errors occurred in recent growth creation attempts. Please avoid these mistakes:\n\n{failures}\n\nLearn from these failures and do not repeat the same errors.", failures: "{{readRecentFailures}}")
+      let setFeedback = set(key: "_promptCompileFeedback", value: "{{formatFailures}}")
+    } else {
+      let setEmptyFeedback = set(key: "_promptCompileFeedback", value: "")
+    }
+  }
+}

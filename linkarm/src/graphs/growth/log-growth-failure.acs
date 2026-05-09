@@ -1,0 +1,45 @@
+graph log-growth-failure {
+  meta: { description: "Log growth creation failure for AI learning", type: "core", category: "growth", author: "AITOS Team" }
+
+  let getName = get(key: "name")
+  let getError = get(key: "_errorMsg")
+  let getAcs = get(key: "acs")
+  let getTimestamp = now()
+  let buildEntry = merge(a: { name: "{{getName}}", error: "{{getError}}", timestamp: "{{getTimestamp}}" }, b: { acsSnippet: "{{getAcs}}" })
+  let readExisting = readLocal(key: "growths/logs/recent-failures.json")
+  let isNilExisting = isNil(value: "{{readExisting}}")
+  let initOrKeep = if isNilExisting {
+    let setEmpty = set(key: "_failureLog", value: [])
+  } else {
+    let setExisting = set(key: "_failureLog", value: "{{readExisting}}")
+  }
+  let getLog = get(key: "_failureLog")
+  let pushEntry = push(array: "{{getLog}}", value: "{{buildEntry}}")
+  let keepRecent = slice(array: "{{pushEntry}}", start: -10)
+  let saveLog = writeLocal(key: "growths/logs/recent-failures.json", value: "{{keepRecent}}")
+  let isSubGraph = contains(text: "{{getName}}", search: "/")
+  let splitName = split(text: "{{getName}}", separator: "/")
+  let projectRoot = getAt(array: "{{splitName}}", index: 0)
+  let resolveLogName = if isSubGraph {
+    let subName = getAt(array: "{{splitName}}", index: 1)
+    let setLogName = set(key: "_logFileName", value: "{{subName}}")
+  } else {
+    let setMainName = set(key: "_logFileName", value: "main")
+  }
+  let getLogFileName = get(key: "_logFileName")
+  let perLogPath = concat(a: "growths/", b: "{{projectRoot}}")
+  let perLogPathLogs = concat(a: "{{perLogPath}}", b: "/logs/")
+  let perLogPathJson = concat(a: "{{perLogPathLogs}}", b: "{{getLogFileName}}")
+  let perLogPathFinal = concat(a: "{{perLogPathJson}}", b: ".json")
+  let readPerLog = readLocal(key: "{{perLogPathFinal}}")
+  let isNilPerLog = isNil(value: "{{readPerLog}}")
+  let initPerLog = if isNilPerLog {
+    let setEmptyPerLog = set(key: "_perGrowthLog", value: [])
+  } else {
+    let setExistingPerLog = set(key: "_perGrowthLog", value: "{{readPerLog}}")
+  }
+  let getPerLog = get(key: "_perGrowthLog")
+  let perEntry = set(key: "_perEntry", value: { status: "fail", error: "{{getError}}", timestamp: "{{getTimestamp}}" })
+  let pushPerEntry = push(array: "{{getPerLog}}", value: "{{perEntry}}")
+  let savePerLog = writeLocal(key: "{{perLogPathFinal}}", value: "{{pushPerEntry}}")
+}

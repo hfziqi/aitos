@@ -1,0 +1,45 @@
+graph log-growth-success {
+  meta: { description: "Log growth creation success", type: "core", category: "growth", author: "AITOS Team" }
+
+  let getName = get(key: "name")
+  let getType = get(key: "type")
+  let getIcon = get(key: "icon")
+  let getTimestamp = now()
+  let buildEntry = merge(a: { name: "{{getName}}", type: "{{getType}}", icon: "{{getIcon}}" }, b: { timestamp: "{{getTimestamp}}" })
+  let readExisting = readLocal(key: "growths/logs/history.json")
+  let isNilExisting = isNil(value: "{{readExisting}}")
+  let initOrKeep = if isNilExisting {
+    let setEmpty = set(key: "_historyLog", value: [])
+  } else {
+    let setExisting = set(key: "_historyLog", value: "{{readExisting}}")
+  }
+  let getLog = get(key: "_historyLog")
+  let pushEntry = push(array: "{{getLog}}", value: "{{buildEntry}}")
+  let keepRecent = slice(array: "{{pushEntry}}", start: -50)
+  let saveLog = writeLocal(key: "growths/logs/history.json", value: "{{keepRecent}}")
+  let isSubGraph = contains(text: "{{getName}}", search: "/")
+  let splitName = split(text: "{{getName}}", separator: "/")
+  let projectRoot = getAt(array: "{{splitName}}", index: 0)
+  let resolveLogName = if isSubGraph {
+    let subName = getAt(array: "{{splitName}}", index: 1)
+    let setLogName = set(key: "_logFileName", value: "{{subName}}")
+  } else {
+    let setMainName = set(key: "_logFileName", value: "main")
+  }
+  let getLogFileName = get(key: "_logFileName")
+  let perLogPath = concat(a: "growths/", b: "{{projectRoot}}")
+  let perLogPathLogs = concat(a: "{{perLogPath}}", b: "/logs/")
+  let perLogPathJson = concat(a: "{{perLogPathLogs}}", b: "{{getLogFileName}}")
+  let perLogPathFinal = concat(a: "{{perLogPathJson}}", b: ".json")
+  let readPerLog = readLocal(key: "{{perLogPathFinal}}")
+  let isNilPerLog = isNil(value: "{{readPerLog}}")
+  let initPerLog = if isNilPerLog {
+    let setEmptyPerLog = set(key: "_perGrowthLog", value: [])
+  } else {
+    let setExistingPerLog = set(key: "_perGrowthLog", value: "{{readPerLog}}")
+  }
+  let getPerLog = get(key: "_perGrowthLog")
+  let perEntry = set(key: "_perEntry", value: { status: "success", timestamp: "{{getTimestamp}}" })
+  let pushPerEntry = push(array: "{{getPerLog}}", value: "{{perEntry}}")
+  let savePerLog = writeLocal(key: "{{perLogPathFinal}}", value: "{{pushPerEntry}}")
+}

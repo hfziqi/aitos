@@ -1,0 +1,45 @@
+graph load-growths {
+  meta: { description: "Load growths (generated graphs) from index", type: "core", category: "graph", author: "AITOS Team" }
+
+  let checkGrowths = get(key: "growths")
+  let shouldLoadGrowths = not(value: "{{checkGrowths}}")
+  let branchLoad = if shouldLoadGrowths {
+    let readIndex = readLocal(key: "growths/index.json")
+    let isIndexNil = isNil(value: "{{readIndex}}")
+    let hasIndex = not(value: "{{isIndexNil}}")
+    let handleIndex = if hasIndex {
+      let checkIsArray = isArr(value: "{{readIndex}}")
+      let handleGrowths = if checkIsArray {
+        let forEachGrowth = forEach growthItem, growthIndex in readIndex  {
+          let getGrowthName = getProp(obj: "{{growthItem}}", key: "name")
+          let buildScope = concat(a: "growths/", b: "{{getGrowthName}}")
+          let buildScopeSlash = concat(a: "{{buildScope}}", b: "/")
+          let listFiles = listLocal(scope: "{{buildScopeSlash}}")
+          let loadEachFile = forEach file in listFiles {
+            let isAcsFile = contains(text: "{{file}}", search: ".acs")
+            let handleAcsFile = if isAcsFile {
+              let readFile = readLocal(key: "{{file}}")
+              let isFileNil = isNil(value: "{{readFile}}")
+              let hasFile = not(value: "{{isFileNil}}")
+              let handleFile = if hasFile {
+                let stripPrefix = slice(array: "{{file}}", start: 8)
+                let stripExt = slice(array: "{{stripPrefix}}", start: 0, end: -4)
+                let buildMainPath = concat(a: "{{getGrowthName}}", b: "/main")
+                let isMainFile = eq(a: "{{stripExt}}", b: "{{buildMainPath}}")
+                let resolveKey = if isMainFile {
+                  let useMainKey = set(key: "_graphKey", value: "{{getGrowthName}}")
+                } else {
+                  let useSubKey = set(key: "_graphKey", value: "{{stripExt}}")
+                }
+                let getGraphKey = get(key: "_graphKey")
+                let buildKey = concat(a: "__graph_", b: "{{getGraphKey}}")
+                let compileFile = compileAcs(acs: "{{readFile}}")
+                let registerFile = set(key: "{{buildKey}}", value: "{{compileFile}}")
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
