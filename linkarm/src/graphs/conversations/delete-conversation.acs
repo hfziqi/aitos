@@ -1,0 +1,41 @@
+graph delete-conversation {
+  meta: { description: "Delete a conversation - parses conversation ID from clickTargetId", type: "action", category: "conversation", author: "AITOS Team" }
+
+  let getTargetId = get(key: "clickTargetId")
+  let findItem = closest(id: "{{getTargetId}}", selector: ".sidebar-item")
+  let getConvIdx = slice(array: "{{findItem}}", start: 9)
+  let getConversations = get(key: "conversations")
+  let getConvByDelIdx = getProp(obj: "{{getConversations}}", key: "{{getConvIdx}}")
+  let getConvId = getProp(obj: "{{getConvByDelIdx}}", key: "id")
+  let initFiltered = set(key: "_filteredConvs", value: [])
+  let forEachConv = forEach conv, convIdx in getConversations  {
+    let getCurConvId = getProp(obj: "{{conv}}", key: "id")
+    let compare = eq(a: "{{getCurConvId}}", b: "{{getConvId}}")
+    let shouldKeep = not(value: "{{compare}}")
+    let handleKeep = if shouldKeep {
+      let getFiltered = get(key: "_filteredConvs")
+      let pushConv = push(array: "{{getFiltered}}", value: "{{conv}}")
+      let saveFiltered = set(key: "_filteredConvs", value: "{{pushConv}}")
+    }
+  }
+  let getFilteredConvs = get(key: "_filteredConvs")
+  let saveConversations = writeLocal(key: "chat/conversations.json", value: "{{getFilteredConvs}}")
+  let updateStore = set(key: "conversations", value: "{{getFilteredConvs}}")
+  let deleteMessagesFile = removeLocal(key: "chat/messages/{{getConvId}}.json")
+  let checkCurrentConv = get(key: "currentConversationId")
+  let isCurrentConvDeleted = eq(a: "{{checkCurrentConv}}", b: "{{getConvId}}")
+  let handleCurrentConv = if isCurrentConvDeleted {
+    let getFiltered = get(key: "_filteredConvs")
+    let getFilteredLen = len(value: "{{getFiltered}}")
+    let checkHasMore = gt(a: "{{getFilteredLen}}", b: 0)
+    let setNewCurrentConv = if checkHasMore {
+      let getFirst = getProp(obj: "{{getFiltered}}", key: 0)
+      let getFirstId = getProp(obj: "{{getFirst}}", key: "id")
+      let setCurrentId = set(key: "currentConversationId", value: "{{getFirstId}}")
+    } else {
+      let clearCurrentId = set(key: "currentConversationId", value: null)
+    }
+    let clearMessages = set(key: "messages", value: [])
+  }
+  let reRender = execFile(file: "core/render")
+}

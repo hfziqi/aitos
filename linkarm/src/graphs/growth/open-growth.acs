@@ -1,0 +1,49 @@
+graph open-growth {
+  meta: { description: "Open growth - parse index and dispatch by type", type: "action", category: "growth", author: "AITOS Team" }
+
+  let getTargetId = get(key: "clickTargetId")
+  let findCard = closest(id: "{{getTargetId}}", selector: ".growth-card")
+  let isCardNil = isNil(value: "{{findCard}}")
+  let isCardFound = not(value: "{{isCardNil}}")
+  let handleCard = if isCardFound {
+    let getCardIndex = slice(array: "{{findCard}}", start: 12)
+    let readIndex = readLocal(key: "growths/index.json")
+    let isIndexNil = isNil(value: "{{readIndex}}")
+    let handleIndex = if isIndexNil {
+      let setError = set(key: "growthError", value: "No growths found")
+    } else {
+      let checkIsArray = isArr(value: "{{readIndex}}")
+      let handleArray = if checkIsArray {
+        let getGrowthItem = getAt(array: "{{readIndex}}", index: {{getCardIndex}})
+        let isItemNil = isNil(value: "{{getGrowthItem}}")
+        let handleItem = if isItemNil {
+          let setError = set(key: "growthError", value: "Growth not found")
+        } else {
+          let getName = getProp(obj: "{{getGrowthItem}}", key: "name")
+          let getType = getProp(obj: "{{getGrowthItem}}", key: "type")
+          let getIcon = getProp(obj: "{{getGrowthItem}}", key: "icon")
+          let getDesc = getProp(obj: "{{getGrowthItem}}", key: "description")
+          let getPath = getProp(obj: "{{getGrowthItem}}", key: "path")
+          let isTypeNil = isNil(value: "{{getType}}")
+          let resolveType = if isTypeNil {
+            let setDefaultType = set(key: "clickedGrowthType", value: "tool")
+          } else {
+            let setMetaType = set(key: "clickedGrowthType", value: "{{getType}}")
+          }
+          let saveName = set(key: "clickedGrowthName", value: "{{getName}}")
+          let saveIcon = set(key: "clickedGrowthIcon", value: "{{getIcon}}")
+          let saveDesc = set(key: "clickedGrowthDesc", value: "{{getDesc}}")
+          let savePath = set(key: "clickedGrowthPath", value: "{{getPath}}")
+          let getGrowthType = get(key: "clickedGrowthType")
+          let isApp = eq(a: "{{getGrowthType}}", b: "app")
+          let dispatchByType = if isApp {
+            let openPopup = execFile(file: "ui/components/growth-popup/create")
+            let execGrowth = execFile(file: "{{getName}}")
+          } else {
+            let openDetail = execFile(file: "ui/components/growth-detail/create")
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "name": "@aitos/input",
+  "version": "1.0.0",
+  "description": "AITOS Input Capability Package - Keyboard, Pointer, and Voice input atoms",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "keywords": [
+    "aitos",
+    "input",
+    "keyboard",
+    "pointer",
+    "voice",
+    "capability"
+  ],
+  "author": "AITOS Team",
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "peerDependencies": {
+    "@aitos/core": "^1.0.0"
+  },
+  "devDependencies": {
+    "@aitos/core": "file:../core",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.9.3"
+  }
+}

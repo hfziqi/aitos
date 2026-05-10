@@ -1,0 +1,54 @@
+graph delete-growth {
+  meta: { description: "Delete growth - parses growth index from clickTargetId", type: "action", category: "growth", author: "AITOS Team" }
+
+  let getTargetId = get(key: "clickTargetId")
+  let findCard = closest(id: "{{getTargetId}}", selector: ".growth-card")
+  let getGrowthIndex = slice(array: "{{findCard}}", start: 12)
+  let getGrowthIndexNum = toNum(value: "{{getGrowthIndex}}")
+  let readIndex = readLocal(key: "growths/index.json")
+  let isIndexNil = isNil(value: "{{readIndex}}")
+  let handleIndex = if isIndexNil {
+    let setError = set(key: "growthError", value: "No growths found")
+  } else {
+    let checkIsArray = isArr(value: "{{readIndex}}")
+    let handleArray = if checkIsArray {
+      let getGrowthItem = getAt(array: "{{readIndex}}", index: {{getGrowthIndexNum}})
+      let isItemNil = isNil(value: "{{getGrowthItem}}")
+      let handleItem = if isItemNil {
+        let setError = set(key: "growthError", value: "Growth not found")
+      } else {
+        let getName = getProp(obj: "{{getGrowthItem}}", key: "name")
+        let buildScope = concat(a: "growths/", b: "{{getName}}/")
+        let listFiles = listLocal(scope: "{{buildScope}}")
+        let deleteEachFile = forEach file in listFiles {
+          let removeFile = removeLocal(key: "{{file}}")
+        }
+        let buildDirPath = concat(a: "growths/", b: "{{getName}}")
+        let removeDir = removeLocal(key: "{{buildDirPath}}")
+        let filterIndex = filter item index: idx in readIndex {
+          let isSameIdx = eq(a: "{{idx}}", b: {{getGrowthIndexNum}})
+          let compare = not(value: "{{isSameIdx}}")
+        }
+        let saveIndex = writeLocal(key: "growths/index.json", value: "{{filterIndex}}")
+        let clearStoreEntries = forEach file in listFiles {
+          let isAcsFile = contains(text: "{{file}}", search: ".acs")
+          let handleAcsFile = if isAcsFile {
+            let stripPrefix = slice(array: "{{file}}", start: 8)
+            let stripExt = slice(array: "{{stripPrefix}}", start: 0, end: -4)
+            let buildMainPath = concat(a: "{{getName}}", b: "/main")
+            let isMainFile = eq(a: "{{stripExt}}", b: "{{buildMainPath}}")
+            let resolveKey = if isMainFile {
+              let useMainKey = set(key: "_storeKey", value: "{{getName}}")
+            } else {
+              let useSubKey = set(key: "_storeKey", value: "{{stripExt}}")
+            }
+            let getStoreKey = get(key: "_storeKey")
+            let buildStoreKey = concat(a: "__graph_", b: "{{getStoreKey}}")
+            let clearStore = set(key: "{{buildStoreKey}}", value: null)
+          }
+        }
+        let reRender = execFile(file: "core/render")
+      }
+    }
+  }
+}

@@ -1,0 +1,5 @@
+graph styles {
+  meta: { description: "Growth popup styles", type: "component", category: "growth-popup", author: "AITOS Team" }
+
+  let injectStyles = injectCSS(id: "growthPopupStyles", css: ".growth-popup-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; } .growth-popup { background-color: #fff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15); min-width: 400px; max-width: 800px; max-height: 80vh; display: flex; flex-direction: column; overflow: hidden; } .growth-popup-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid #e8e8e8; background-color: #fafafa; } .growth-popup-title { display: flex; align-items: center; gap: 10px; font-size: 16px; font-weight: 600; color: #333; } .growth-popup-icon { font-size: 20px; } .growth-popup-close { background: none; border: none; font-size: 18px; color: #999; padding: 4px 8px; border-radius: 4px; } .growth-popup-body { padding: 20px; overflow: auto; flex: 1; }")
+}

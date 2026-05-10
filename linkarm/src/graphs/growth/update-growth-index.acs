@@ -1,0 +1,26 @@
+graph update-growth-index {
+  meta: { description: "Update growth index file", type: "core", category: "growth", author: "AITOS Team" }
+
+  let getName = get(key: "name")
+  let getType = get(key: "type")
+  let getIcon = get(key: "icon")
+  let getDesc = get(key: "description")
+  let filePath = concat(a: "growths/", b: "{{getName}}")
+  let filePathAcs = concat(a: "{{filePath}}", b: "/main.acs")
+  let readIndex = readLocal(key: "growths/index.json")
+  let indexIsArray = isArr(value: "{{readIndex}}")
+  let initIndex = if indexIsArray {
+    let keepIndex = set(key: "_growthIndex", value: "{{readIndex}}")
+  } else {
+    let newIndex = set(key: "_growthIndex", value: [])
+  }
+  let getIndex = get(key: "_growthIndex")
+  let filterExisting = filter item in getIndex {
+    let getItemName = getProp(obj: "{{item}}", key: "name")
+    let isSame = eq(a: "{{getItemName}}", b: "{{getName}}")
+    let isNotSame = not(value: "{{isSame}}")
+  }
+  let setEntry = set(key: "_growthEntry", value: { name: "{{getName}}", path: "{{filePathAcs}}", type: "{{getType}}", icon: "{{getIcon}}", description: "{{getDesc}}" })
+  let pushEntry = push(array: "{{filterExisting}}", value: "{{setEntry}}")
+  let saveIndex = writeLocal(key: "growths/index.json", value: "{{pushEntry}}")
+}

@@ -1,0 +1,145 @@
+graph click-delegate {
+  meta: { description: "Click event delegation - pure router", type: "core", category: "event", author: "AITOS Team" }
+
+  let getClickEvent = get(key: "appClick")
+  let getTargetId = getProp(obj: "{{getClickEvent}}", key: "targetId")
+  let getAncestorIds = getProp(obj: "{{getClickEvent}}", key: "ancestorIds")
+  let saveTargetId = set(key: "clickTargetId", value: "{{getTargetId}}")
+  let routeAction = if getTargetId {
+    let isModelsTab = eq(a: "{{getTargetId}}", b: "modelsTab")
+    let branchModelsTab = if isModelsTab {
+      let execAction = execFile(file: "actions/click/tab-switch")
+    }
+    let isGrowthsTab = eq(a: "{{getTargetId}}", b: "growthsTab")
+    let branchGrowthsTab = if isGrowthsTab {
+      let execAction = execFile(file: "actions/click/tab-switch")
+    }
+    let isNewChat = eq(a: "{{getTargetId}}", b: "newChatButton")
+    let branchNewChat = if isNewChat {
+      let execAction = execFile(file: "actions/newChat")
+    }
+    let isChatBtn = eq(a: "{{getTargetId}}", b: "chatButton")
+    let branchChatBtn = if isChatBtn {
+      let execAction = execFile(file: "actions/openChat")
+    }
+    let isAIBtn = eq(a: "{{getTargetId}}", b: "aiButton")
+    let branchAIBtn = if isAIBtn {
+      let execAction = execFile(file: "models/open-market")
+    }
+    let isSendBtn = eq(a: "{{getTargetId}}", b: "sendButton")
+    let branchSendBtn = if isSendBtn {
+      let execAction = execFile(file: "actions/send-message")
+    }
+    let isAddModelBtn = includes(array: "{{getAncestorIds}}", value: "addModelButton")
+    let branchAddModelBtn = if isAddModelBtn {
+      let execAction = execFile(file: "models/show-add-form")
+    }
+    let isSubmitAddModelBtn = eq(a: "{{getTargetId}}", b: "submitAddModelButton")
+    let branchSubmitAddModelBtn = if isSubmitAddModelBtn {
+      let execAction = execFile(file: "models/submit-add-form")
+    }
+    let isCancelAddModelBtn = eq(a: "{{getTargetId}}", b: "cancelAddModelButton")
+    let branchCancelAddModelBtn = if isCancelAddModelBtn {
+      let execAction = execFile(file: "ui/components/add-model-form/hide")
+    }
+    let isAddModelOverlay = eq(a: "{{getTargetId}}", b: "addModelOverlay")
+    let branchAddModelOverlay = if isAddModelOverlay {
+      let execAction = execFile(file: "ui/components/add-model-form/hide")
+    }
+    let checkModelCard = if getTargetId {
+      let getPrefix = slice(array: "{{getTargetId}}", start: 0, end: 11)
+      let checkPrefix = eq(a: "{{getPrefix}}", b: "model_card_")
+      let getSuffix = slice(array: "{{getTargetId}}", start: -7)
+      let checkIsDelete = eq(a: "{{getSuffix}}", b: "_delete")
+      let checkNotDelete = not(value: "{{checkIsDelete}}")
+      let isModelCard = and(a: "{{checkPrefix}}", b: "{{checkNotDelete}}")
+      let handleModelCardClick = if isModelCard {
+        let execAction = execFile(file: "models/select-model")
+      }
+    }
+    let checkDeleteBtn = if getTargetId {
+      let getPrefix = slice(array: "{{getTargetId}}", start: 0, end: 11)
+      let checkPrefix = eq(a: "{{getPrefix}}", b: "model_card_")
+      let getSuffix = slice(array: "{{getTargetId}}", start: -7)
+      let checkSuffix = eq(a: "{{getSuffix}}", b: "_delete")
+      let isModelDelete = and(a: "{{checkPrefix}}", b: "{{checkSuffix}}")
+      let handleDelete = if isModelDelete {
+        let execAction = execFile(file: "models/delete-model")
+      }
+    }
+    let checkConvDelBtn = if getTargetId {
+      let getPrefix = slice(array: "{{getTargetId}}", start: 0, end: 11)
+      let checkPrefix = eq(a: "{{getPrefix}}", b: "convDelBtn-")
+      let handleConvDelete = if checkPrefix {
+        let execAction = execFile(file: "conversations/delete-conversation")
+      }
+    }
+    let checkConvItem = if getTargetId {
+      let getPrefix = slice(array: "{{getTargetId}}", start: 0, end: 9)
+      let checkPrefix = eq(a: "{{getPrefix}}", b: "convItem-")
+      let handleConvItemClick = if checkPrefix {
+        let execAction = execFile(file: "actions/switchConversation")
+      }
+    }
+    let checkConvTitle = if getTargetId {
+      let getPrefix = slice(array: "{{getTargetId}}", start: 0, end: 10)
+      let checkPrefix = eq(a: "{{getPrefix}}", b: "convTitle-")
+      let handleConvTitleClick = if checkPrefix {
+        let execAction = execFile(file: "actions/switchConversation")
+      }
+    }
+    let checkGrowthCard = if getTargetId {
+      let getPrefix = slice(array: "{{getTargetId}}", start: 0, end: 12)
+      let checkPrefix = eq(a: "{{getPrefix}}", b: "growth_card_")
+      let getSuffix = slice(array: "{{getTargetId}}", start: -7)
+      let checkIsDelete = eq(a: "{{getSuffix}}", b: "_delete")
+      let checkNotDelete = not(value: "{{checkIsDelete}}")
+      let isGrowthCard = and(a: "{{checkPrefix}}", b: "{{checkNotDelete}}")
+      let handleGrowthCardClick = if isGrowthCard {
+        let execAction = execFile(file: "growth/open-growth")
+      }
+    }
+    let checkGrowthDelBtn = if getTargetId {
+      let getPrefix = slice(array: "{{getTargetId}}", start: 0, end: 12)
+      let checkPrefix = eq(a: "{{getPrefix}}", b: "growth_card_")
+      let getSuffix = slice(array: "{{getTargetId}}", start: -7)
+      let checkSuffix = eq(a: "{{getSuffix}}", b: "_delete")
+      let isGrowthDelete = and(a: "{{checkPrefix}}", b: "{{checkSuffix}}")
+      let handleGrowthDelete = if isGrowthDelete {
+        let execAction = execFile(file: "growth/delete-growth")
+      }
+    }
+    let checkGrowthOverlay = if getTargetId {
+      let isOverlay = eq(a: "{{getTargetId}}", b: "growthOverlay")
+      let handleOverlay = if isOverlay {
+        let execAction = execFile(file: "ui/components/growth-popup/hide")
+      }
+    }
+    let checkGrowthClose = if getTargetId {
+      let isClose = eq(a: "{{getTargetId}}", b: "growthPopupClose")
+      let handleClose = if isClose {
+        let execAction = execFile(file: "ui/components/growth-popup/hide")
+      }
+    }
+    let checkGrowthDetailClose = if getTargetId {
+      let isClose = eq(a: "{{getTargetId}}", b: "growthDetailClose")
+      let handleClose = if isClose {
+        let execAction = execFile(file: "ui/components/growth-detail/hide")
+      }
+    }
+    let checkGrowthDetailOverlay = if getTargetId {
+      let isOverlay = eq(a: "{{getTargetId}}", b: "growthDetailOverlay")
+      let handleOverlay = if isOverlay {
+        let execAction = execFile(file: "ui/components/growth-detail/hide")
+      }
+    }
+    let checkGrowthPopupClick = if getTargetId {
+      let findContainer = closest(id: "{{getTargetId}}", selector: "#growthPopupBody")
+      let isNilResult = isNil(value: "{{findContainer}}")
+      let isInPopup = not(value: "{{isNilResult}}")
+      let handleGrowthClick = if isInPopup {
+        let execAction = execFile(file: "growth/handle-growth-click")
+      }
+    }
+  }
+}

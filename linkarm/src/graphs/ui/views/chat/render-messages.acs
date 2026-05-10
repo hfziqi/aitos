@@ -1,0 +1,17 @@
+graph render-messages {
+  meta: { description: "Render messages in chat view", type: "view", category: "chat", author: "AITOS Team" }
+
+  let clearMessageList = clearElement(id: "messageList")
+  let getMessages = get(key: "messages")
+  let checkHasMessages = isArr(value: "{{getMessages}}")
+  let renderOrLoad = if checkHasMessages {
+    let forEachMessage = forEach currentMessage, messageIndex in getMessages  {
+      let renderBubble = execFile(file: "ui/components/message-bubble/create")
+    }
+  } else {
+    let loadMessages = execFile(file: "messages/load-messages")
+    let forEachLoadedMessage = forEach currentMessage, messageIndex in messages  {
+      let renderBubble = execFile(file: "ui/components/message-bubble/create")
+    }
+  }
+}

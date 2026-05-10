@@ -1,0 +1,13 @@
+graph tab-switch {
+  meta: { description: "Handle market tab switch click", type: "action", category: "click", author: "AITOS Team" }
+
+  let getTargetId = get(key: "clickTargetId")
+  let isModelsTab = eq(a: "{{getTargetId}}", b: "modelsTab")
+  let handleTab = if isModelsTab {
+    let setModelsTab = set(key: "currentMarketTab", value: "models")
+    let reRender = execFile(file: "core/render")
+  } else {
+    let setGrowthsTab = set(key: "currentMarketTab", value: "growths")
+    let reRender = execFile(file: "core/render")
+  }
+}

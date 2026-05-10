@@ -1,0 +1,5 @@
+graph styles {
+  meta: { description: "AI message bubble appearance styles", type: "styles", category: "ai-message-bubble", author: "AITOS Team" }
+
+  let injectStyles = injectCSS(id: "aiMsgBubbleStyles", css: ".ai-msg-bubble { display: flex; align-self: flex-start; max-width: 70%; margin-bottom: 16px; padding: 8px 16px; border-radius: 16px; font-size: 14px; line-height: 1.4; background-color: #fff; color: #333; }")
+}

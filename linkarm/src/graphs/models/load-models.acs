@@ -1,0 +1,10 @@
+graph load-models {
+  meta: { description: "Load AI models from local storage", type: "core", category: "persistence", author: "AITOS Team" }
+
+  let initDefault = set(key: "aiModelsList", value: [])
+  let readFromLocal = readLocal(key: "models/ai-models.json")
+  let checkIsArray = isArr(value: "{{readFromLocal}}")
+  let handleResult = if checkIsArray {
+    let setFromLocal = set(key: "aiModelsList", value: "{{readFromLocal}}")
+  }
+}

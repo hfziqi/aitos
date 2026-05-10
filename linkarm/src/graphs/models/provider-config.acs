@@ -1,0 +1,5 @@
+graph provider-config {
+  meta: { description: "Provider configuration data", type: "data", category: "ai-models", author: "AITOS Team" }
+
+  let setProviders = set(key: "providerConfig", value: { providers: [{ id: "deepseek", name: "DeepSeek", baseUrl: "https://api.deepseek.com" }, { id: "kimi", name: "Kimi", baseUrl: "https://api.moonshot.cn/v1" }, { id: "glm", name: "GLM", baseUrl: "https://open.bigmodel.cn/api/paas/v4" }, { id: "minimax", name: "MiniMax", baseUrl: "https://api.minimaxi.com/v1" }], providersMap: { deepseek: { name: "DeepSeek", baseUrl: "https://api.deepseek.com" }, kimi: { name: "Kimi", baseUrl: "https://api.moonshot.cn/v1" }, glm: { name: "GLM", baseUrl: "https://open.bigmodel.cn/api/paas/v4" }, minimax: { name: "MiniMax", baseUrl: "https://api.minimaxi.com/v1" } }, models: { deepseek: ["deepseek-chat", "deepseek-coder", "deepseek-reasoner"], kimi: ["moonshot-v1-8k", "moonshot-v1-32k", "moonshot-v1-128k"], glm: ["glm-4-plus", "glm-4-flash", "glm-4v-plus", "glm-4v-flash"], minimax: ["abab6.5s-chat", "abab6.5-chat", "abab5.5-chat"] } })
+}

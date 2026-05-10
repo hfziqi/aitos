@@ -1,0 +1,5 @@
+graph base {
+  meta: { description: "Base identity prompt", type: "prompt", category: "ai", author: "AITOS Team" }
+
+  let prompt = set(key: "_promptBase", value: "You are a helpful AI assistant running in AITOS system.")
+}

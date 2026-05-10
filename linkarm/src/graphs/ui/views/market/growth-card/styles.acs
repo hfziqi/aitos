@@ -1,0 +1,6 @@
+graph styles {
+  meta: { description: "Growth card styles", type: "styles", category: "growth-card", author: "AITOS Team" }
+
+  let injectStyles = injectCSS(id: "growthCardStyles", css: ".growth-card { display: flex; flex-direction: column; align-items: center; padding: 8px; background-color: transparent; border-radius: 12px; transition: all 0.2s; position: relative; border: 1px solid transparent; } .growth-card:hover { background-color: rgba(0, 0, 0, 0.04); border-color: transparent; } .growth-card:hover .growth-card-btn-delete { opacity: 1; } .growth-card-icon { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; background-color: #f0f0f0; border-radius: 12px; margin-bottom: 6px; font-size: 24px; color: #999; border: 2px solid #e0e0e0; cursor: default; } .growth-card-name { font-size: 11px; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 64px; color: #333; } .growth-card-btn-delete { position: absolute; top: 2px; right: 2px; width: 16px; height: 16px; padding: 0; border: none; background: transparent; color: #999; font-size: 12px; line-height: 16px; text-align: center; border-radius: 4px; opacity: 0; transition: opacity 0.15s ease, color 0.15s ease, background 0.15s ease; } .growth-card-btn-delete:hover { color: #ff4d4f; background: rgba(255, 77, 79, 0.1); }")
+}
+}

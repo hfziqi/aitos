@@ -1,0 +1,67 @@
+graph save-growth {
+  meta: { description: "Save a growth graph - compile, validate, register, persist, index, log", type: "core", category: "growth", author: "AITOS Team" }
+
+  let getName = get(key: "name")
+  let getAcs = get(key: "acs")
+  let getType = get(key: "type")
+  let getIcon = get(key: "icon")
+  let getDesc = get(key: "description")
+  let typeIsNil = isNil(value: "{{getType}}")
+  let iconIsNil = isNil(value: "{{getIcon}}")
+  let descIsNil = isNil(value: "{{getDesc}}")
+  let resolveType = if typeIsNil {
+    let setDefaultType = set(key: "type", value: "tool")
+  } else {
+    let keepType = set(key: "type", value: "{{getType}}")
+  }
+  let resolveIcon = if iconIsNil {
+    let setDefaultIcon = set(key: "icon", value: "🧩")
+  } else {
+    let keepIcon = set(key: "icon", value: "{{getIcon}}")
+  }
+  let resolveDesc = if descIsNil {
+    let setDefaultDesc = set(key: "description", value: "")
+  } else {
+    let keepDesc = set(key: "description", value: "{{getDesc}}")
+  }
+  let checkName = isNil(value: "{{getName}}")
+  let checkAcs = isNil(value: "{{getAcs}}")
+  let validateInput = if checkName {
+    let buildError = set(key: "_errorMsg", value: "Missing growth name")
+    let setError = set(key: "createGrowthResult", value: { success: false, error: "{{_errorMsg}}" })
+    let logFailure = execFile(file: "growth/log-growth-failure")
+  } else {
+    let validateAcs = if checkAcs {
+      let buildError = set(key: "_errorMsg", value: "Missing ACS source code")
+      let setError = set(key: "createGrowthResult", value: { success: false, error: "{{_errorMsg}}" })
+      let logFailure = execFile(file: "growth/log-growth-failure")
+    } else {
+      let compile = compileAcs(acs: "{{getAcs}}")
+      let compileOk = isObj(value: "{{compile}}")
+      let handleCompile = if compileOk {
+        let storeKey = concat(a: "__graph_", b: "{{getName}}")
+        let register = set(key: "{{storeKey}}", value: "{{compile}}")
+        let filePath = concat(a: "growths/", b: "{{getName}}")
+        let isSubGraph = contains(text: "{{getName}}", search: "/")
+        let filePathAcs = if isSubGraph {
+          let subPath = concat(a: "{{filePath}}", b: ".acs")
+        } else {
+          let mainPath = concat(a: "{{filePath}}", b: "/main.acs")
+        }
+        let persist = writeLocal(key: "{{filePathAcs}}", value: "{{getAcs}}")
+        let logSuccess = execFile(file: "growth/log-growth-success")
+        let handleIndex = if isSubGraph {
+          let skip = set(key: "_indexSkipped", value: true)
+        } else {
+          let updateIndex = execFile(file: "growth/update-growth-index")
+        }
+        let setResult = set(key: "createGrowthResult", value: { success: true, path: "{{filePathAcs}}", name: "{{getName}}" })
+      } else {
+        let buildError = set(key: "_errorMsg", value: "{{compile}}")
+        let setError = set(key: "createGrowthResult", value: { success: false, error: "{{compile}}" })
+        let logFailure = execFile(file: "growth/log-growth-failure")
+      }
+    }
+  }
+  let getResult = get(key: "createGrowthResult")
+}

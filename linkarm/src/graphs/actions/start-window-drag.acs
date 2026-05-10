@@ -1,0 +1,3 @@
+graph start-window-drag {
+  let startDrag = startWindowDrag()
+}

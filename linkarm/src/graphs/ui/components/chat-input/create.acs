@@ -1,0 +1,20 @@
+graph create {
+  meta: { description: "Create chat input area (logic)", type: "component", category: "chat-input", author: "AITOS Team" }
+
+  let createInputContainer = createElement(tag: "div", id: "inputContainer")
+  let setContainerClass = setAttribute(id: "inputContainer", name: "class", value: "chat-input-container")
+  let appendInputContainer = appendChild(parentId: "mainViewContainer", childId: "inputContainer")
+  let createInnerWrapper = createElement(tag: "div", id: "inputInnerWrapper")
+  let setInnerClass = setAttribute(id: "inputInnerWrapper", name: "class", value: "chat-input-inner")
+  let appendInnerWrapper = appendChild(parentId: "inputContainer", childId: "inputInnerWrapper")
+  let createInputBox = createElement(tag: "textarea", id: "inputBox")
+  let setInputBoxClass = setAttribute(id: "inputBox", name: "class", value: "chat-input-box")
+  let setInputBoxAttr = setAttribute(id: "inputBox", name: "placeholder", value: "")
+  let appendInputBox = appendChild(parentId: "inputInnerWrapper", childId: "inputBox")
+  let createSendButton = createElement(tag: "button", id: "sendButton")
+  let setSendButtonClass = setAttribute(id: "sendButton", name: "class", value: "chat-input-send-btn")
+  let setSendButtonIcon = setInnerHTML(id: "sendButton", html: "<svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"currentColor\" stroke=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z\"/></svg>")
+  let appendSendButton = appendChild(parentId: "inputInnerWrapper", childId: "sendButton")
+  let listenInput = addEventListener(id: "inputBox", event: "input", storeKey: "inputValue")
+  let listenKeydown = addEventListener(id: "inputBox", event: "keydown", storeKey: "inputKeydown", action: "actions/handle-input-keydown", preventDefault: true)
+}

@@ -1,0 +1,19 @@
+graph on-provider-change {
+  meta: { description: "Handle provider selection change", type: "action", category: "ai-models", author: "AITOS Team" }
+
+  let getConfig = get(key: "providerConfig")
+  let getSelectedProvider = getValue(id: "providerSelect")
+  let getProvidersMap = getProp(obj: "{{getConfig}}", key: "providersMap")
+  let getProviderInfo = getProp(obj: "{{getProvidersMap}}", key: "{{getSelectedProvider}}")
+  let getProviderBaseUrl = getProp(obj: "{{getProviderInfo}}", key: "baseUrl")
+  let getModels = getProp(obj: "{{getConfig}}", key: "models")
+  let getModelList = getProp(obj: "{{getModels}}", key: "{{getSelectedProvider}}")
+  let clearModelSelect = setInnerHTML(id: "modelNameSelect", html: "")
+  let forEachModel = forEach modelName, modelIdx in getModelList  {
+    let createOption = createElement(tag: "option", id: "model_opt_{{modelName}}")
+    let setOptValue = setAttribute(id: "model_opt_{{modelName}}", name: "value", value: "{{modelName}}")
+    let setOptText = setTextContent(id: "model_opt_{{modelName}}", text: "{{modelName}}")
+    let appendOption = appendChild(parentId: "modelNameSelect", childId: "model_opt_{{modelName}}")
+  }
+  let setBaseUrl = setValue(id: "baseUrlInput", value: "{{getProviderBaseUrl}}")
+}

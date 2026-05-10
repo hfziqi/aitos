@@ -1,0 +1,4 @@
+graph openChat {
+  let setCurrentView = set(key: "currentView", value: "chat")
+  let execRender = execFile(file: "core/render")
+}

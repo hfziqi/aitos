@@ -1,0 +1,10 @@
+graph system-info {
+  meta: { description: "System information prompt", type: "prompt", category: "ai", author: "AITOS Team" }
+
+  let getSystemInfo = getSystemInfo()
+  let getOs = getProp(obj: "{{getSystemInfo}}", key: "os")
+  let getShell = getProp(obj: "{{getSystemInfo}}", key: "shell")
+  let getIsDesktop = getProp(obj: "{{getSystemInfo}}", key: "isDesktop")
+  let buildPrompt = format(template: "## System Information\n\n- OS: {os}\n- Shell: {shell}\n- Desktop: {isDesktop}\n\nUse appropriate commands based on the system. For example:\n- Windows: dir, type, copy, etc.\n- Linux/macOS: ls, cat, cp, etc.", os: "{{getOs}}", shell: "{{getShell}}", isDesktop: "{{getIsDesktop}}")
+  let savePrompt = set(key: "_promptSystemInfo", value: "{{buildPrompt}}")
+}

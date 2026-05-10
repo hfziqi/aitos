@@ -1,0 +1,3 @@
+graph minimize-window {
+  let minimize = minimizeWindow()
+}

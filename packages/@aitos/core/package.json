@@ -1,0 +1,27 @@
+{
+  "name": "@aitos/core",
+  "version": "1.0.1",
+  "description": "AITOS Core Package - AI-friendly atomic architecture based on capability dimensions",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "keywords": [
+    "aitos",
+    "atomic",
+    "architecture",
+    "ai-friendly",
+    "capability-based"
+  ],
+  "author": "AITOS Team",
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.9.3"
+  }
+}

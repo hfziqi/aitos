@@ -1,0 +1,13 @@
+graph handle-input-keydown {
+  meta: { description: "Handle input keydown - Enter to send, Shift+Enter for newline", type: "action", category: "chat", author: "AITOS Team" }
+
+  let getKeydown = get(key: "inputKeydown")
+  let getKey = getProp(obj: "{{getKeydown}}", key: "key")
+  let getShiftKey = getProp(obj: "{{getKeydown}}", key: "shiftKey")
+  let isEnter = eq(a: "{{getKey}}", b: "Enter")
+  let isNotShift = not(value: "{{getShiftKey}}")
+  let shouldSend = and(a: "{{isEnter}}", b: "{{isNotShift}}")
+  let handleSend = if shouldSend {
+    let sendMessage = execFile(file: "actions/send-message")
+  }
+}

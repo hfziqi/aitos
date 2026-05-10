@@ -1,0 +1,15 @@
+graph get-growth-log {
+  meta: { description: "Get creation log for a specific growth", type: "core", category: "growth", author: "AITOS Team" }
+
+  let getName = get(key: "name")
+  let logPath = concat(a: "growths/logs/", b: "{{getName}}")
+  let logPathJson = concat(a: "{{logPath}}", b: ".json")
+  let readLog = readLocal(key: "{{logPathJson}}")
+  let isNilLog = isNil(value: "{{readLog}}")
+  let handleResult = if isNilLog {
+    let setEmpty = set(key: "growthLogResult", value: { found: false, name: "{{getName}}", message: "No log found for this growth" })
+  } else {
+    let setLog = set(key: "growthLogResult", value: { found: true, name: "{{getName}}", log: "{{readLog}}" })
+  }
+  let getResult = get(key: "growthLogResult")
+}

@@ -1,0 +1,24 @@
+graph chat-loop {
+  meta: { description: "AI chat loop coordinator - orchestrates sub-graphs", type: "service", category: "ai", author: "AITOS Team" }
+
+  let getModelConfig = get(key: "activeModelConfig")
+  let getUserMessage = get(key: "userMessage")
+  let getElementId = get(key: "streamElementId")
+  let getApiKey = getProp(obj: "{{getModelConfig}}", key: "apiKey")
+  let getBaseUrl = getProp(obj: "{{getModelConfig}}", key: "baseUrl")
+  let buildSystemPrompt = execFile(file: "services/ai/build-system-prompt")
+  let getExistingMessages = get(key: "messages")
+  let buildSystemMsg = set(key: "_sysMsg", value: { role: "system", content: "{{buildSystemPrompt}}" })
+  let prependSystem = concat(a: ["{{buildSystemMsg}}"], b: "{{getExistingMessages}}")
+  let initMessages = set(key: "messages", value: "{{prependSystem}}")
+  let initLoop = set(key: "continueLoop", value: true)
+  let chatLoop = loop cond: "continueLoop" {
+    let buildRequest = execFile(file: "services/ai/build-chat-request")
+    let buildApiUrl = concat(a: "{{getBaseUrl}}", b: "/chat/completions")
+    let callAPI = httpStreamRequest(url: "{{buildApiUrl}}", method: "POST", headers: { Authorization: "Bearer {{getApiKey}}", "Content-Type": "application/json" }, body: "{{buildRequest}}", elementId: "{{getElementId}}")
+    let saveApiResponse = set(key: "apiResponse", value: "{{callAPI}}")
+    let handleResponse = execFile(file: "services/ai/handle-chat-response")
+  }
+  let getFinalContent = get(key: "finalContent")
+  let saveFinalResponse = set(key: "aiResponse", value: { role: "assistant", content: "{{getFinalContent}}" })
+}

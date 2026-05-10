@@ -1,0 +1,6 @@
+graph save-models {
+  meta: { description: "Save AI models to local storage", type: "core", category: "persistence", author: "AITOS Team" }
+
+  let getModels = get(key: "aiModelsList")
+  let saveModels = writeLocal(key: "models/ai-models.json", value: "{{getModels}}")
+}

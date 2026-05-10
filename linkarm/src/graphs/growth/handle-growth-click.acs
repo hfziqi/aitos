@@ -1,0 +1,11 @@
+graph handle-growth-click {
+  meta: { description: "Handle click inside growth popup", type: "action", category: "growth", author: "AITOS Team" }
+
+  let getActiveGrowth = get(key: "activeGrowthName")
+  let isActiveNil = isNil(value: "{{getActiveGrowth}}")
+  let hasActiveGrowth = not(value: "{{isActiveNil}}")
+  let execGrowthHandler = if hasActiveGrowth {
+    let buildHandlerPath = concat(a: "{{getActiveGrowth}}", b: "/handle-click")
+    let execHandler = execFile(file: "{{buildHandlerPath}}")
+  }
+}

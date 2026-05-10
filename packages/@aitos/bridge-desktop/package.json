@@ -1,0 +1,31 @@
+{
+  "name": "@aitos/bridge-desktop",
+  "version": "1.0.0",
+  "description": "AITOS desktop bridge atoms - unified bridge atoms for desktop environment",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "keywords": [
+    "aitos",
+    "bridge",
+    "desktop",
+    "capability"
+  ],
+  "author": "AITOS Team",
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "peerDependencies": {
+    "@aitos/core": "^1.0.0",
+    "@aitos/bridge": "^1.0.0"
+  },
+  "devDependencies": {
+    "@aitos/core": "file:../core",
+    "@aitos/bridge": "file:../bridge",
+    "typescript": "^5.0.0"
+  }
+}

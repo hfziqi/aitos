@@ -1,0 +1,7 @@
+graph hide {
+  meta: { description: "Hide growth popup", type: "component", category: "growth-popup", author: "AITOS Team" }
+
+  let removeOverlay = removeElement(id: "growthOverlay")
+  let clearActiveGrowth = set(key: "activeGrowthName", value: "")
+  let clearContainerId = set(key: "growthContainerId", value: "")
+}

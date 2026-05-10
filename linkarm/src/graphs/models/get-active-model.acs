@@ -1,0 +1,23 @@
+graph get-active-model {
+  meta: { description: "Get active AI model configuration", type: "service", category: "ai-models", author: "AITOS Team" }
+
+  let getActiveId = readLocal(key: "models/active-model-id.json")
+  let loadModels = readLocal(key: "models/ai-models.json")
+  let findModel = if getActiveId {
+    let filter = filter currentModel in loadModels {
+      let getCurrentId = getProp(obj: "{{currentModel}}", key: "id")
+      let compare = eq(a: "{{getCurrentId}}", b: "{{getActiveId}}")
+    }
+    let setResult = if filter {
+      let getFirst = getProp(obj: "{{filter}}", key: 0)
+      let doSet1 = set(key: "activeModel", value: "{{getFirst}}")
+      let doSet2 = set(key: "activeModelConfig", value: "{{getFirst}}")
+    } else {
+      let setNull1 = set(key: "activeModel", value: null)
+      let setNull2 = set(key: "activeModelConfig", value: null)
+    }
+  } else {
+    let setNull1 = set(key: "activeModel", value: null)
+    let setNull2 = set(key: "activeModelConfig", value: null)
+  }
+}
