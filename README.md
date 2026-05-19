@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./aitos/aitos.png" width="120" alt="AITOS Logo">
+  <img src="./aitos.jpg" width="120" alt="AITOS Logo">
 </p>
 
 <h1 align="center">AITOS</h1>
