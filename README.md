@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/aitos"><img src="https://img.shields.io/npm/v/aitos" alt="npm"></a>
+  <a href="https://www.npmjs.com/package/@aitos/core"><img src="https://img.shields.io/npm/v/@aitos/core" alt="npm"></a>
   <img src="https://img.shields.io/badge/license-MIT-blue" alt="License">
 </p>
 
@@ -17,7 +17,7 @@
 
 ## What is AITOS?
 
-AITOS provides **108 atoms** (minimal operation units) that AI can compose into **graphs** (programs), and a runtime that executes graphs directly. Think of it as the **instruction set for AI** — just as x86 is the instruction set for CPU, AITOS is the instruction set for AI agents.
+AITOS provides **153 atoms** (minimal operation units) across 8 packages, that AI can compose into **graphs** (programs), and a runtime that executes graphs directly. Think of it as the **instruction set for AI** — just as x86 is the instruction set for CPU, AITOS is the instruction set for AI agents.
 
 ### How it differs from Function Calling / LangChain
 
@@ -179,29 +179,32 @@ Equivalent JSON (5-10x larger):
 
 Use `{{nodeId}}` or `{{nodeId.field}}` to reference another node's output.
 
-## Built-in Atoms (108)
+## Built-in Atoms (153)
 
-### Core (50 atoms)
+### Core (66 atoms)
 
 | Category | Atoms |
 |----------|-------|
-| **State** | `get`, `set` |
+| **State** | `get`, `set`, `setGlobal` |
 | **Calculation** | `add`, `sub`, `mul`, `div`, `mod`, `random` |
 | **Judgment** | `eq`, `gt`, `lt`, `gte`, `lte`, `and`, `or`, `not`, `isNil`, `isNum`, `isStr`, `isArr`, `isObj` |
-| **Control** | `branch`, `loop`, `forEach`, `exec`, `execGraph`, `execFile`, `wait`, `log`, `getSkillSet` |
-| **Manipulation** | `concat`, `split`, `len`, `push`, `pop`, `slice`, `getProp`, `setProp`, `keys`, `values`, `merge`, `filter`, `format` |
-| **Time** | `timestampToDate`, `getMonthDays`, `isLeapYear` |
-| **Tool Calls** | `handleToolCalls`, `listTools`, `registerTool`, `executeTool` |
+| **Control** | `branch`, `loop`, `forEach`, `exec`, `execGraph`, `execFile`, `wait`, `log`, `getSkillSet`, `compileAcs`, `executeInContext` |
+| **Manipulation** | `concat`, `split`, `len`, `push`, `pop`, `slice`, `getProp`, `setProp`, `keys`, `values`, `merge`, `filter`, `format`, `toNum`, `contains`, `includes`, `startsWith`, `replace`, `trim`, `toLower`, `toUpper`, `getAt`, `join` |
+| **Time** | `now`, `timestampToDate`, `getMonthDays`, `isLeapYear` |
+| **Tool Calls** | `handleToolCalls` |
+| **Telemetry** | `getTelemetryStats`, `resetTelemetry`, `flushTelemetry`, `getTraceLog`, `analyzeTelemetry` |
 
-### Extension Packages
+### Extension Packages (87 atoms)
 
 | Package | Atoms | Description |
 |---------|-------|-------------|
-| **@aitos/output** | 38 | DOM operations, Canvas 2D, notifications |
+| **@aitos/output** | 56 | DOM operations, Canvas 2D, notifications, markdown rendering |
 | **@aitos/input** | 7 | Mouse, touch, keyboard, file picker |
 | **@aitos/store** | 6 | localStorage, graph management |
 | **@aitos/transfer** | 2 | HTTP request, SSE streaming |
 | **@aitos/sense** | 5 | Accelerometer, gyroscope, geolocation, battery, network |
+| **@aitos/bridge** | 5 | System info, window control (minimize, maximize, close, drag) |
+| **@aitos/bridge-desktop** | 6 | Desktop file I/O, command execution, zip reading |
 
 ## Architecture
 
@@ -222,30 +225,74 @@ Use `{{nodeId}}` or `{{nodeId.field}}` to reference another node's output.
 │  │ Compiler │  │ + Reference Res. │    │
 │  └──────────┘  └──────────────────┘    │
 ├─────────────────────────────────────────┤
-│  Core (50)  │  Extension Packages      │
-│  - state     │  - @aitos/input (7)     │
-│  - control   │  - @aitos/output (38)   │
-│  - judgment  │  - @aitos/store (6)     │
-│  - calc      │  - @aitos/transfer (2)  │
-│  - manip     │  - @aitos/sense (5)     │
-│  - time      │                          │
-│  - toolcalls │                          │
+│  Core (66)  │  Extension Packages          │
+│  - state     │  - @aitos/input (7)         │
+│  - control   │  - @aitos/output (56)       │
+│  - judgment  │  - @aitos/store (6)         │
+│  - calc      │  - @aitos/transfer (2)      │
+│  - manip     │  - @aitos/sense (5)         │
+│  - time      │  - @aitos/bridge (5)        │
+│  - toolcalls │  - @aitos/bridge-desktop (6)│
+│  - telemetry │                              │
 └─────────────────────────────────────────┘
 ```
+
+## Advanced Features
+
+### Growth System (后生图)
+
+Growths are self-evolving programs — AI-generated graphs that can be saved, shared, and reused.
+
+| Mechanism | Description |
+|-----------|-------------|
+| **`save-growth`** | Saves AI-generated graphs as reusable growths |
+| **`list-growths`** | Lists all available growths for reuse |
+| **`open-growth`** | Opens and activates a saved growth |
+| **`callGrowthTool`** | AI can dynamically invoke any tool-type growth without explicit configuration |
+
+Growths come in two types:
+- **`app`** — User-facing UI applications (visible in sidebar)
+- **`tool`** — AI-callable functions (visible in the graph market)
+
+### Graph Market (图市场)
+
+A built-in marketplace where users can:
+- **Add Model** — Configure AI models (OpenAI-compatible APIs)
+- **Import Package** — Import `.zip` packages containing growths (`.acs` files), which are automatically compiled and registered
+- **Discover** — Browse available tool-type growths
+
+Every growth imported from the market is immediately available — either in the sidebar (app type) or as an AI callable tool (tool type).
+
+### Bridge Desktop
+
+The `@aitos/bridge` and `@aitos/bridge-desktop` packages enable AI to operate native desktop environments:
+
+- **Window control** — Minimize, maximize, close, drag windows
+- **System info** — Query OS, platform, environment
+- **File I/O** — Read, write, list, remove local files
+- **Command execution** — Run shell commands
+- **Zip reading** — Extract and read `.zip` package files
+
+This transforms AITOS from a browser-only runtime to a **desktop operating environment** for AI agents.
 
 ## AI Integration
 
 AITOS is designed to work with any LLM that supports function calling:
 
 1. **`getSkillSet`** — Returns all available atoms as a JSON description. Give this to AI as a tool.
-2. **`handleToolCalls`** — Processes AI's tool_calls response, executes the requested atoms.
+2. **`handleToolCalls`** — Processes AI's tool_calls response, executes the requested atoms, and supports dynamic routing to tool-type growths via `callGrowthTool`.
 3. **`execGraph`** — AI can generate and execute entire graphs, not just single function calls.
 
 Example flow:
 ```
-User → AI → getSkillSet() → [AI sees all atoms]
+User → AI → getSkillSet() → [AI sees all atoms + growth tools]
 User → AI → AI generates graph → execGraph(graph) → Result
+                              → callGrowthTool(name, args) → Execute pre-saved growth
 ```
+
+### `callGrowthTool` — AI-callable Growths
+
+Tool-type growths are automatically exposed to AI as callable tools. When the AI needs functionality implemented in a saved growth (e.g., "rain detection algorithm"), the runtime routes the request to the matching growth via `callGrowthTool`, executes it, and returns the result. This allows AI to **reuse pre-composed graphs** instead of generating them from scratch every time.
 
 ## Use Cases
 
