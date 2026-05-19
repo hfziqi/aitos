@@ -1,0 +1,27 @@
+graph show {
+  meta: { description: "Show context menu at mouse position", type: "component", category: "context-menu", author: "AITOS Team" }
+
+  let getEvent = get(key: "_contextMenuEvent")
+  let mouseX = getProp(obj: "{{getEvent}}", key: "x")
+  let mouseY = getProp(obj: "{{getEvent}}", key: "y")
+
+  let createMenu = createElement(tag: "div", id: "contextMenu")
+  let setMenuStyles = setStyles(id: "contextMenu", styles: { position: "fixed", left: "{{mouseX}}px", top: "{{mouseY}}px", background: "#fff", border: "1px solid #e0e0e0", borderRadius: "8px", boxShadow: "0 4px 12px rgba(0,0,0,0.12)", padding: "4px 0", zIndex: "2000", minWidth: "160px" })
+  let appendMenu = appendChild(parentId: "appContainer", childId: "contextMenu")
+
+  let setMenuItemStyles = injectCSS(id: "contextMenuItemHover", css: "#contextMenuImport:hover, #contextMenuAddModel:hover { background: #f0f0f0; }")
+
+  let createAddModelItem = createElement(tag: "div", id: "contextMenuAddModel")
+  let setAddModelItemStyles = setStyles(id: "contextMenuAddModel", styles: { padding: "8px 16px", fontSize: "14px", cursor: "default", color: "#333", display: "flex", alignItems: "center", gap: "8px" })
+  let setAddModelItemText = setTextContent(id: "contextMenuAddModel", text: "➕ Add Model")
+  let appendAddModelItem = appendChild(parentId: "contextMenu", childId: "contextMenuAddModel")
+
+  let createImportItem = createElement(tag: "div", id: "contextMenuImport")
+  let setImportItemStyles = setStyles(id: "contextMenuImport", styles: { padding: "8px 16px", fontSize: "14px", cursor: "default", color: "#333", display: "flex", alignItems: "center", gap: "8px" })
+  let setImportItemText = setTextContent(id: "contextMenuImport", text: "📦 Import Package")
+  let appendImportItem = appendChild(parentId: "contextMenu", childId: "contextMenuImport")
+
+  let createOverlay = createElement(tag: "div", id: "contextMenuOverlay")
+  let setOverlayStyles = setStyles(id: "contextMenuOverlay", styles: { position: "fixed", top: "0", left: "0", right: "0", bottom: "0", zIndex: "1999" })
+  let appendOverlay = appendChild(parentId: "appContainer", childId: "contextMenuOverlay")
+}

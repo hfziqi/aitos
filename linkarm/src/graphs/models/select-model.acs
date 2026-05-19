@@ -7,8 +7,9 @@ graph select-model {
   let isCardFound = not(value: "{{isCardNil}}")
   let handleSelect = if isCardFound {
     let getModelId = slice(array: "{{findCard}}", start: 11)
-    let saveSelection = writeLocal(key: "models/active-model-id.json", value: "{{getModelId}}")
     let setActiveId = set(key: "activeModelId", value: "{{getModelId}}")
-    let reRender = execFile(file: "core/render")
+    let saveSelection = execFile(file: "models/save-active-model")
+    let clearMainView = clearElement(id: "mainViewContainer")
+    let reRender = execFile(file: "ui/views/market/create")
   }
 }

@@ -1,0 +1,6 @@
+graph save-active-model {
+  meta: { description: "Save active model ID to local storage", type: "domain", category: "ai-models", author: "AITOS Team" }
+
+  let getModelId = get(key: "activeModelId")
+  let saveFile = writeLocal(key: "models/active-model-id.json", value: "{{getModelId}}")
+}

@@ -5,7 +5,8 @@ graph log-growth-success {
   let getType = get(key: "type")
   let getIcon = get(key: "icon")
   let getTimestamp = now()
-  let buildEntry = merge(a: { name: "{{getName}}", type: "{{getType}}", icon: "{{getIcon}}" }, b: { timestamp: "{{getTimestamp}}" })
+  let getAcs = get(key: "acs")
+  let buildEntry = merge(a: { name: "{{getName}}", type: "{{getType}}", icon: "{{getIcon}}" }, b: { acs: "{{getAcs}}", timestamp: "{{getTimestamp}}" })
   let readExisting = readLocal(key: "growths/logs/history.json")
   let isNilExisting = isNil(value: "{{readExisting}}")
   let initOrKeep = if isNilExisting {

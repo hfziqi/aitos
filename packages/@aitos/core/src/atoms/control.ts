@@ -298,4 +298,65 @@ export const compileAcsAtom: Atom = {
   },
 };
 
+export const executeInContextAtom: Atom = {
+  name: 'executeInContext',
+  version: '1.0.0',
+  meta: {
+    input: [
+      { name: 'contextKey', type: 'string', description: 'Store key of the target Context to execute in' },
+      { name: 'graphKey', type: 'string', description: 'Store key of the Graph to execute' },
+      { name: 'store', type: 'object', description: 'Optional data to pre-load into target Context before execution' },
+      { name: 'scope', type: 'object', description: 'Optional outer scope to pass to the graph' }
+    ],
+    output: { type: 'any', description: 'Result of the last node in the executed graph' }
+  },
+  characteristics: { stateless: true, atomic: true, composable: true },
+  execute: async (input: { 
+    contextKey: string; 
+    graphKey: string; 
+    store?: Record<string, any>;
+    scope?: Record<string, any>;
+  }, context: Context): Promise<Result> => {
+    const targetCtx: Context | undefined = context.store.get(input.contextKey);
+    if (!targetCtx || typeof targetCtx.executeGraph !== 'function') {
+      return { success: false, error: `Target context not found at key "${input.contextKey}"` };
+    }
+
+    let graph = context.store.get(input.graphKey);
+    if (!graph) {
+      graph = targetCtx.store.get(input.graphKey);
+    }
+    if (!graph) {
+      return { success: false, error: `Graph not found at key "${input.graphKey}"` };
+    }
+
+    if (typeof graph === 'string') {
+      try {
+        graph = compileAcs(graph);
+      } catch (e: any) {
+        return { success: false, error: `Failed to compile ACS: ${e.message}` };
+      }
+    }
+
+    if (!isGraph(graph)) {
+      return { success: false, error: 'Invalid graph: must be a Graph object or ACS string' };
+    }
+
+    if (input.store) {
+      for (const [k, v] of Object.entries(input.store)) {
+        targetCtx.store.set(k, v);
+      }
+    }
+
+    const srcChainId = context.store.get('__traceChainId');
+    if (srcChainId) {
+      targetCtx.store.set('__traceChainId', srcChainId);
+    }
+
+    const results = await targetCtx.executeGraph(graph, input.scope || targetCtx.currentScope);
+    const lastNodeId = graph.order[graph.order.length - 1];
+    return { success: true, data: results[lastNodeId] };
+  },
+};
+
 

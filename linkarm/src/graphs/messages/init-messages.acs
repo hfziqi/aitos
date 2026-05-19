@@ -1,9 +1,7 @@
 graph init-messages {
+  meta: { description: "Initialize empty messages file for a conversation", type: "domain", category: "messages", author: "AITOS Team" }
 
-  let getMessages = get(key: "messages")
-  let checkIsArray = isArr(value: "{{getMessages}}")
-  let initIfNeeded = if checkIsArray {
-  } else {
-    let setEmptyMessages = set(key: "messages", value: [])
-  }
+  let getConvId = get(key: "_convId")
+  let buildPath = set(key: "_msgPath", value: "chat/messages/{{getConvId}}.json")
+  let initFile = writeLocal(key: "{{buildPath}}", value: [])
 }

@@ -2,7 +2,25 @@ graph get-growth-log {
   meta: { description: "Get creation log for a specific growth", type: "core", category: "growth", author: "AITOS Team" }
 
   let getName = get(key: "name")
-  let logPath = concat(a: "growths/logs/", b: "{{getName}}")
+  let isSubGraph = contains(text: "{{getName}}", search: "/")
+  let splitName = split(text: "{{getName}}", separator: "/")
+  let resolveRoot = if isSubGraph {
+    let root = getAt(array: "{{splitName}}", index: 0)
+    let saveRoot = set(key: "_rootName", value: "{{root}}")
+  } else {
+    let saveRoot = set(key: "_rootName", value: "{{getName}}")
+  }
+  let resolveFile = if isSubGraph {
+    let sub = getAt(array: "{{splitName}}", index: 1)
+    let saveFile = set(key: "_logFile", value: "{{sub}}")
+  } else {
+    let saveFile = set(key: "_logFile", value: "main")
+  }
+  let getRoot = get(key: "_rootName")
+  let getLogFile = get(key: "_logFile")
+  let logDir = concat(a: "growths/", b: "{{getRoot}}")
+  let logDirLogs = concat(a: "{{logDir}}", b: "/logs/")
+  let logPath = concat(a: "{{logDirLogs}}", b: "{{getLogFile}}")
   let logPathJson = concat(a: "{{logPath}}", b: ".json")
   let readLog = readLocal(key: "{{logPathJson}}")
   let isNilLog = isNil(value: "{{readLog}}")

@@ -1,0 +1,6 @@
+graph save-growth-index {
+  meta: { description: "Save growth index to local storage", type: "domain", category: "growth", author: "AITOS Team" }
+
+  let getIndex = get(key: "growthsListResult")
+  let saveIndex = writeLocal(key: "growths/index.json", value: "{{getIndex}}")
+}

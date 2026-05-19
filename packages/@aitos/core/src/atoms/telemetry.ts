@@ -1,4 +1,4 @@
-import { Atom, Context, Result, TelemetryStats } from '../types';
+import { Atom, Context, Result, TelemetryStats, TraceEntry } from '../types';
 
 export const getTelemetryStatsAtom: Atom = {
   name: 'getTelemetryStats',
@@ -51,20 +51,43 @@ export const flushTelemetryAtom: Atom = {
   }
 };
 
-export const getTelemetryHistoryAtom: Atom = {
-  name: 'getTelemetryHistory',
+export const getTraceLogAtom: Atom = {
+  name: 'getTraceLog',
   version: '1.0.0',
   meta: {
-    input: [],
-    output: { type: 'array', description: 'Historical telemetry snapshots' }
+    input: [
+      { name: 'traceChainId', type: 'string', description: 'Filter by trace chain ID to get a complete user operation flow' },
+      { name: 'graph', type: 'string', description: 'Filter by graph name' },
+      { name: 'atom', type: 'string', description: 'Filter by atom name' },
+      { name: 'success', type: 'boolean', description: 'Filter by success/failure' },
+      { name: 'limit', type: 'number', description: 'Max entries to return (default 100)' }
+    ],
+    output: { type: 'array', description: 'Filtered execution trace log' }
   },
   characteristics: { stateless: false, atomic: true, composable: true },
-  execute: async (_input: any, context: Context): Promise<Result> => {
+  execute: async (input: any, context: Context): Promise<Result> => {
     if (!context.runtime) {
       return { success: false, error: 'Runtime not available' };
     }
-    const history = context.runtime.getTelemetryHistory();
-    return { success: true, data: history };
+    let traces = context.runtime.getTraceLog();
+
+    if (input.traceChainId) {
+      traces = traces.filter(t => t.traceChainId === input.traceChainId);
+    }
+    if (input.graph) {
+      traces = traces.filter(t => t.graph === input.graph);
+    }
+    if (input.atom) {
+      traces = traces.filter(t => t.atom === input.atom);
+    }
+    if (input.success !== undefined && input.success !== null) {
+      traces = traces.filter(t => t.success === input.success);
+    }
+
+    const limit = input.limit || 100;
+    traces = traces.slice(-limit);
+
+    return { success: true, data: traces };
   }
 };
 

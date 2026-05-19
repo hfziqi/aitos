@@ -5,7 +5,8 @@ graph delete-growth {
   let findCard = closest(id: "{{getTargetId}}", selector: ".growth-card")
   let getGrowthIndex = slice(array: "{{findCard}}", start: 12)
   let getGrowthIndexNum = toNum(value: "{{getGrowthIndex}}")
-  let readIndex = readLocal(key: "growths/index.json")
+  let listGrowths = execFile(file: "growth/list-growths")
+  let readIndex = get(key: "growthsListResult")
   let isIndexNil = isNil(value: "{{readIndex}}")
   let handleIndex = if isIndexNil {
     let setError = set(key: "growthError", value: "No growths found")
@@ -29,7 +30,8 @@ graph delete-growth {
           let isSameIdx = eq(a: "{{idx}}", b: {{getGrowthIndexNum}})
           let compare = not(value: "{{isSameIdx}}")
         }
-        let saveIndex = writeLocal(key: "growths/index.json", value: "{{filterIndex}}")
+        let setFilteredIndex = set(key: "growthsListResult", value: "{{filterIndex}}")
+        let saveIndex = execFile(file: "growth/save-growth-index")
         let clearStoreEntries = forEach file in listFiles {
           let isAcsFile = contains(text: "{{file}}", search: ".acs")
           let handleAcsFile = if isAcsFile {
@@ -47,7 +49,8 @@ graph delete-growth {
             let clearStore = set(key: "{{buildStoreKey}}", value: null)
           }
         }
-        let reRender = execFile(file: "core/render")
+        let clearMainView = clearElement(id: "mainViewContainer")
+        let reRender = execFile(file: "ui/views/market/create")
       }
     }
   }

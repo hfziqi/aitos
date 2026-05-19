@@ -50,6 +50,7 @@ export interface Context {
   store: {
     get: (key: string) => any;
     set: (key: string, value: any) => void;
+    setGlobal: (key: string, value: any) => void;
     has: (key: string) => boolean;
     delete: (key: string) => void;
     clear: () => void;
@@ -83,9 +84,22 @@ export interface GraphSuggestion {
   source: string;
 }
 
+export interface TraceEntry {
+  traceChainId: string;
+  timestamp: number;
+  graph: string;
+  nodeId: string;
+  atom: string;
+  input: any;
+  duration: number;
+  success: boolean;
+  error?: string;
+}
+
 export interface TelemetrySnapshot {
   timestamp: number;
   stats: TelemetryStats[];
+  traces: TraceEntry[];
 }
 
 export interface Runtime {
@@ -95,11 +109,12 @@ export interface Runtime {
   listAtoms(): Atom[];
   getSkillSet(): string;
   getTelemetryStats(): TelemetryStats[];
+  getTraceLog(): TraceEntry[];
   resetTelemetry(): void;
   onSnapshot(callback: (snapshot: TelemetrySnapshot) => void): void;
+  onStatsSnapshot(callback: (stats: TelemetryStats[]) => void): void;
   flushTelemetry(): TelemetrySnapshot;
-  getTelemetryHistory(): TelemetrySnapshot[];
-  restoreTelemetryHistory(history: TelemetrySnapshot[]): void;
+  flushStats(): TelemetryStats[];
 }
 
 export interface TelemetryStats {

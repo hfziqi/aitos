@@ -1,0 +1,8 @@
+graph create {
+  meta: { description: "Create stream output container for AI streaming response", type: "component", category: "stream-container", author: "AITOS Team" }
+
+  let createStreamContainer = createElement(tag: "div", id: "streamContainer")
+  let setStreamStyles = setStyles(id: "streamContainer", styles: { maxWidth: "70%", wordBreak: "break-word", padding: "8px 16px", fontSize: "14px", lineHeight: "1.4" })
+  let appendStreamContainer = appendChild(parentId: "messageList", childId: "streamContainer")
+  let setStreamElementId = set(key: "streamElementId", value: "streamContainer")
+}

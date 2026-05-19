@@ -1,5 +1,7 @@
 import { Atom, Context, Result } from '@aitos/core';
 
+let traceChainCounter = 0;
+
 export const getMousePositionAtom: Atom = {
   name: 'getMousePosition',
   version: '1.0.0',
@@ -120,6 +122,9 @@ export const addEventListenerAtom: Atom = {
         eventData.x = e.clientX;
         eventData.y = e.clientY;
         eventData.button = e.button;
+        if (e.type === 'contextmenu' && input.preventDefault) {
+          e.preventDefault();
+        }
       } else if (e instanceof KeyboardEvent) {
         eventData.key = e.key;
         eventData.code = e.code;
@@ -153,6 +158,8 @@ export const addEventListenerAtom: Atom = {
       context.store.set(input.storeKey, eventData);
       
       if (input.action && context.executeGraph) {
+        const chainId = `chain_${++traceChainCounter}`;
+        context.store.set('__traceChainId', chainId);
         const graph = context.store.get(`__graph_${input.action}`);
         if (graph) {
           await context.executeGraph(graph);

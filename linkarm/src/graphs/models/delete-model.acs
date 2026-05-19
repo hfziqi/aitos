@@ -4,19 +4,21 @@ graph delete-model {
   let getTargetId = get(key: "clickTargetId")
   let findCard = closest(id: "{{getTargetId}}", selector: ".model-card")
   let getModelId = slice(array: "{{findCard}}", start: 11)
-  let loadModels = readLocal(key: "models/ai-models.json")
-  let filterModels = filter currentModel index: modelIndex in loadModels {
+  let loadModels = execFile(file: "models/load-models")
+  let getList = get(key: "aiModelsList")
+  let filterModels = filter currentModel index: modelIndex in getList {
     let getCurrentId = getProp(obj: "{{currentModel}}", key: "id")
     let isSameId = eq(a: "{{getCurrentId}}", b: "{{getModelId}}")
     let compare = not(value: "{{isSameId}}")
   }
-  let saveModels = writeLocal(key: "models/ai-models.json", value: "{{filterModels}}")
-  let getActiveId = readLocal(key: "models/active-model-id.json")
+  let setList = set(key: "aiModelsList", value: "{{filterModels}}")
+  let saveModels = execFile(file: "models/save-models")
+  let loadActive = execFile(file: "models/load-active-model")
+  let getActiveId = get(key: "activeModelId")
   let isActiveModelDeleted = eq(a: "{{getActiveId}}", b: "{{getModelId}}")
   let checkActiveModel = if isActiveModelDeleted {
-    let clearActiveModelFile = removeLocal(key: "models/active-model-id.json")
-    let clearActiveModelId = set(key: "activeModelId", value: null)
-    let clearActiveModelConfig = set(key: "activeModelConfig", value: null)
+    let clearActive = execFile(file: "models/clear-active-model")
   }
-  let reRender = execFile(file: "core/render")
+  let clearMainView = clearElement(id: "mainViewContainer")
+  let reRender = execFile(file: "ui/views/market/create")
 }

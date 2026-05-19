@@ -1,0 +1,35 @@
+graph create {
+  meta: { description: "Import package popup", type: "component", category: "import-package-form", author: "AITOS Team" }
+
+  let createOverlay = createElement(tag: "div", id: "importPkgOverlay")
+  let setOverlayClass = setAttribute(id: "importPkgOverlay", name: "class", value: "overlay")
+  let appendOverlay = appendChild(parentId: "appContainer", childId: "importPkgOverlay")
+
+  let createModal = createElement(tag: "div", id: "importPkgModal")
+  let setModalClass = setAttribute(id: "importPkgModal", name: "class", value: "modal")
+  let setModalStyles = setStyles(id: "importPkgModal", styles: { textAlign: "center", padding: "24px" })
+  let appendModal = appendChild(parentId: "importPkgOverlay", childId: "importPkgModal")
+
+  let createTitle = createElement(tag: "h3", id: "importPkgTitle")
+  let setTitleText = setTextContent(id: "importPkgTitle", text: "Import ACS Package")
+  let appendTitle = appendChild(parentId: "importPkgModal", childId: "importPkgTitle")
+
+  let createDesc = createElement(tag: "p", id: "importPkgDesc")
+  let setDescText = setTextContent(id: "importPkgDesc", text: "Select a .zip file containing ACS graphs. Each .acs file will be compiled and registered automatically.")
+  let setDescStyles = setStyles(id: "importPkgDesc", styles: { fontSize: "13px", color: "#666", marginTop: "8px", marginBottom: "20px" })
+  let appendDesc = appendChild(parentId: "importPkgModal", childId: "importPkgDesc")
+
+  let createBtnContainer = createElement(tag: "div", id: "importPkgBtnContainer")
+  let setBtnContainerStyles = setStyles(id: "importPkgBtnContainer", styles: { display: "flex", gap: "8px", justifyContent: "center" })
+  let appendBtnContainer = appendChild(parentId: "importPkgModal", childId: "importPkgBtnContainer")
+
+  let createCancelBtn = createElement(tag: "button", id: "importPkgCancelBtn")
+  let setCancelBtnClass = setAttribute(id: "importPkgCancelBtn", name: "class", value: "btn-secondary")
+  let setCancelBtnText = setTextContent(id: "importPkgCancelBtn", text: "Cancel")
+  let appendCancelBtn = appendChild(parentId: "importPkgBtnContainer", childId: "importPkgCancelBtn")
+
+  let createImportBtn = createElement(tag: "button", id: "importPkgStartBtn")
+  let setImportBtnClass = setAttribute(id: "importPkgStartBtn", name: "class", value: "btn-primary")
+  let setImportBtnText = setTextContent(id: "importPkgStartBtn", text: "Select & Import")
+  let appendImportBtn = appendChild(parentId: "importPkgBtnContainer", childId: "importPkgStartBtn")
+}

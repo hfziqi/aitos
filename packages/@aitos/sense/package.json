@@ -1,6 +1,6 @@
 {
   "name": "@aitos/sense",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "AITOS Sense Capability Package - Motion, Environment, and Device sensing atoms",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

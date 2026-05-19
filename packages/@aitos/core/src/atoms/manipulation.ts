@@ -417,3 +417,22 @@ export const getAtAtom: Atom = {
     return { success: true, data: input.array[idx] };
   },
 };
+
+export const joinAtom: Atom = {
+  name: 'join',
+  version: '1.0.0',
+  meta: {
+    input: [
+      { name: 'array', type: 'array', description: 'Array of items to join' },
+      { name: 'separator', type: 'string', description: 'Separator between items' }
+    ],
+    output: { type: 'string', description: 'Joined string' }
+  },
+  characteristics: { stateless: true, atomic: true, composable: true },
+  execute: async (input: { array: any[]; separator: string }, context: Context): Promise<Result> => {
+    if (!Array.isArray(input.array)) {
+      return { success: true, data: String(input.array) };
+    }
+    return { success: true, data: input.array.join(String(input.separator)) };
+  },
+};

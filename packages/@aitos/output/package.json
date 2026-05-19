@@ -1,6 +1,6 @@
 {
   "name": "@aitos/output",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "AITOS Output Capability Package - Visual, Audio, and Haptic output atoms",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

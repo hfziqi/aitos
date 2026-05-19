@@ -1,6 +1,6 @@
 {
   "name": "@aitos/core",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "AITOS Core Package - AI-friendly atomic architecture based on capability dimensions",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

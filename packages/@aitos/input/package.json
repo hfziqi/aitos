@@ -1,6 +1,6 @@
 {
   "name": "@aitos/input",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "AITOS Input Capability Package - Keyboard, Pointer, and Voice input atoms",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

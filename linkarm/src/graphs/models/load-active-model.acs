@@ -1,0 +1,6 @@
+graph load-active-model {
+  meta: { description: "Load active model ID from local storage", type: "domain", category: "ai-models", author: "AITOS Team" }
+
+  let readFile = readLocal(key: "models/active-model-id.json")
+  let setStore = set(key: "activeModelId", value: "{{readFile}}")
+}

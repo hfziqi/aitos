@@ -12,6 +12,7 @@ graph get-active-model {
       let getFirst = getProp(obj: "{{filter}}", key: 0)
       let doSet1 = set(key: "activeModel", value: "{{getFirst}}")
       let doSet2 = set(key: "activeModelConfig", value: "{{getFirst}}")
+      let doSet3 = set(key: "activeModelId", value: "{{getActiveId}}")
     } else {
       let setNull1 = set(key: "activeModel", value: null)
       let setNull2 = set(key: "activeModelConfig", value: null)

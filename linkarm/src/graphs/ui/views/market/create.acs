@@ -14,17 +14,6 @@ graph create {
   let createModelsGrid = createElement(tag: "div", id: "modelsGrid")
   let setModelsGridStyles = setStyles(id: "modelsGrid", styles: { display: "grid", gridTemplateColumns: "repeat(8, 1fr)", gap: "12px" })
   let appendModelsGrid = appendChild(parentId: "modelsSection", childId: "modelsGrid")
-  let createAddCard = createElement(tag: "div", id: "addModelButton")
-  let setAddCardClass = setAttribute(id: "addModelButton", name: "class", value: "model-card model-card-add")
-  let createAddIcon = createElement(tag: "div", id: "addModelButton_icon")
-  let setAddIconClass = setAttribute(id: "addModelButton_icon", name: "class", value: "model-card-icon")
-  let setAddIconText = setTextContent(id: "addModelButton_icon", text: "+")
-  let createAddName = createElement(tag: "div", id: "addModelButton_name")
-  let setAddNameClass = setAttribute(id: "addModelButton_name", name: "class", value: "model-card-name")
-  let setAddNameText = setTextContent(id: "addModelButton_name", text: "Add")
-  let appendAddCard = appendChild(parentId: "modelsGrid", childId: "addModelButton")
-  let appendAddIcon = appendChild(parentId: "addModelButton", childId: "addModelButton_icon")
-  let appendAddName = appendChild(parentId: "addModelButton", childId: "addModelButton_name")
   let renderModels = if aiModelsList {
     let forEach = forEach currentModel, modelIndex in aiModelsList  {
       let renderCard = execFile(file: "ui/components/model-card/create")
@@ -36,7 +25,7 @@ graph create {
   let createGrowthsGrid = createElement(tag: "div", id: "growthsGrid")
   let setGrowthsGridStyles = setStyles(id: "growthsGrid", styles: { display: "grid", gridTemplateColumns: "repeat(8, 1fr)", gap: "12px" })
   let appendGrowthsGrid = appendChild(parentId: "growthsSection", childId: "growthsGrid")
-  let getGrowthsIndex = readLocal(key: "growths/index.json")
+  let getGrowthsIndex = execFile(file: "growth/list-growths")
   let renderGrowths = if getGrowthsIndex {
     let checkIsArray = isArr(value: "{{getGrowthsIndex}}")
     let handleGrowths = if checkIsArray {
@@ -45,4 +34,5 @@ graph create {
       }
     }
   }
+  let listenRightClick = addEventListener(id: "marketContainer", event: "contextmenu", storeKey: "_contextMenuEvent", action: "ui/components/context-menu/show", preventDefault: true)
 }

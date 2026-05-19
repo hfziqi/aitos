@@ -4,5 +4,6 @@ graph submit-add-form {
   let getFormValues = execFile(file: "models/get-add-model-form-values")
   let addModel = execFile(file: "models/add-model")
   let hideForm = execFile(file: "ui/components/add-model-form/hide")
-  let render = execFile(file: "core/render")
+  let clearMainView = clearElement(id: "mainViewContainer")
+  let render = execFile(file: "ui/views/market/create")
 }

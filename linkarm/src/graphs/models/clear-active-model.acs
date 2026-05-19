@@ -1,0 +1,7 @@
+graph clear-active-model {
+  meta: { description: "Clear active model selection from file and store", type: "domain", category: "ai-models", author: "AITOS Team" }
+
+  let removeFile = removeLocal(key: "models/active-model-id.json")
+  let clearStoreId = set(key: "activeModelId", value: null)
+  let clearStoreConfig = set(key: "activeModelConfig", value: null)
+}

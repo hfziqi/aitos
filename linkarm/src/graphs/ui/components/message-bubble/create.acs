@@ -6,7 +6,8 @@ graph create {
   let getMsgRole = getProp(obj: "{{getCurrentMsg}}", key: "role")
   let getMsgContent = getProp(obj: "{{getCurrentMsg}}", key: "content")
   let createMessageElement = createElement(tag: "div", id: "msg_{{getMsgIndex}}")
-  let setLayoutStyles = setStyles(id: "msg_{{getMsgIndex}}", styles: { display: "flex" })
+  let setMsgClass = setAttribute(id: "msg_{{getMsgIndex}}", name: "class", value: "msg-bubble")
+  let setLayoutStyles = setStyles(id: "msg_{{getMsgIndex}}", styles: { wordBreak: "break-word", flexShrink: "0" })
   let execStyles = execFile(file: "ui/components/message-bubble/styles")
   let isUserMessage = eq(a: "{{getMsgRole}}", b: "user")
   let checkMessageRole = if isUserMessage {
@@ -14,6 +15,7 @@ graph create {
   } else {
     let execAIStyles = setStyles(id: "msg_{{getMsgIndex}}", styles: { alignSelf: "flex-start", backgroundColor: "#ffffff", color: "#333333" })
   }
-  let setMessageContent = setTextContent(id: "msg_{{getMsgIndex}}", text: "{{getMsgContent}}")
+  let convertMarkdown = markdownToHtml(text: "{{getMsgContent}}")
+  let setMessageContent = setInnerHTML(id: "msg_{{getMsgIndex}}", html: "{{convertMarkdown}}")
   let appendToMessageList = appendChild(parentId: "messageList", childId: "msg_{{getMsgIndex}}")
 }

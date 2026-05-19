@@ -10,12 +10,14 @@ graph add-model {
   let setIdPrefix = set(key: "idPrefix", value: "model")
   let generateId = execFile(file: "models/generate-id")
   let createModel = set(key: "newModel", value: { id: "{{generateId}}", name: "{{getInputName}}", provider: "{{getInputProvider}}", modelName: "{{getInputModelName}}", apiKey: "{{getInputApiKey}}", baseUrl: "{{getInputBaseUrl}}" })
-  let loadModels = readLocal(key: "models/ai-models.json")
-  let checkModels = if loadModels {
-    let push = push(array: "{{loadModels}}", value: "{{newModel}}")
+  let loadModels = execFile(file: "models/load-models")
+  let getList = get(key: "aiModelsList")
+  let checkModels = if getList {
+    let push = push(array: "{{getList}}", value: "{{newModel}}")
   } else {
     let createArray = push(array: [], value: "{{newModel}}")
   }
-  let saveModels = writeLocal(key: "models/ai-models.json", value: "{{checkModels}}")
+  let setList = set(key: "aiModelsList", value: "{{checkModels}}")
+  let saveModels = execFile(file: "models/save-models")
   let setResult = set(key: "addedModel", value: "{{createModel}}")
 }

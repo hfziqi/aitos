@@ -1,6 +1,6 @@
 {
   "name": "@aitos/transfer",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "AITOS Transfer Capability Package - Network and IPC transfer atoms",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

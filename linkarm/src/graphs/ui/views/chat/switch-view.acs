@@ -1,0 +1,6 @@
+graph switch-view {
+  meta: { description: "Switch main view to chat without rebuilding layout", type: "view", category: "chat", author: "AITOS Team" }
+
+  let clearMainViewContainer = clearElement(id: "mainViewContainer")
+  let execChatView = execFile(file: "ui/views/chat/create")
+}

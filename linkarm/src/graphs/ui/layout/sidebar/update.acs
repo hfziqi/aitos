@@ -1,0 +1,17 @@
+graph update {
+  meta: { description: "Update sidebar active states and titles (no rebuild)", type: "layout", category: "sidebar", author: "AITOS Team" }
+
+  let getConversations = get(key: "conversations")
+  let getCurrentConvId = get(key: "currentConversationId")
+  let forEachConversation = forEach conversation, convIndex in getConversations  {
+    let getConvId = getProp(obj: "{{conversation}}", key: "id")
+    let getConvTitle = getProp(obj: "{{conversation}}", key: "title")
+    let setTitleText = setTextContent(id: "convTitle-{{convIndex}}", text: "{{getConvTitle}}")
+    let isActive = eq(a: "{{getConvId}}", b: "{{getCurrentConvId}}")
+    let updateClass = if isActive {
+      let setActiveClass = setAttribute(id: "convItem-{{convIndex}}", name: "class", value: "sidebar-item active")
+    } else {
+      let setNormalClass = setAttribute(id: "convItem-{{convIndex}}", name: "class", value: "sidebar-item")
+    }
+  }
+}

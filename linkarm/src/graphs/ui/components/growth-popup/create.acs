@@ -1,8 +1,9 @@
 graph create {
   meta: { description: "Create growth popup for app-type growth", type: "component", category: "growth-popup", author: "AITOS Team" }
 
-  let getGrowthName = get(key: "clickedGrowthName")
-  let getGrowthIcon = get(key: "clickedGrowthIcon")
+  let getGrowthData = get(key: "clickedGrowth")
+  let getGrowthName = getProp(obj: "{{getGrowthData}}", key: "name")
+  let getGrowthIcon = getProp(obj: "{{getGrowthData}}", key: "icon")
   let isIconNil = isNil(value: "{{getGrowthIcon}}")
   let resolveIcon = if isIconNil {
     let setDefaultIcon = set(key: "_popupIcon", value: "🌱")

@@ -3,4 +3,5 @@ graph styles {
 
   let getSideW = get(key: "sideW")
   let setAppearanceStyles = setStyles(id: "sidebarContainer", styles: { width: "{{getSideW}}px", backgroundColor: "#fcfcfc", padding: "8px" })
+  let injectScrollbarStyles = injectCSS(id: "sidebarScrollbarHide", css: "#conversationList { scrollbar-width: none; } #conversationList::-webkit-scrollbar { display: none; }")
 }

@@ -12,7 +12,7 @@ graph handle-chat-response {
     let handleBranch = if checkToolCalls {
       let getContent1 = getProp(obj: "{{getApiResponse}}", key: "content")
       let buildAssistantMsg = merge(a: { role: "assistant", content: "{{getContent1}}" }, b: { tool_calls: "{{getToolCalls}}" })
-      let getMsgs1 = get(key: "messages")
+      let getMsgs1 = get(key: "_apiContext")
       let pushAssistantMsg = push(array: "{{getMsgs1}}", value: "{{buildAssistantMsg}}")
       let handleTools = handleToolCalls(toolCalls: "{{getToolCalls}}")
       let initToolMessages = set(key: "toolMessages", value: "{{pushAssistantMsg}}")
@@ -25,14 +25,14 @@ graph handle-chat-response {
         let saveToolMessages = set(key: "toolMessages", value: "{{pushToolMsg}}")
       }
       let getToolMessagesFinal = get(key: "toolMessages")
-      let saveMessagesContinue = set(key: "messages", value: "{{getToolMessagesFinal}}")
+      let saveMessagesContinue = set(key: "_apiContext", value: "{{getToolMessagesFinal}}")
       let setContinueTrue = set(key: "continueLoop", value: true)
     } else {
       let getContent2 = getProp(obj: "{{getApiResponse}}", key: "content")
       let buildFinalMsg = merge(a: { role: "assistant" }, b: { content: "{{getContent2}}" })
-      let getMsgs2 = get(key: "messages")
+      let getMsgs2 = get(key: "_apiContext")
       let pushAssistantFinal = push(array: "{{getMsgs2}}", value: "{{buildFinalMsg}}")
-      let saveMessagesFinal = set(key: "messages", value: "{{pushAssistantFinal}}")
+      let saveMessagesFinal = set(key: "_apiContext", value: "{{pushAssistantFinal}}")
       let saveFinalContent = set(key: "finalContent", value: "{{getContent2}}")
       let setContinueFalse = set(key: "continueLoop", value: false)
     }

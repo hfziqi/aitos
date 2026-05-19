@@ -1,0 +1,5 @@
+graph hide {
+  meta: { description: "Hide import package popup", type: "action", category: "import-package-form", author: "AITOS Team" }
+
+  let removeOverlay = removeElement(id: "importPkgOverlay")
+}

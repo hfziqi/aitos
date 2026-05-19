@@ -2,4 +2,5 @@ graph styles {
   meta: { description: "Message list appearance styles", type: "styles", category: "message-list", author: "AITOS Team" }
 
   let setAppearanceStyles = setStyles(id: "messageList", styles: { display: "flex", flexDirection: "column", padding: "20px", backgroundColor: "#f1f1f1", gap: "16px" })
+  let injectScrollbarStyles = injectCSS(id: "messageListScrollbarHide", css: "#messageList { scrollbar-width: none; } #messageList::-webkit-scrollbar { display: none; }")
 }

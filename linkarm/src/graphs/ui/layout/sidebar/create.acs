@@ -5,7 +5,7 @@ graph create {
   let shouldCreateSidebar = not(value: "{{checkSidebarContainer}}")
   let branchSidebarContainer = if shouldCreateSidebar {
     let createSidebarContainer = createElement(tag: "div", id: "sidebarContainer")
-    let setLayoutStyles = setStyles(id: "sidebarContainer", styles: { display: "flex", flexDirection: "column", height: "100%" })
+    let setLayoutStyles = setStyles(id: "sidebarContainer", styles: { display: "flex", flexDirection: "column", height: "100%", minHeight: "0" })
     let execStyles = execFile(file: "ui/layout/sidebar/styles")
     let appendSidebarContainer = appendChild(parentId: "mainContent", childId: "sidebarContainer")
   }
@@ -15,6 +15,9 @@ graph create {
   let setNewChatButtonCustomStyles = setStyles(id: "newChatButton", styles: { width: "calc(100% - 16px)", margin: "12px 8px 8px 8px" })
   let setNewChatButtonText = setTextContent(id: "newChatButton", text: "+ New Chat")
   let appendNewChatButton = appendChild(parentId: "sidebarContainer", childId: "newChatButton")
+  let createConvList = createElement(tag: "div", id: "conversationList")
+  let setConvListStyles = setStyles(id: "conversationList", styles: { flex: "1", overflowY: "auto", minHeight: "0" })
+  let appendConvList = appendChild(parentId: "sidebarContainer", childId: "conversationList")
   let getConversations = get(key: "conversations")
   let getCurrentConvId = get(key: "currentConversationId")
   let forEachConversation = forEach conversation, convIndex in getConversations  {
@@ -31,12 +34,13 @@ graph create {
     let createTitleSpan = createElement(tag: "span", id: "convTitle-{{convIndex}}")
     let getConvTitle = getProp(obj: "{{conversation}}", key: "title")
     let setTitleText = setTextContent(id: "convTitle-{{convIndex}}", text: "{{getConvTitle}}")
+    let setTitleStyles = setStyles(id: "convTitle-{{convIndex}}", styles: { overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: "1", minWidth: "0" })
     let appendTitleSpan = appendChild(parentId: "convItem-{{convIndex}}", childId: "convTitle-{{convIndex}}")
     let createDeleteBtn = createElement(tag: "button", id: "convDelBtn-{{convIndex}}")
     let setDeleteBtnText = setTextContent(id: "convDelBtn-{{convIndex}}", text: "×")
     let setDeleteBtnStyles = setStyles(id: "convDelBtn-{{convIndex}}", styles: { border: "none", background: "transparent", color: "#999", fontSize: "16px", padding: "0 4px", marginLeft: "8px" })
     let setDeleteBtnData = setAttribute(id: "convDelBtn-{{convIndex}}", name: "data-conv-id", value: "{{getConvId}}")
     let appendDeleteBtn = appendChild(parentId: "convItem-{{convIndex}}", childId: "convDelBtn-{{convIndex}}")
-    let appendConvItem = appendChild(parentId: "sidebarContainer", childId: "convItem-{{convIndex}}")
+    let appendConvItem = appendChild(parentId: "conversationList", childId: "convItem-{{convIndex}}")
   }
 }

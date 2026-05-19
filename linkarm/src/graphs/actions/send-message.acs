@@ -7,8 +7,11 @@ graph send-message {
     let setNewMessage = set(key: "newMessage", value: {{buildUserMessage}})
     let addUserMessageToConversation = execFile(file: "messages/add-message")
     let clearInput = setValue(id: "inputBox", value: "")
-    let renderMessages = execFile(file: "ui/views/chat/render-messages")
-    let createAIMessageElement = execFile(file: "ui/components/ai-message-bubble/create")
+    let appendBubble = execFile(file: "ui/views/chat/append-message")
+    let saveTitleInput = set(key: "_titleMsg", value: "{{getInputValue}}")
+    let updateTitle = execFile(file: "conversations/update-title")
+    let refreshSidebar = executeInContext(contextKey: "_activeContext", graphKey: "__graph_ui/layout/sidebar/update")
+    let createStreamContainer = execFile(file: "ui/components/stream-container/create")
     let prepareAICall = set(key: "userMessage", value: {{getInputValue}})
     let callAIResponse = execFile(file: "services/ai/call-ai-response")
   }

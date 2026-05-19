@@ -43,14 +43,15 @@ export const httpRequestAtom: Atom = {
 
 export const httpStreamRequestAtom: Atom = {
   name: 'httpStreamRequest',
-  version: '1.3.0',
+  version: '1.4.0',
   meta: {
     input: [
       { name: 'url', type: 'string', description: 'Request URL' },
       { name: 'method', type: 'string', description: 'HTTP method' },
       { name: 'body', type: 'any', description: 'Request body' },
       { name: 'headers', type: 'object', description: 'Request headers' },
-      { name: 'elementId', type: 'string', description: 'Element ID for streaming display (optional)' }
+      { name: 'elementId', type: 'string', description: 'Element ID for streaming display (optional)' },
+      { name: 'streamKey', type: 'string', description: 'Store key to persist streaming content (optional)' }
     ],
     output: { type: 'object', description: '{ role, content, toolCalls }' }
   },
@@ -61,6 +62,7 @@ export const httpStreamRequestAtom: Atom = {
     body?: any; 
     headers?: Record<string, string>;
     elementId?: string;
+    streamKey?: string;
   }, context: Context): Promise<Result> => {
     try {
       const options: RequestInit = {
@@ -88,11 +90,6 @@ export const httpStreamRequestAtom: Atom = {
       let fullContent = '';
       let toolCalls: any[] = [];
       
-      let streamElement: HTMLElement | null = null;
-      if (input.elementId && typeof document !== 'undefined') {
-        streamElement = document.getElementById(input.elementId);
-      }
-      
       while (true) {
         const { done, value } = await reader.read();
         
@@ -115,8 +112,12 @@ export const httpStreamRequestAtom: Atom = {
               if (delta?.content) {
                 fullContent += delta.content;
                 
-                if (streamElement) {
-                  streamElement.textContent = fullContent;
+                if (input.elementId) {
+                  context.execute('setTextContent', { id: input.elementId, text: fullContent }).catch(() => {});
+                }
+                
+                if (input.streamKey) {
+                  context.store.set(input.streamKey, fullContent);
                 }
               }
               

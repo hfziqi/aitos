@@ -37,7 +37,8 @@ graph save-growth {
       let logFailure = execFile(file: "growth/log-growth-failure")
     } else {
       let compile = compileAcs(acs: "{{getAcs}}")
-      let compileOk = isObj(value: "{{compile}}")
+      let compileErr = getProp(obj: "{{compile}}", key: "__error")
+      let compileOk = isNil(value: "{{compileErr}}")
       let handleCompile = if compileOk {
         let storeKey = concat(a: "__graph_", b: "{{getName}}")
         let register = set(key: "{{storeKey}}", value: "{{compile}}")
@@ -57,8 +58,8 @@ graph save-growth {
         }
         let setResult = set(key: "createGrowthResult", value: { success: true, path: "{{filePathAcs}}", name: "{{getName}}" })
       } else {
-        let buildError = set(key: "_errorMsg", value: "{{compile}}")
-        let setError = set(key: "createGrowthResult", value: { success: false, error: "{{compile}}" })
+        let buildError = set(key: "_errorMsg", value: "{{compileErr}}")
+        let setError = set(key: "createGrowthResult", value: { success: false, error: "{{compileErr}}" })
         let logFailure = execFile(file: "growth/log-growth-failure")
       }
     }

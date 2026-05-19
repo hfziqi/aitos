@@ -1,7 +1,7 @@
 graph add-message {
   meta: { description: "Add message to current conversation and save to separate file", type: "domain", category: "conversation", author: "AITOS Team" }
 
-  let getConversationId = get(key: "currentConversationId")
+  let getConversationId = get(key: "_convId")
   let getMessage = get(key: "newMessage")
   let buildPath = set(key: "_msgPath", value: "chat/messages/{{getConversationId}}.json")
   let readExistingMessages = readLocal(key: "{{buildPath}}")

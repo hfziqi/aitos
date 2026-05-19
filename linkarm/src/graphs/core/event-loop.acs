@@ -1,0 +1,19 @@
+graph event-loop {
+  meta: { description: "Event dispatch loop - polls appClick and routes to active conversation context", type: "core", category: "event", author: "AITOS Team" }
+
+  let eventLoop = loop {
+    let getEvent = get(key: "appClick")
+    let checkEvent = isObj(value: "{{getEvent}}")
+    let handleEvent = if checkEvent {
+      let getTargetId = getProp(obj: "{{getEvent}}", key: "targetId")
+      let getAncestors = getProp(obj: "{{getEvent}}", key: "ancestorIds")
+      let execInCtx = executeInContext(
+        contextKey: "_activeContext",
+        graphKey: "__graph_core/click-delegate",
+        store: { appClick: "{{getEvent}}", clickTargetId: "{{getTargetId}}", ancestorIds: "{{getAncestors}}" }
+      )
+      let clearEvent = set(key: "appClick", value: null)
+    }
+    let yield = wait(ms: 50)
+  }
+}

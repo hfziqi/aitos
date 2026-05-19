@@ -3,12 +3,10 @@ graph switchConversation {
 
   let getTargetId = get(key: "clickTargetId")
   let findItem = closest(id: "{{getTargetId}}", selector: ".sidebar-item")
-  let getIdx = slice(array: "{{findItem}}", start: 9)
-  let getConversations = get(key: "conversations")
-  let getConvByIdx = getProp(obj: "{{getConversations}}", key: "{{getIdx}}")
-  let getConvId = getProp(obj: "{{getConvByIdx}}", key: "id")
-  let setCurrentConvId = set(key: "currentConversationId", value: "{{getConvId}}")
-  let clearMessages = set(key: "messages", value: null)
-  let setCurrentView = set(key: "currentView", value: "chat")
-  let execRender = execFile(file: "core/render")
+  let getConvId = getAttribute(id: "{{findItem}}", name: "data-conv-id")
+  let setCurrentConvId = setGlobal(key: "currentConversationId", value: "{{getConvId}}")
+  let createCtx = createConversationContext(convId: "{{getConvId}}")
+  let setActiveCtx = setGlobal(key: "_activeContext", value: "{{createCtx}}")
+  let updateSidebar = executeInContext(contextKey: "_activeContext", graphKey: "__graph_ui/layout/sidebar/update")
+  let switchToChat = executeInContext(contextKey: "_activeContext", graphKey: "__graph_ui/views/chat/switch-view")
 }

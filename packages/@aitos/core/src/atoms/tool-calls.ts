@@ -5,6 +5,19 @@ function isGraph(obj: any): boolean {
   return obj && typeof obj === 'object' && Array.isArray(obj.order) && typeof obj.nodes === 'object';
 }
 
+function safeStringify(obj: any): string {
+  const seen = new WeakSet();
+  return JSON.stringify(obj, (key, value) => {
+    if (typeof value === 'object' && value !== null) {
+      if (seen.has(value)) {
+        return '[Circular]';
+      }
+      seen.add(value);
+    }
+    return value;
+  });
+}
+
 export const handleToolCallsAtom: Atom = {
   name: 'handleToolCalls',
   version: '1.0.0',
@@ -34,7 +47,7 @@ export const handleToolCallsAtom: Atom = {
         results.push({
           toolCallId: toolCall.id,
           name: toolName,
-          result: JSON.stringify({ error: 'Failed to parse arguments' })
+          result: safeStringify({ error: 'Failed to parse arguments' })
         });
         continue;
       }
@@ -60,7 +73,10 @@ export const handleToolCallsAtom: Atom = {
           const toolToGraphMap: Record<string, string> = {
             'save-growth': 'growth/save-growth',
             'get-growth-log': 'growth/get-growth-log',
+            'list-growths': 'growth/list-growths',
+            'get-growth-code': 'growth/get-growth-code',
             'analyze-telemetry': 'telemetry/analyze',
+            'callGrowthTool': 'growth/call-growth-tool',
           };
           const graphKey = toolToGraphMap[toolName] || toolName;
           const graphSource = context.store.get(`__graph_${graphKey}`);
@@ -77,7 +93,7 @@ export const handleToolCallsAtom: Atom = {
                 graph = graphSource;
               } else {
                 result = { error: `Graph "${toolName}" has invalid format` };
-                results.push({ toolCallId: toolCall.id, name: toolName, result: JSON.stringify(result) });
+                results.push({ toolCallId: toolCall.id, name: toolName, result: safeStringify(result) });
                 continue;
               }
 
@@ -96,7 +112,7 @@ export const handleToolCallsAtom: Atom = {
       results.push({
         toolCallId: toolCall.id,
         name: toolName,
-        result: JSON.stringify(result)
+        result: safeStringify(result)
       });
     }
 

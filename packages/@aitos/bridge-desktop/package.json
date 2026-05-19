@@ -1,6 +1,6 @@
 {
   "name": "@aitos/bridge-desktop",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "AITOS desktop bridge atoms - unified bridge atoms for desktop environment",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

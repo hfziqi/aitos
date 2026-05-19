@@ -1,9 +1,10 @@
 graph create {
   meta: { description: "Create growth detail for tool-type growth", type: "component", category: "growth-detail", author: "AITOS Team" }
 
-  let getGrowthName = get(key: "clickedGrowthName")
-  let getGrowthIcon = get(key: "clickedGrowthIcon")
-  let getGrowthDesc = get(key: "clickedGrowthDesc")
+  let getGrowthData = get(key: "clickedGrowth")
+  let getGrowthName = getProp(obj: "{{getGrowthData}}", key: "name")
+  let getGrowthIcon = getProp(obj: "{{getGrowthData}}", key: "icon")
+  let getGrowthDesc = getProp(obj: "{{getGrowthData}}", key: "description")
   let isIconNil = isNil(value: "{{getGrowthIcon}}")
   let resolveIcon = if isIconNil {
     let setDefaultIcon = set(key: "_detailIcon", value: "🌱")

@@ -1,0 +1,6 @@
+graph handle-import {
+  meta: { description: "Handle context menu import click - hide menu and show import popup", type: "action", category: "context-menu", author: "AITOS Team" }
+
+  let hideMenu = execFile(file: "ui/components/context-menu/hide")
+  let showPopup = execFile(file: "growth/show-import-package-popup")
+}

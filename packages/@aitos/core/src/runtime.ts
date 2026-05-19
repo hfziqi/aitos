@@ -1,4 +1,4 @@
-import { Atom, Context, Result, Graph, GraphNode, Scope, AtomRegistry, GraphValidationError, GraphSuggestion, Runtime, TelemetryStats, TelemetrySnapshot } from './types';
+import { Atom, Context, Result, Graph, GraphNode, Scope, AtomRegistry, GraphValidationError, GraphSuggestion, Runtime, TelemetryStats, TelemetrySnapshot, TraceEntry } from './types';
 
 class Store {
   private data: Map<string, any> = new Map();
@@ -106,8 +106,9 @@ class AtomRegistryImpl implements AtomRegistry {
 export class AitosRuntime implements Runtime {
   private atoms: Map<string, Atom> = new Map();
   private telemetryStore: TelemetryStore = new TelemetryStore();
-  private telemetryHistory: TelemetrySnapshot[] = [];
+  private traceLog: TraceEntry[] = [];
   private snapshotCallback?: (snapshot: TelemetrySnapshot) => void;
+  private statsSnapshotCallback?: (stats: TelemetryStats[]) => void;
 
   register(atom: Atom): void {
     const key = `${atom.name}@${atom.version}`;
@@ -224,7 +225,9 @@ export class AitosRuntime implements Runtime {
   async executeGraph(graph: Graph, context: Context, outerScope?: Record<string, any>, graphName?: string): Promise<Record<string, any>> {
     const results: Record<string, any> = outerScope ? { ...outerScope } : {};
     const gName = graphName || 'unknown';
-    
+
+    const traceChainId = context.store.get('__traceChainId') || '';
+
     const previousScope = context.currentScope;
     context.currentScope = results;
     context.runtime = this;
@@ -238,9 +241,25 @@ export class AitosRuntime implements Runtime {
 
       this.telemetryStore.record(node.atom, gName, duration, result.success);
 
+      this.traceLog.push({
+        traceChainId,
+        timestamp: Date.now(),
+        graph: gName,
+        nodeId,
+        atom: node.atom,
+        input,
+        duration,
+        success: result.success,
+        error: result.error,
+      });
+
+      if (this.traceLog.length > 100000) {
+        this.traceLog.splice(0, this.traceLog.length - 100000);
+      }
+
       if (!result.success) {
-        context.currentScope = previousScope;
-        throw new Error(JSON.stringify({ node: nodeId, atom: node.atom, error: result.error }));
+        results[nodeId] = { __error: result.error };
+        continue;
       }
 
       results[nodeId] = result.data;
@@ -255,23 +274,37 @@ export class AitosRuntime implements Runtime {
     this.snapshotCallback = callback;
   }
 
+  onStatsSnapshot(callback: (stats: TelemetryStats[]) => void): void {
+    this.statsSnapshotCallback = callback;
+  }
+
   flushTelemetry(): TelemetrySnapshot {
     const stats = this.telemetryStore.getStats();
-    const snapshot: TelemetrySnapshot = { timestamp: Date.now(), stats };
-    this.telemetryHistory.push(snapshot);
-    if (this.telemetryHistory.length > 100) {
-      this.telemetryHistory.shift();
-    }
+    const traces = [...this.traceLog];
+    this.traceLog = [];
+    const snapshot: TelemetrySnapshot = { timestamp: Date.now(), stats, traces };
+
     this.snapshotCallback?.(snapshot);
     return snapshot;
   }
 
-  getTelemetryHistory(): TelemetrySnapshot[] {
-    return this.telemetryHistory;
+  flushStats(): TelemetryStats[] {
+    const stats = this.telemetryStore.getStats();
+    this.statsSnapshotCallback?.(stats);
+    return stats;
   }
 
-  restoreTelemetryHistory(history: TelemetrySnapshot[]): void {
-    this.telemetryHistory = history.slice(-100);
+  getTelemetryStats(): TelemetryStats[] {
+    return this.telemetryStore.getStats();
+  }
+
+  getTraceLog(): TraceEntry[] {
+    return [...this.traceLog];
+  }
+
+  resetTelemetry(): void {
+    this.telemetryStore.reset();
+    this.traceLog = [];
   }
 
   private resolveGraphInput(node: GraphNode, results: Record<string, any>, context: Context): any {
@@ -449,14 +482,6 @@ export class AitosRuntime implements Runtime {
     };
 
     return JSON.stringify(registry);
-  }
-
-  getTelemetryStats(): TelemetryStats[] {
-    return this.telemetryStore.getStats();
-  }
-
-  resetTelemetry(): void {
-    this.telemetryStore.reset();
   }
 }
 

@@ -1,5 +1,6 @@
 export * from './visual';
 export * from './notify';
+export * from './markdown';
 
 import { Atom } from '@aitos/core';
 import {
@@ -61,6 +62,9 @@ import {
   showPromptAtom,
   showNotificationAtom,
 } from './notify';
+import {
+  markdownToHtmlAtom,
+} from './markdown';
 
 export const allAtoms: Atom[] = [
   createElementAtom,
@@ -118,4 +122,5 @@ export const allAtoms: Atom[] = [
   showConfirmAtom,
   showPromptAtom,
   showNotificationAtom,
+  markdownToHtmlAtom,
 ];

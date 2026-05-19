@@ -1,0 +1,12 @@
+graph call-growth-tool {
+  meta: { description: "Execute a tool growth by name - dynamically loads args and runs the target graph", type: "action", category: "growth", author: "AITOS Team" }
+
+  let getName = get(key: "name")
+  let getArgs = get(key: "args")
+  let getArgKeys = keys(obj: "{{getArgs}}")
+  let spreadArgs = forEach argKey in getArgKeys {
+    let getValue = getProp(obj: "{{getArgs}}", key: "{{argKey}}")
+    let setValue = set(key: "{{argKey}}", value: "{{getValue}}")
+  }
+  let execTool = execFile(file: "{{getName}}")
+}

@@ -1,0 +1,20 @@
+graph get-growth-code {
+  meta: { description: "Get the ACS source code for a growth", type: "core", category: "growth", author: "AITOS Team" }
+
+  let getName = get(key: "name")
+  let isSubGraph = contains(text: "{{getName}}", search: "/")
+  let filePath = concat(a: "growths/", b: "{{getName}}")
+  let filePathAcs = if isSubGraph {
+    let subPath = concat(a: "{{filePath}}", b: ".acs")
+  } else {
+    let mainPath = concat(a: "{{filePath}}", b: "/main.acs")
+  }
+  let readCode = readLocal(key: "{{filePathAcs}}")
+  let isNilCode = isNil(value: "{{readCode}}")
+  let handleResult = if isNilCode {
+    let setError = set(key: "growthCodeResult", value: { found: false, name: "{{getName}}", error: "Growth not found" })
+  } else {
+    let setCode = set(key: "growthCodeResult", value: { found: true, name: "{{getName}}", acs: "{{readCode}}" })
+  }
+  let getResult = get(key: "growthCodeResult")
+}

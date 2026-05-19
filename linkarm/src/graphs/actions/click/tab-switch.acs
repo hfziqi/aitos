@@ -4,10 +4,12 @@ graph tab-switch {
   let getTargetId = get(key: "clickTargetId")
   let isModelsTab = eq(a: "{{getTargetId}}", b: "modelsTab")
   let handleTab = if isModelsTab {
-    let setModelsTab = set(key: "currentMarketTab", value: "models")
-    let reRender = execFile(file: "core/render")
+    let setModelsTab = setGlobal(key: "currentMarketTab", value: "models")
+    let clearMainView = clearElement(id: "mainViewContainer")
+    let reRender = execFile(file: "ui/views/market/create")
   } else {
-    let setGrowthsTab = set(key: "currentMarketTab", value: "growths")
-    let reRender = execFile(file: "core/render")
+    let setGrowthsTab = setGlobal(key: "currentMarketTab", value: "growths")
+    let clearMainView = clearElement(id: "mainViewContainer")
+    let reRender = execFile(file: "ui/views/market/create")
   }
 }

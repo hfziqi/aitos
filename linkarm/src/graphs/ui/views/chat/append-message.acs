@@ -1,0 +1,11 @@
+graph append-message {
+  meta: { description: "Append single message bubble (no clear)", type: "view", category: "chat", author: "AITOS Team" }
+
+  let getMessages = get(key: "messages")
+  let getLen = len(value: "{{getMessages}}")
+  let calcLastIndex = sub(a: "{{getLen}}", b: 1)
+  let getLastMsg = getAt(array: "{{getMessages}}", index: {{calcLastIndex}})
+  let setCurrentMsg = set(key: "currentMessage", value: "{{getLastMsg}}")
+  let setMsgIndex = set(key: "messageIndex", value: "{{calcLastIndex}}")
+  let renderBubble = execFile(file: "ui/components/message-bubble/create")
+}

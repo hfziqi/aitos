@@ -1,4 +1,4 @@
 graph openChat {
-  let setCurrentView = set(key: "currentView", value: "chat")
-  let execRender = execFile(file: "core/render")
+  let setCurrentView = setGlobal(key: "currentView", value: "chat")
+  let switchToChat = execFile(file: "ui/views/chat/switch-view")
 }

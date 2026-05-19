@@ -4,4 +4,5 @@ graph hide {
   let removeOverlay = removeElement(id: "growthOverlay")
   let clearActiveGrowth = set(key: "activeGrowthName", value: "")
   let clearContainerId = set(key: "growthContainerId", value: "")
+  let clearGrowthData = set(key: "clickedGrowth", value: null)
 }

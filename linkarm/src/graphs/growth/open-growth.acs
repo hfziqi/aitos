@@ -7,7 +7,7 @@ graph open-growth {
   let isCardFound = not(value: "{{isCardNil}}")
   let handleCard = if isCardFound {
     let getCardIndex = slice(array: "{{findCard}}", start: 12)
-    let readIndex = readLocal(key: "growths/index.json")
+    let readIndex = execFile(file: "growth/list-growths")
     let isIndexNil = isNil(value: "{{readIndex}}")
     let handleIndex = if isIndexNil {
       let setError = set(key: "growthError", value: "No growths found")
@@ -26,15 +26,14 @@ graph open-growth {
           let getPath = getProp(obj: "{{getGrowthItem}}", key: "path")
           let isTypeNil = isNil(value: "{{getType}}")
           let resolveType = if isTypeNil {
-            let setDefaultType = set(key: "clickedGrowthType", value: "tool")
+            let setDefaultType = set(key: "_growthType", value: "tool")
           } else {
-            let setMetaType = set(key: "clickedGrowthType", value: "{{getType}}")
+            let setMetaType = set(key: "_growthType", value: "{{getType}}")
           }
-          let saveName = set(key: "clickedGrowthName", value: "{{getName}}")
-          let saveIcon = set(key: "clickedGrowthIcon", value: "{{getIcon}}")
-          let saveDesc = set(key: "clickedGrowthDesc", value: "{{getDesc}}")
-          let savePath = set(key: "clickedGrowthPath", value: "{{getPath}}")
-          let getGrowthType = get(key: "clickedGrowthType")
+          let getResolvedType = get(key: "_growthType")
+          let saveGrowth = set(key: "clickedGrowth", value: { name: "{{getName}}", type: "{{getResolvedType}}", icon: "{{getIcon}}", description: "{{getDesc}}", path: "{{getPath}}" })
+          let getGrowthData = get(key: "clickedGrowth")
+          let getGrowthType = getProp(obj: "{{getGrowthData}}", key: "type")
           let isApp = eq(a: "{{getGrowthType}}", b: "app")
           let dispatchByType = if isApp {
             let openPopup = execFile(file: "ui/components/growth-popup/create")

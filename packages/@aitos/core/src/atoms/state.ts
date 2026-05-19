@@ -32,3 +32,20 @@ export const setAtom: Atom = {
     return { success: true, data: input.value };
   },
 };
+
+export const setGlobalAtom: Atom = {
+  name: 'setGlobal',
+  version: '1.0.0',
+  meta: {
+    input: [
+      { name: 'key', type: 'string', description: 'Global state key name' },
+      { name: 'value', type: 'any', description: 'Value to store in global store' }
+    ],
+    output: { type: 'any', description: 'The value that was set' }
+  },
+  characteristics: { stateless: true, atomic: true, composable: true },
+  execute: async (input: { key: string; value: any }, context: Context): Promise<Result> => {
+    context.store.setGlobal(input.key, input.value);
+    return { success: true, data: input.value };
+  },
+};

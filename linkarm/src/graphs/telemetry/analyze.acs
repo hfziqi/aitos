@@ -1,0 +1,62 @@
+graph telemetry-analyze {
+  meta: { description: "Analyze telemetry stats from local storage", type: "core", category: "telemetry", author: "AITOS Team" }
+
+  let readData = readLocal(key: "logs/telemetry/stats.json")
+  let isNilData = isNil(value: "{{readData}}")
+  let handleNoData = if isNilData {
+    let setResult = set(key: "telemetryResult", value: { found: false, message: "No telemetry data found. The system hasn't collected any stats yet." })
+  } else {
+    let getStats = getProp(obj: "{{readData}}", key: "stats")
+    let isNilStats = isNil(value: "{{getStats}}")
+    let handleStats = if isNilStats {
+      let setEmpty = set(key: "telemetryResult", value: { found: false, message: "Telemetry file exists but contains no stats array." })
+    } else {
+      let getTimestamp = getProp(obj: "{{readData}}", key: "timestamp")
+      let getLen = len(value: "{{getStats}}")
+      let initTotalCalls = set(key: "_totalCalls", value: 0)
+      let initTotalErrors = set(key: "_totalErrors", value: 0)
+      let initTotalWeighted = set(key: "_totalWeightedDuration", value: 0)
+      let initErrorList = set(key: "_errorList", value: [])
+      let forEachStat = forEach stat in getStats {
+        let getCount = getProp(obj: "{{stat}}", key: "count")
+        let getErrors = getProp(obj: "{{stat}}", key: "errorCount")
+        let getAvgDuration = getProp(obj: "{{stat}}", key: "avgDuration")
+        let getAtomName = getProp(obj: "{{stat}}", key: "atom")
+        let getPrevTotal = get(key: "_totalCalls")
+        let getPrevErrors = get(key: "_totalErrors")
+        let getPrevWeighted = get(key: "_totalWeightedDuration")
+        let newTotal = add(a: "{{getPrevTotal}}", b: "{{getCount}}")
+        let newErrors = add(a: "{{getPrevErrors}}", b: "{{getErrors}}")
+        let weighted = mul(a: "{{getAvgDuration}}", b: "{{getCount}}")
+        let newWeighted = add(a: "{{getPrevWeighted}}", b: "{{weighted}}")
+        let saveTotal = set(key: "_totalCalls", value: "{{newTotal}}")
+        let saveErrors = set(key: "_totalErrors", value: "{{newErrors}}")
+        let saveWeighted = set(key: "_totalWeightedDuration", value: "{{newWeighted}}")
+        let hasErrors = gt(a: "{{getErrors}}", b: 0)
+        let addToErrorList = if hasErrors {
+          let getErrorList = get(key: "_errorList")
+          let buildEntry = merge(a: { name: "{{getAtomName}}", errorCount: "{{getErrors}}", totalCalls: "{{getCount}}" }, b: {})
+          let pushEntry = push(array: "{{getErrorList}}", value: "{{buildEntry}}")
+          let saveErrorList = set(key: "_errorList", value: "{{pushEntry}}")
+        }
+      }
+      let getFinalTotal = get(key: "_totalCalls")
+      let getFinalErrors = get(key: "_totalErrors")
+      let getFinalWeighted = get(key: "_totalWeightedDuration")
+      let getFinalErrorList = get(key: "_errorList")
+      let hasCalls = gt(a: "{{getFinalTotal}}", b: 0)
+      let computeSummary = if hasCalls {
+        let errorRate = div(a: "{{getFinalErrors}}", b: "{{getFinalTotal}}")
+        let errorRatePct = mul(a: "{{errorRate}}", b: 100)
+        let avgDuration = div(a: "{{getFinalWeighted}}", b: "{{getFinalTotal}}")
+        let buildSummary = merge(a: { totalAtoms: "{{getLen}}", totalCalls: "{{getFinalTotal}}", totalErrors: "{{getFinalErrors}}", errorRate: "{{errorRatePct}}", avgDuration: "{{avgDuration}}" }, b: {})
+        let setSummary = set(key: "_summary", value: "{{buildSummary}}")
+      } else {
+        let setEmptySummary = set(key: "_summary", value: { totalAtoms: 0, totalCalls: 0, totalErrors: 0, errorRate: 0, avgDuration: 0 })
+      }
+      let getSummary = get(key: "_summary")
+      let setResult = set(key: "telemetryResult", value: { found: true, summary: "{{getSummary}}", errorHotspots: "{{getFinalErrorList}}", allAtoms: "{{getStats}}", timestamp: "{{getTimestamp}}" })
+    }
+  }
+  let getResult = get(key: "telemetryResult")
+}

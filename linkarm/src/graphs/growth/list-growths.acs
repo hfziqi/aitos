@@ -1,0 +1,12 @@
+graph list-growths {
+  meta: { description: "List all growths (user-created graphs)", type: "core", category: "growth", author: "AITOS Team" }
+
+  let readIndex = readLocal(key: "growths/index.json")
+  let isNilIndex = isNil(value: "{{readIndex}}")
+  let handleResult = if isNilIndex {
+    let setEmpty = set(key: "growthsListResult", value: [])
+  } else {
+    let setIndex = set(key: "growthsListResult", value: "{{readIndex}}")
+  }
+  let getResult = get(key: "growthsListResult")
+}

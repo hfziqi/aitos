@@ -3,10 +3,8 @@ graph delete-conversation {
 
   let getTargetId = get(key: "clickTargetId")
   let findItem = closest(id: "{{getTargetId}}", selector: ".sidebar-item")
-  let getConvIdx = slice(array: "{{findItem}}", start: 9)
   let getConversations = get(key: "conversations")
-  let getConvByDelIdx = getProp(obj: "{{getConversations}}", key: "{{getConvIdx}}")
-  let getConvId = getProp(obj: "{{getConvByDelIdx}}", key: "id")
+  let getConvId = getAttribute(id: "{{findItem}}", name: "data-conv-id")
   let initFiltered = set(key: "_filteredConvs", value: [])
   let forEachConv = forEach conv, convIdx in getConversations  {
     let getCurConvId = getProp(obj: "{{conv}}", key: "id")
@@ -19,9 +17,11 @@ graph delete-conversation {
     }
   }
   let getFilteredConvs = get(key: "_filteredConvs")
-  let saveConversations = writeLocal(key: "chat/conversations.json", value: "{{getFilteredConvs}}")
-  let updateStore = set(key: "conversations", value: "{{getFilteredConvs}}")
-  let deleteMessagesFile = removeLocal(key: "chat/messages/{{getConvId}}.json")
+  let updateStore = setGlobal(key: "conversations", value: "{{getFilteredConvs}}")
+  let saveConversations = execFile(file: "conversations/save-conversations")
+  let createDelCtx = createConversationContext(convId: "{{getConvId}}")
+  let setDelCtx = setGlobal(key: "_delCtx", value: "{{createDelCtx}}")
+  let deleteMessagesFile = executeInContext(contextKey: "_delCtx", graphKey: "__graph_messages/delete-messages")
   let checkCurrentConv = get(key: "currentConversationId")
   let isCurrentConvDeleted = eq(a: "{{checkCurrentConv}}", b: "{{getConvId}}")
   let handleCurrentConv = if isCurrentConvDeleted {
@@ -31,11 +31,16 @@ graph delete-conversation {
     let setNewCurrentConv = if checkHasMore {
       let getFirst = getProp(obj: "{{getFiltered}}", key: 0)
       let getFirstId = getProp(obj: "{{getFirst}}", key: "id")
-      let setCurrentId = set(key: "currentConversationId", value: "{{getFirstId}}")
+      let setCurrentId = setGlobal(key: "currentConversationId", value: "{{getFirstId}}")
+      let createCtx = createConversationContext(convId: "{{getFirstId}}")
+      let setActiveCtx = setGlobal(key: "_activeContext", value: "{{createCtx}}")
     } else {
-      let clearCurrentId = set(key: "currentConversationId", value: null)
+      let clearCurrentId = setGlobal(key: "currentConversationId", value: null)
+      let clearMessages = set(key: "messages", value: [])
+      let createEmptyCtx = createConversationContext(convId: "__empty__")
+      let setActiveCtx = setGlobal(key: "_activeContext", value: "{{createEmptyCtx}}")
     }
-    let clearMessages = set(key: "messages", value: [])
   }
-  let reRender = execFile(file: "core/render")
+  let updateSidebar = executeInContext(contextKey: "_activeContext", graphKey: "__graph_ui/layout/sidebar/create")
+  let switchToChat = executeInContext(contextKey: "_activeContext", graphKey: "__graph_ui/views/chat/switch-view")
 }

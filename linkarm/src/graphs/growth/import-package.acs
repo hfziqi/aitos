@@ -1,0 +1,49 @@
+graph import-package {
+  meta: { description: "Import a .zip package of ACS graphs", type: "action", category: "growth", author: "AITOS Team" }
+
+  let pickFile = showFilePicker(accept: ".zip")
+  let fileNil = isNil(value: "{{pickFile}}")
+  let handleFile = if fileNil {
+    let setEmpty = set(key: "_importResult", value: { success: false, error: "No file selected" })
+  } else {
+    let readBuffer = readFile(file: "{{pickFile}}", encoding: "arrayBuffer")
+    let bufferNil = isNil(value: "{{readBuffer}}")
+    let handleBuffer = if bufferNil {
+      let setError = set(key: "_importResult", value: { success: false, error: "Failed to read zip file" })
+    } else {
+      let extractEntries = readZipFile(data: "{{readBuffer}}")
+      let entriesNil = isNil(value: "{{extractEntries}}")
+      let handleEntries = if entriesNil {
+        let setError = set(key: "_importResult", value: { success: false, error: "Failed to extract zip contents" })
+      } else {
+        let initCount = set(key: "_importedCount", value: 0)
+        let initErrors = set(key: "_importErrors", value: [])
+        let forEachEntry = forEach entry, entryIdx in extractEntries {
+          let isAcs = contains(text: "{{entry.name}}", search: ".acs")
+          let processEntry = if isAcs {
+            let stripAcs = replace(text: "{{entry.name}}", search: ".acs", replacement: "")
+            let setName = set(key: "name", value: "{{stripAcs}}")
+            let setAcs = set(key: "acs", value: "{{entry.content}}")
+            let setType = set(key: "type", value: "tool")
+            let saveGraph = execFile(file: "growth/save-growth")
+            let getResult = get(key: "createGrowthResult")
+            let success = getProp(obj: "{{getResult}}", key: "success")
+            let handleResult = if success {
+              let getCount = get(key: "_importedCount")
+              let incCount = add(a: "{{getCount}}", b: 1)
+              let saveCount = set(key: "_importedCount", value: "{{incCount}}")
+            } else {
+              let getErrors = get(key: "_importErrors")
+              let getError = getProp(obj: "{{getResult}}", key: "error")
+              let pushError = push(array: "{{getErrors}}", value: "{{getError}}")
+              let saveErrors = set(key: "_importErrors", value: "{{pushError}}")
+            }
+          }
+        }
+        let getFinalCount = get(key: "_importedCount")
+        let getFinalErrors = get(key: "_importErrors")
+        let setFinalResult = set(key: "_importResult", value: { success: true, imported: "{{getFinalCount}}", errors: "{{getFinalErrors}}" })
+      }
+    }
+  }
+}

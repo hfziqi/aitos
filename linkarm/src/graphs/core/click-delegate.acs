@@ -30,9 +30,9 @@ graph click-delegate {
     let branchSendBtn = if isSendBtn {
       let execAction = execFile(file: "actions/send-message")
     }
-    let isAddModelBtn = includes(array: "{{getAncestorIds}}", value: "addModelButton")
-    let branchAddModelBtn = if isAddModelBtn {
-      let execAction = execFile(file: "models/show-add-form")
+    let isContextMenuAddModel = eq(a: "{{getTargetId}}", b: "contextMenuAddModel")
+    let branchContextMenuAddModel = if isContextMenuAddModel {
+      let execAction = execFile(file: "ui/components/context-menu/handle-add-model")
     }
     let isSubmitAddModelBtn = eq(a: "{{getTargetId}}", b: "submitAddModelButton")
     let branchSubmitAddModelBtn = if isSubmitAddModelBtn {
@@ -45,6 +45,26 @@ graph click-delegate {
     let isAddModelOverlay = eq(a: "{{getTargetId}}", b: "addModelOverlay")
     let branchAddModelOverlay = if isAddModelOverlay {
       let execAction = execFile(file: "ui/components/add-model-form/hide")
+    }
+    let isContextMenuImport = eq(a: "{{getTargetId}}", b: "contextMenuImport")
+    let branchContextMenuImport = if isContextMenuImport {
+      let execAction = execFile(file: "ui/components/context-menu/handle-import")
+    }
+    let isContextMenuOverlay = eq(a: "{{getTargetId}}", b: "contextMenuOverlay")
+    let branchContextMenuOverlay = if isContextMenuOverlay {
+      let execAction = execFile(file: "ui/components/context-menu/hide")
+    }
+    let isImportStartBtn = eq(a: "{{getTargetId}}", b: "importPkgStartBtn")
+    let branchImportStartBtn = if isImportStartBtn {
+      let execAction = execFile(file: "growth/import-package")
+    }
+    let isImportCancelBtn = eq(a: "{{getTargetId}}", b: "importPkgCancelBtn")
+    let branchImportCancelBtn = if isImportCancelBtn {
+      let execAction = execFile(file: "ui/components/import-package-form/hide")
+    }
+    let isImportOverlay = eq(a: "{{getTargetId}}", b: "importPkgOverlay")
+    let branchImportOverlay = if isImportOverlay {
+      let execAction = execFile(file: "ui/components/import-package-form/hide")
     }
     let checkModelCard = if getTargetId {
       let getPrefix = slice(array: "{{getTargetId}}", start: 0, end: 11)
