@@ -1,10 +1,8 @@
 graph delete-conversation {
-  meta: { description: "Delete a conversation - parses conversation ID from clickTargetId", type: "action", category: "conversation", author: "AITOS Team" }
+  meta: { description: "Delete a conversation by _convDelId from context menu", type: "action", category: "conversation", author: "AITOS Team" }
 
-  let getTargetId = get(key: "clickTargetId")
-  let findItem = closest(id: "{{getTargetId}}", selector: ".sidebar-item")
+  let getConvId = get(key: "_convDelId")
   let getConversations = get(key: "conversations")
-  let getConvId = getAttribute(id: "{{findItem}}", name: "data-conv-id")
   let initFiltered = set(key: "_filteredConvs", value: [])
   let forEachConv = forEach conv, convIdx in getConversations  {
     let getCurConvId = getProp(obj: "{{conv}}", key: "id")

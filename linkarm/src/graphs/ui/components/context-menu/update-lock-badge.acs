@@ -1,0 +1,16 @@
+graph update-lock-badge {
+  meta: { description: "Add or remove lock badge on a growth card — pure UI, no data writes", type: "component", category: "context-menu", author: "AITOS Team" }
+
+  let getCardIndex = get(key: "_contextMenuGrowthIndex")
+  let isLocking = get(key: "locked")
+  let cardId = concat(a: "growth_card_", b: "{{getCardIndex}}")
+  let badgeId = concat(a: "{{cardId}}", b: "_lock")
+  let updateBadge = if isLocking {
+    let createBadge = createElement(tag: "div", id: "{{badgeId}}")
+    let setBadgeStyles = setStyles(id: "{{badgeId}}", styles: { position: "absolute", top: "4px", left: "4px", fontSize: "12px", zIndex: "1" })
+    let setBadgeText = setTextContent(id: "{{badgeId}}", text: "🔒")
+    let appendBadge = appendChild(parentId: "{{cardId}}", childId: "{{badgeId}}")
+  } else {
+    let removeBadge = removeElement(id: "{{badgeId}}")
+  }
+}

@@ -1,0 +1,12 @@
+graph agi-guide {
+  meta: { description: "AGI multi-model orchestration guide", type: "prompt", category: "ai", author: "AITOS Team" }
+
+  let getModels = get(key: "aiModelsList")
+  let getActiveId = get(key: "activeModelId")
+  let otherModels = filter item in getModels {
+    let itemId = getProp(obj: "{{item}}", key: "id")
+    let isActive = eq(a: "{{itemId}}", b: "{{getActiveId}}")
+    let isOther = not(value: "{{isActive}}")
+  }
+  let setPrompt = set(key: "_promptAgiGuide", value: "【AGI 多模型协作能力】\n\n你可以调用其他 AI 模型来协助完成任务。当你遇到以下情况时，请考虑使用子模型：\n\n1. 需要专业知识（代码审查、翻译、写作等）\n2. 任务可以平行拆分\n3. 用户明确要求使用不同模型\n\n可用工具:\n  call-model(modelId, task)\n    - modelId: 目标模型ID\n    - task: 要委派的任务描述\n\n使用策略:\n- 简单问题直接用你自己回答，不需要子模型\n- 并行任务可以同时调用多个子模型\n- 子模型返回后，你负责汇总和优化最终输出")
+}

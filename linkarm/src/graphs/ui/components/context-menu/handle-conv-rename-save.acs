@@ -1,0 +1,45 @@
+graph handle-conv-rename-save {
+  meta: { description: "Save inline-edited conversation title and restore span", type: "action", category: "context-menu", author: "AITOS Team" }
+
+  let getInputId = get(key: "_renameInputId")
+  let getNewTitle = getValue(id: "{{getInputId}}")
+  let inputValue = getProp(obj: "{{getNewTitle}}", key: "__error")
+  let inputExists = isNil(value: "{{inputValue}}")
+  let branchExists = if inputExists {
+    let nameLen = len(value: "{{getNewTitle}}")
+    let isNotEmpty = gt(a: "{{nameLen}}", b: 0)
+    let getConvId = get(key: "_convDelId")
+    let getCurrentTitle = get(key: "_convRenameTitle")
+    let isSame = eq(a: "{{getNewTitle}}", b: "{{getCurrentTitle}}")
+    let branchChanged = if isNotEmpty {
+      let branchNotSame = if isSame {
+        let restoreTitle = execFile(file: "ui/components/context-menu/handle-conv-rename-restore")
+      } else {
+        let getConversations = get(key: "conversations")
+        let initRenamed = set(key: "_renamedConvs", value: [])
+        let forEachConv = forEach conv, convIdx in getConversations {
+          let getCurConvId = getProp(obj: "{{conv}}", key: "id")
+          let isTarget = eq(a: "{{getCurConvId}}", b: "{{getConvId}}")
+          let handleTarget = if isTarget {
+            let updatedConv = setProp(obj: "{{conv}}", key: "title", value: "{{getNewTitle}}")
+            let getRenamed = get(key: "_renamedConvs")
+            let pushRenamed = push(array: "{{getRenamed}}", value: "{{updatedConv}}")
+            let saveRenamed = set(key: "_renamedConvs", value: "{{pushRenamed}}")
+          } else {
+            let getRenamed = get(key: "_renamedConvs")
+            let pushOrig = push(array: "{{getRenamed}}", value: "{{conv}}")
+            let saveOrig = set(key: "_renamedConvs", value: "{{pushOrig}}")
+          }
+        }
+        let getRenamedConvs = get(key: "_renamedConvs")
+        let updateStore = setGlobal(key: "conversations", value: "{{getRenamedConvs}}")
+        let saveConversations = execFile(file: "conversations/save-conversations")
+        let updateSidebar = executeInContext(contextKey: "_activeContext", graphKey: "__graph_ui/layout/sidebar/create")
+      }
+    }
+    let handleEmpty = if isNotEmpty {
+    } else {
+      let restoreTitle = execFile(file: "ui/components/context-menu/handle-conv-rename-restore")
+    }
+  }
+}

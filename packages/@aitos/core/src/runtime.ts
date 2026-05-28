@@ -307,6 +307,14 @@ export class AitosRuntime implements Runtime {
     this.traceLog = [];
   }
 
+  getGraphOutput(graph: Graph, results: Record<string, any>): any {
+    if (graph.outputRef) {
+      return results[graph.outputRef];
+    }
+    const lastNodeId = graph.order[graph.order.length - 1];
+    return results[lastNodeId];
+  }
+
   private resolveGraphInput(node: GraphNode, results: Record<string, any>, context: Context): any {
     const resolved: any = {};
     const SUBGRAPH_KEYS = new Set(['nodes', 'then', 'else']);

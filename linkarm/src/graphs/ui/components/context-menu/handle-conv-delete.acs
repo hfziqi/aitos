@@ -1,0 +1,7 @@
+graph handle-conv-delete {
+  meta: { description: "Handle conversation delete from right-click context menu", type: "action", category: "context-menu", author: "AITOS Team" }
+
+  let hideMenu = execFile(file: "ui/components/context-menu/hide")
+  let execDelete = execFile(file: "conversations/delete-conversation")
+  let clearConvDelId = setGlobal(key: "_convDelId", value: null)
+}

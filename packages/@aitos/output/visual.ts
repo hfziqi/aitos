@@ -542,6 +542,31 @@ export const clearElementAtom: Atom = {
   },
 };
 
+export const focusAtom: Atom = {
+  name: 'focus',
+  version: '1.0.0',
+  meta: {
+    input: [
+      { name: 'id', type: 'string', description: 'Element ID' }
+    ],
+    output: { type: 'void', description: 'Nothing' }
+  },
+  characteristics: { stateless: true, atomic: true, composable: true },
+  execute: async (input: { id: string }, context: Context): Promise<Result> => {
+    if (typeof document === 'undefined') {
+      return { success: false, error: 'focus requires browser environment' };
+    }
+
+    const el = getElement(input.id);
+    if (!el) {
+      return { success: false, error: `Element "${input.id}" not found` };
+    }
+
+    (el as HTMLElement).focus();
+    return { success: true, data: null };
+  },
+};
+
 export const setValueAtom: Atom = {
   name: 'setValue',
   version: '1.0.0',
@@ -1363,5 +1388,30 @@ export const canvasToDataURLAtom: Atom = {
     const format = input.format || 'image/png';
     const dataUrl = canvas.toDataURL(format);
     return { success: true, data: dataUrl };
+  },
+};
+
+export const scrollToBottomAtom: Atom = {
+  name: 'scrollToBottom',
+  version: '1.0.0',
+  meta: {
+    input: [
+      { name: 'id', type: 'string', description: 'Element ID to scroll to bottom' }
+    ],
+    output: { type: 'void', description: 'Nothing' }
+  },
+  characteristics: { stateless: true, atomic: true, composable: true },
+  execute: async (input: { id: string }, context: Context): Promise<Result> => {
+    if (typeof document === 'undefined') {
+      return { success: false, error: 'scrollToBottom requires browser environment' };
+    }
+
+    const el = getElement(input.id);
+    if (!el) {
+      return { success: false, error: `Element "${input.id}" not found` };
+    }
+
+    el.scrollTop = el.scrollHeight;
+    return { success: true, data: null };
   },
 };

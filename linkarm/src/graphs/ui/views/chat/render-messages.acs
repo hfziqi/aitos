@@ -14,4 +14,5 @@ graph render-messages {
     let getStreamElementId = get(key: "streamElementId")
     let setStreamContent = setTextContent(id: "{{getStreamElementId}}", text: "{{getStreamContent}}")
   }
+  let scrollToBottom = scrollToBottom(id: "messageList")
 }

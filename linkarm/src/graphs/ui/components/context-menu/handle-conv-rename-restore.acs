@@ -1,0 +1,14 @@
+graph handle-conv-rename-restore {
+  meta: { description: "Restore title span after rename cancelled or unchanged", type: "action", category: "context-menu", author: "AITOS Team" }
+
+  let getInputId = get(key: "_renameInputId")
+  let removeInput = removeElement(id: "{{getInputId}}")
+  let getRenameItemId = get(key: "_convRenameItemId")
+  let convIndex = slice(array: "{{getRenameItemId}}", start: 9)
+  let titleId = concat(a: "convTitle-", b: "{{convIndex}}")
+  let getCurrentTitle = get(key: "_convRenameTitle")
+  let createSpan = createElement(tag: "span", id: "{{titleId}}")
+  let setSpanText = setTextContent(id: "{{titleId}}", text: "{{getCurrentTitle}}")
+  let setSpanStyles = setStyles(id: "{{titleId}}", styles: { overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: "1", minWidth: "0" })
+  let appendSpan = appendChild(parentId: "{{getRenameItemId}}", childId: "{{titleId}}")
+}

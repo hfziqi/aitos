@@ -220,8 +220,8 @@ export const execFileAtom: Atom = {
     }
 
     const results = await context.executeGraph(graph, context.currentScope, input.file);
-    const lastNodeId = graph.order[graph.order.length - 1];
-    return { success: true, data: results[lastNodeId] };
+    const output = context.runtime!.getGraphOutput(graph, results);
+    return { success: true, data: output };
   },
 };
 

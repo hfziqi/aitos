@@ -1,0 +1,48 @@
+graph check-lock {
+  meta: { description: "Check if a growth is locked. Returns { locked: bool }. Checks index.json first, falls back to _lock marker file.", type: "core", category: "growth", author: "AITOS Team" }
+
+  let getName = get(key: "name")
+  let readIndex = readLocal(key: "growths/index.json")
+  let indexIsArr = isArr(value: "{{readIndex}}")
+  let initIndex = if indexIsArr {
+    let keep = set(key: "_growthIndex", value: "{{readIndex}}")
+  } else {
+    let empty = set(key: "_growthIndex", value: [])
+  }
+  let getIndex = get(key: "_growthIndex")
+  let filterItem = filter item in getIndex {
+    let itemName = getProp(obj: "{{item}}", key: "name")
+    let isMatch = eq(a: "{{itemName}}", b: "{{getName}}")
+  }
+  let getFirst = getAt(array: "{{filterItem}}", index: 0)
+  let gotNil = isNil(value: "{{getFirst}}")
+  let handleResult = if gotNil {
+    let lockFilePath = concat(a: "growths/", b: "{{getName}}")
+    let lockFileFull = concat(a: "{{lockFilePath}}", b: "/_lock")
+    let readLockFile = readLocal(key: "{{lockFileFull}}")
+    let lockFileNil = isNil(value: "{{readLockFile}}")
+    let fallbackResult = if lockFileNil {
+      let setResult = set(key: "checkLockResult", value: { locked: false })
+    } else {
+      let isLockedStr = eq(a: "{{readLockFile}}", b: "true")
+      let setResult = set(key: "checkLockResult", value: { locked: {{isLockedStr}} })
+    }
+  } else {
+    let getLocked = getProp(obj: "{{getFirst}}", key: "locked")
+    let lockedNil = isNil(value: "{{getLocked}}")
+    let result = if lockedNil {
+      let lockFilePath = concat(a: "growths/", b: "{{getName}}")
+      let lockFileFull = concat(a: "{{lockFilePath}}", b: "/_lock")
+      let readLockFile = readLocal(key: "{{lockFileFull}}")
+      let lockFileNil = isNil(value: "{{readLockFile}}")
+      let fallbackResult = if lockFileNil {
+        let setResult = set(key: "checkLockResult", value: { locked: false })
+      } else {
+        let isLockedStr = eq(a: "{{readLockFile}}", b: "true")
+        let setResult = set(key: "checkLockResult", value: { locked: {{isLockedStr}} })
+      }
+    } else {
+      let setResult = set(key: "checkLockResult", value: { locked: {{getLocked}} })
+    }
+  }
+}

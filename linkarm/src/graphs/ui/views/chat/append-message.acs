@@ -8,4 +8,5 @@ graph append-message {
   let setCurrentMsg = set(key: "currentMessage", value: "{{getLastMsg}}")
   let setMsgIndex = set(key: "messageIndex", value: "{{calcLastIndex}}")
   let renderBubble = execFile(file: "ui/components/message-bubble/create")
+  let scrollToBottom = scrollToBottom(id: "messageList")
 }

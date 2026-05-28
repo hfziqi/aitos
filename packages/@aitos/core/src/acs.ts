@@ -460,11 +460,12 @@ export class AcsCompiler {
 
     if (acsGraph.mode) graph.mode = acsGraph.mode;
     if (acsGraph.meta) graph._meta = acsGraph.meta;
-    if (acsGraph.input && acsGraph.input.length > 0) {
-      graph.interface = {
-        input: acsGraph.input.map(i => ({ name: i.name, type: i.type })),
-        output: { type: acsGraph.output || 'void' },
-      };
+    graph.interface = {
+      input: (acsGraph.input || []).map(i => ({ name: i.name, type: i.type })),
+      output: { type: 'any' },
+    };
+    if (acsGraph.output) {
+      graph.outputRef = acsGraph.output;
     }
 
     this.compileNodes(acsGraph.nodes, graph);
@@ -581,14 +582,12 @@ export class AcsDecompiler {
       const parts = Object.entries(graph._meta).map(([k, v]) => `${k}: "${v}"`).join(', ');
       lines.push(`  meta: { ${parts} }`);
     }
-    if (graph.interface) {
-      if (graph.interface.input.length === 0) {
-        lines.push(`  in: none`);
-      } else {
-        const inStr = graph.interface.input.map(i => `${i.name}: ${i.type}`).join(', ');
-        lines.push(`  in: ${inStr}`);
-      }
-      lines.push(`  out: ${graph.interface.output.type}`);
+    if (graph.interface && graph.interface.input.length > 0) {
+      const inStr = graph.interface.input.map(i => `${i.name}: ${i.type}`).join(', ');
+      lines.push(`  in: ${inStr}`);
+    }
+    if (graph.outputRef) {
+      lines.push(`  out: ${graph.outputRef}`);
     }
 
     lines.push('');

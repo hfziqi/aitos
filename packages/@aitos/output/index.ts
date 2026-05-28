@@ -20,6 +20,7 @@ import {
   closestAtom,
   getWindowSizeAtom,
   clearElementAtom,
+  focusAtom,
   setValueAtom,
   getValueAtom,
   setCanvasAtom,
@@ -55,6 +56,7 @@ import {
   setInnerHTMLAtom,
   screenshotAtom,
   canvasToDataURLAtom,
+  scrollToBottomAtom,
 } from './visual';
 import {
   showAlertAtom,
@@ -83,6 +85,7 @@ export const allAtoms: Atom[] = [
   closestAtom,
   getWindowSizeAtom,
   clearElementAtom,
+  focusAtom,
   setValueAtom,
   getValueAtom,
   setCanvasAtom,
@@ -118,6 +121,7 @@ export const allAtoms: Atom[] = [
   setInnerHTMLAtom,
   screenshotAtom,
   canvasToDataURLAtom,
+  scrollToBottomAtom,
   showAlertAtom,
   showConfirmAtom,
   showPromptAtom,

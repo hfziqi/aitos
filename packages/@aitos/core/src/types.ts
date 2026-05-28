@@ -38,6 +38,7 @@ export interface Graph {
   mode?: GraphMode;
   _meta?: { description?: string; type?: string; category?: string; author?: string };
   interface?: GraphInterface;
+  outputRef?: string;
   order: string[];
   nodes: Record<string, GraphNode>;
 }
@@ -106,6 +107,7 @@ export interface Runtime {
   register(atom: Atom): void;
   validateGraph(graph: Graph): { valid: boolean; errors: string[] };
   executeGraph(graph: Graph, context: Context, outerScope?: Record<string, any>, graphName?: string): Promise<Record<string, any>>;
+  getGraphOutput(graph: Graph, results: Record<string, any>): any;
   listAtoms(): Atom[];
   getSkillSet(): string;
   getTelemetryStats(): TelemetryStats[];

@@ -5,26 +5,45 @@ graph import-package {
   let fileNil = isNil(value: "{{pickFile}}")
   let handleFile = if fileNil {
     let setEmpty = set(key: "_importResult", value: { success: false, error: "No file selected" })
+    let closePopup = execFile(file: "ui/components/import-package-form/hide")
   } else {
     let readBuffer = readFile(file: "{{pickFile}}", encoding: "arrayBuffer")
     let bufferNil = isNil(value: "{{readBuffer}}")
     let handleBuffer = if bufferNil {
       let setError = set(key: "_importResult", value: { success: false, error: "Failed to read zip file" })
+      let showError = showAlert(message: "Import failed: Could not read the zip file.")
+      let closePopup = execFile(file: "ui/components/import-package-form/hide")
     } else {
       let extractEntries = readZipFile(data: "{{readBuffer}}")
       let entriesNil = isNil(value: "{{extractEntries}}")
       let handleEntries = if entriesNil {
         let setError = set(key: "_importResult", value: { success: false, error: "Failed to extract zip contents" })
+        let showError = showAlert(message: "Import failed: Could not extract zip contents. The file may be corrupted.")
+        let closePopup = execFile(file: "ui/components/import-package-form/hide")
       } else {
         let initCount = set(key: "_importedCount", value: 0)
         let initErrors = set(key: "_importErrors", value: [])
         let forEachEntry = forEach entry, entryIdx in extractEntries {
           let isAcs = contains(text: "{{entry.name}}", search: ".acs")
           let processEntry = if isAcs {
-            let stripAcs = replace(text: "{{entry.name}}", search: ".acs", replacement: "")
-            let setName = set(key: "name", value: "{{stripAcs}}")
+            let hasSlash = contains(text: "{{entry.name}}", search: "/")
+            let isMainAcs = contains(text: "{{entry.name}}", search: "main.acs")
+            let resolveName = if hasSlash {
+              let handleMainOrSub = if isMainAcs {
+                let parts = split(text: "{{entry.name}}", separator: "/")
+                let firstName = getAt(array: "{{parts}}", index: 0)
+                let setGrowthName = set(key: "_growthName", value: "{{firstName}}")
+              } else {
+                let stripAcs = replace(text: "{{entry.name}}", search: ".acs", replacement: "")
+                let setSubName = set(key: "_growthName", value: "{{stripAcs}}")
+              }
+            } else {
+              let stripAcs = replace(text: "{{entry.name}}", search: ".acs", replacement: "")
+              let setFlatName = set(key: "_growthName", value: "{{stripAcs}}")
+            }
+            let getGrowthName = get(key: "_growthName")
+            let setName = set(key: "name", value: "{{getGrowthName}}")
             let setAcs = set(key: "acs", value: "{{entry.content}}")
-            let setType = set(key: "type", value: "tool")
             let saveGraph = execFile(file: "growth/save-growth")
             let getResult = get(key: "createGrowthResult")
             let success = getProp(obj: "{{getResult}}", key: "success")
@@ -40,9 +59,25 @@ graph import-package {
             }
           }
         }
+        let restoreLocks = forEach entry, entryIdx in extractEntries {
+          let isLock = contains(text: "{{entry.name}}", search: "_lock")
+          let handleLock = if isLock {
+            let parts = split(text: "{{entry.name}}", separator: "/")
+            let growthName = getAt(array: "{{parts}}", index: 0)
+            let isLocked = eq(a: "{{entry.content}}", b: "true")
+            let lockIfNeeded = if isLocked {
+              let setLockName = set(key: "name", value: "{{growthName}}")
+              let setLocked = set(key: "locked", value: true)
+              let execLock = execFile(file: "growth/lock-growth")
+            }
+          }
+        }
         let getFinalCount = get(key: "_importedCount")
         let getFinalErrors = get(key: "_importErrors")
         let setFinalResult = set(key: "_importResult", value: { success: true, imported: "{{getFinalCount}}", errors: "{{getFinalErrors}}" })
+        let closePopup = execFile(file: "ui/components/import-package-form/hide")
+        let clearMainView = clearElement(id: "mainViewContainer")
+        let reRenderMarket = execFile(file: "ui/views/market/create")
       }
     }
   }

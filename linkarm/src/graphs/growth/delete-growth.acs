@@ -19,38 +19,50 @@ graph delete-growth {
         let setError = set(key: "growthError", value: "Growth not found")
       } else {
         let getName = getProp(obj: "{{getGrowthItem}}", key: "name")
-        let buildScope = concat(a: "growths/", b: "{{getName}}/")
-        let listFiles = listLocal(scope: "{{buildScope}}")
-        let deleteEachFile = forEach file in listFiles {
-          let removeFile = removeLocal(key: "{{file}}")
+        let setLockName = set(key: "name", value: "{{getName}}")
+        let execCheckLock = execFile(file: "growth/check-lock")
+        let getLockResult = get(key: "checkLockResult")
+        let isLocked = getProp(obj: "{{getLockResult}}", key: "locked")
+        let handleLocked = if isLocked {
+          let buildError = set(key: "_errorMsg", value: "growth '{{getName}}' is locked, cannot delete")
+          let setError = set(key: "growthError", value: "growth '{{getName}}' is locked, cannot delete")
         }
-        let buildDirPath = concat(a: "growths/", b: "{{getName}}")
-        let removeDir = removeLocal(key: "{{buildDirPath}}")
-        let filterIndex = filter item index: idx in readIndex {
-          let isSameIdx = eq(a: "{{idx}}", b: {{getGrowthIndexNum}})
-          let compare = not(value: "{{isSameIdx}}")
-        }
-        let setFilteredIndex = set(key: "growthsListResult", value: "{{filterIndex}}")
-        let saveIndex = execFile(file: "growth/save-growth-index")
-        let clearStoreEntries = forEach file in listFiles {
-          let isAcsFile = contains(text: "{{file}}", search: ".acs")
-          let handleAcsFile = if isAcsFile {
-            let stripPrefix = slice(array: "{{file}}", start: 8)
-            let stripExt = slice(array: "{{stripPrefix}}", start: 0, end: -4)
-            let buildMainPath = concat(a: "{{getName}}", b: "/main")
-            let isMainFile = eq(a: "{{stripExt}}", b: "{{buildMainPath}}")
-            let resolveKey = if isMainFile {
-              let useMainKey = set(key: "_storeKey", value: "{{getName}}")
-            } else {
-              let useSubKey = set(key: "_storeKey", value: "{{stripExt}}")
-            }
-            let getStoreKey = get(key: "_storeKey")
-            let buildStoreKey = concat(a: "__graph_", b: "{{getStoreKey}}")
-            let clearStore = set(key: "{{buildStoreKey}}", value: null)
+        let doDelete = if isLocked {
+          let skipDelete = set(key: "_skipDelete", value: true)
+        } else {
+          let buildScope = concat(a: "growths/", b: "{{getName}}/")
+          let listFiles = listLocal(scope: "{{buildScope}}")
+          let deleteEachFile = forEach file in listFiles {
+            let removeFile = removeLocal(key: "{{file}}")
           }
+          let buildDirPath = concat(a: "growths/", b: "{{getName}}")
+          let removeDir = removeLocal(key: "{{buildDirPath}}")
+          let filterIndex = filter item index: idx in readIndex {
+            let isSameIdx = eq(a: "{{idx}}", b: {{getGrowthIndexNum}})
+            let compare = not(value: "{{isSameIdx}}")
+          }
+          let setFilteredIndex = set(key: "growthsListResult", value: "{{filterIndex}}")
+          let saveIndex = execFile(file: "growth/save-growth-index")
+          let clearStoreEntries = forEach file in listFiles {
+            let isAcsFile = contains(text: "{{file}}", search: ".acs")
+            let handleAcsFile = if isAcsFile {
+              let stripPrefix = slice(array: "{{file}}", start: 8)
+              let stripExt = slice(array: "{{stripPrefix}}", start: 0, end: -4)
+              let buildMainPath = concat(a: "{{getName}}", b: "/main")
+              let isMainFile = eq(a: "{{stripExt}}", b: "{{buildMainPath}}")
+              let resolveKey = if isMainFile {
+                let useMainKey = set(key: "_storeKey", value: "{{getName}}")
+              } else {
+                let useSubKey = set(key: "_storeKey", value: "{{stripExt}}")
+              }
+              let getStoreKey = get(key: "_storeKey")
+              let buildStoreKey = concat(a: "__graph_", b: "{{getStoreKey}}")
+              let clearStore = set(key: "{{buildStoreKey}}", value: null)
+            }
+          }
+          let clearMainView = clearElement(id: "mainViewContainer")
+          let reRender = execFile(file: "ui/views/market/create")
         }
-        let clearMainView = clearElement(id: "mainViewContainer")
-        let reRender = execFile(file: "ui/views/market/create")
       }
     }
   }

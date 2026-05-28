@@ -33,14 +33,11 @@ graph create {
     let setConvItemId = setAttribute(id: "convItem-{{convIndex}}", name: "data-conv-id", value: "{{getConvId}}")
     let createTitleSpan = createElement(tag: "span", id: "convTitle-{{convIndex}}")
     let getConvTitle = getProp(obj: "{{conversation}}", key: "title")
+    let setConvTitleAttr = setAttribute(id: "convItem-{{convIndex}}", name: "data-conv-title", value: "{{getConvTitle}}")
     let setTitleText = setTextContent(id: "convTitle-{{convIndex}}", text: "{{getConvTitle}}")
     let setTitleStyles = setStyles(id: "convTitle-{{convIndex}}", styles: { overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: "1", minWidth: "0" })
     let appendTitleSpan = appendChild(parentId: "convItem-{{convIndex}}", childId: "convTitle-{{convIndex}}")
-    let createDeleteBtn = createElement(tag: "button", id: "convDelBtn-{{convIndex}}")
-    let setDeleteBtnText = setTextContent(id: "convDelBtn-{{convIndex}}", text: "×")
-    let setDeleteBtnStyles = setStyles(id: "convDelBtn-{{convIndex}}", styles: { border: "none", background: "transparent", color: "#999", fontSize: "16px", padding: "0 4px", marginLeft: "8px" })
-    let setDeleteBtnData = setAttribute(id: "convDelBtn-{{convIndex}}", name: "data-conv-id", value: "{{getConvId}}")
-    let appendDeleteBtn = appendChild(parentId: "convItem-{{convIndex}}", childId: "convDelBtn-{{convIndex}}")
     let appendConvItem = appendChild(parentId: "conversationList", childId: "convItem-{{convIndex}}")
   }
+  let listenContextMenu = addEventListener(id: "conversationList", event: "contextmenu", storeKey: "_contextMenuEvent", action: "ui/components/context-menu/conv-show", preventDefault: true)
 }

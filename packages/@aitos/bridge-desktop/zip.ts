@@ -20,7 +20,7 @@ async function unzipZipFile(buffer: ArrayBuffer): Promise<Array<{ name: string; 
   const decoder = new TextDecoder();
 
   // Parse central directory
-  const fileHeaders: Array<{ name: string; localOffset: number }> = [];
+  const fileHeaders: Array<{ name: string; localOffset: number; compressedSize: number }> = [];
   let cdPos = cdOffset;
   for (let i = 0; i < cdEntries; i++) {
     if (view.getUint32(cdPos, true) !== 0x02014b50) throw new Error('Invalid central directory entry');
@@ -28,7 +28,8 @@ async function unzipZipFile(buffer: ArrayBuffer): Promise<Array<{ name: string; 
     const extraLen = view.getUint16(cdPos + 30, true);
     const commentLen = view.getUint16(cdPos + 32, true);
     const localOffset = view.getUint32(cdPos + 42, true);
-    fileHeaders.push({ name: decoder.decode(new Uint8Array(buffer, cdPos + 46, nameLen)), localOffset });
+    const compressedSize = view.getUint32(cdPos + 20, true);
+    fileHeaders.push({ name: decoder.decode(new Uint8Array(buffer, cdPos + 46, nameLen)), localOffset, compressedSize });
     cdPos += 46 + nameLen + extraLen + commentLen;
   }
 
@@ -42,7 +43,10 @@ async function unzipZipFile(buffer: ArrayBuffer): Promise<Array<{ name: string; 
     const compression = view.getUint16(pos + 8, true);
     const nameLen = view.getUint16(pos + 26, true);
     const extraLen = view.getUint16(pos + 28, true);
-    const compressedSize = view.getUint32(pos + 18, true);
+    let compressedSize = view.getUint32(pos + 18, true);
+    if (compressedSize === 0) {
+      compressedSize = fh.compressedSize;
+    }
 
     pos += 30 + nameLen + extraLen;
     const rawData = new Uint8Array(buffer, pos, compressedSize);

@@ -77,6 +77,7 @@ export const handleToolCallsAtom: Atom = {
             'get-growth-code': 'growth/get-growth-code',
             'analyze-telemetry': 'telemetry/analyze',
             'callGrowthTool': 'growth/call-growth-tool',
+            'call-model': 'services/ai/call-model',
           };
           const graphKey = toolToGraphMap[toolName] || toolName;
           const graphSource = context.store.get(`__graph_${graphKey}`);
@@ -98,8 +99,7 @@ export const handleToolCallsAtom: Atom = {
               }
 
               const graphResults = await context.runtime.executeGraph(graph, context, undefined, graphKey);
-              const lastNodeId = graph.order[graph.order.length - 1];
-              result = graphResults[lastNodeId];
+              result = context.runtime.getGraphOutput(graph, graphResults);
             } catch (e: any) {
               result = { error: `Graph execution failed: ${e.message}` };
             }

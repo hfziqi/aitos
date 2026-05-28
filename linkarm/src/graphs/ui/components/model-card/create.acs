@@ -18,11 +18,7 @@ graph create {
   let createName = createElement(tag: "div", id: "{{createCardId}}_name")
   let setNameClass = setAttribute(id: "{{createCardId}}_name", name: "class", value: "model-card-name")
   let setNameText = setTextContent(id: "{{createCardId}}_name", text: "{{getModelName}}")
-  let createDeleteBtn = createElement(tag: "button", id: "{{createCardId}}_delete")
-  let setDeleteBtnClass = setAttribute(id: "{{createCardId}}_delete", name: "class", value: "model-card-btn-delete")
-  let setDeleteBtnText = setTextContent(id: "{{createCardId}}_delete", text: "×")
   let appendCard = appendChild(parentId: "modelsGrid", childId: "{{createCardId}}")
-  let appendDeleteBtn = appendChild(parentId: "{{createCardId}}", childId: "{{createCardId}}_delete")
   let appendIcon = appendChild(parentId: "{{createCardId}}", childId: "{{createCardId}}_icon")
   let appendName = appendChild(parentId: "{{createCardId}}", childId: "{{createCardId}}_name")
 }

@@ -20,11 +20,15 @@ graph click-delegate {
     }
     let isChatBtn = eq(a: "{{getTargetId}}", b: "chatButton")
     let branchChatBtn = if isChatBtn {
-      let execAction = execFile(file: "actions/openChat")
+      let execAction = execFile(file: "actions/open-chat-sidebar")
     }
     let isAIBtn = eq(a: "{{getTargetId}}", b: "aiButton")
     let branchAIBtn = if isAIBtn {
       let execAction = execFile(file: "models/open-market")
+    }
+    let isTerminalBtn = eq(a: "{{getTargetId}}", b: "terminalButton")
+    let branchTerminalBtn = if isTerminalBtn {
+      let execAction = execFile(file: "actions/open-terminal")
     }
     let isSendBtn = eq(a: "{{getTargetId}}", b: "sendButton")
     let branchSendBtn = if isSendBtn {
@@ -49,6 +53,22 @@ graph click-delegate {
     let isContextMenuImport = eq(a: "{{getTargetId}}", b: "contextMenuImport")
     let branchContextMenuImport = if isContextMenuImport {
       let execAction = execFile(file: "ui/components/context-menu/handle-import")
+    }
+    let isContextMenuLockBtn = eq(a: "{{getTargetId}}", b: "contextMenuLockBtn")
+    let branchContextMenuLockBtn = if isContextMenuLockBtn {
+      let execAction = execFile(file: "ui/components/context-menu/handle-lock")
+    }
+    let isContextMenuUnlockBtn = eq(a: "{{getTargetId}}", b: "contextMenuUnlockBtn")
+    let branchContextMenuUnlockBtn = if isContextMenuUnlockBtn {
+      let execAction = execFile(file: "ui/components/context-menu/handle-lock")
+    }
+    let isContextMenuGrowthDelete = eq(a: "{{getTargetId}}", b: "contextMenuGrowthDelete")
+    let branchContextMenuGrowthDelete = if isContextMenuGrowthDelete {
+      let execAction = execFile(file: "ui/components/context-menu/handle-growth-delete")
+    }
+    let isContextMenuModelDelete = eq(a: "{{getTargetId}}", b: "contextMenuModelDelete")
+    let branchContextMenuModelDelete = if isContextMenuModelDelete {
+      let execAction = execFile(file: "ui/components/context-menu/handle-model-delete")
     }
     let isContextMenuOverlay = eq(a: "{{getTargetId}}", b: "contextMenuOverlay")
     let branchContextMenuOverlay = if isContextMenuOverlay {
@@ -77,22 +97,13 @@ graph click-delegate {
         let execAction = execFile(file: "models/select-model")
       }
     }
-    let checkDeleteBtn = if getTargetId {
-      let getPrefix = slice(array: "{{getTargetId}}", start: 0, end: 11)
-      let checkPrefix = eq(a: "{{getPrefix}}", b: "model_card_")
-      let getSuffix = slice(array: "{{getTargetId}}", start: -7)
-      let checkSuffix = eq(a: "{{getSuffix}}", b: "_delete")
-      let isModelDelete = and(a: "{{checkPrefix}}", b: "{{checkSuffix}}")
-      let handleDelete = if isModelDelete {
-        let execAction = execFile(file: "models/delete-model")
-      }
+    let isContextMenuConvDelete = eq(a: "{{getTargetId}}", b: "contextMenuConvDelete")
+    let branchContextMenuConvDelete = if isContextMenuConvDelete {
+      let execAction = execFile(file: "ui/components/context-menu/handle-conv-delete")
     }
-    let checkConvDelBtn = if getTargetId {
-      let getPrefix = slice(array: "{{getTargetId}}", start: 0, end: 11)
-      let checkPrefix = eq(a: "{{getPrefix}}", b: "convDelBtn-")
-      let handleConvDelete = if checkPrefix {
-        let execAction = execFile(file: "conversations/delete-conversation")
-      }
+    let isContextMenuConvRename = eq(a: "{{getTargetId}}", b: "contextMenuConvRename")
+    let branchContextMenuConvRename = if isContextMenuConvRename {
+      let execAction = execFile(file: "ui/components/context-menu/handle-conv-rename")
     }
     let checkConvItem = if getTargetId {
       let getPrefix = slice(array: "{{getTargetId}}", start: 0, end: 9)
@@ -117,16 +128,6 @@ graph click-delegate {
       let isGrowthCard = and(a: "{{checkPrefix}}", b: "{{checkNotDelete}}")
       let handleGrowthCardClick = if isGrowthCard {
         let execAction = execFile(file: "growth/open-growth")
-      }
-    }
-    let checkGrowthDelBtn = if getTargetId {
-      let getPrefix = slice(array: "{{getTargetId}}", start: 0, end: 12)
-      let checkPrefix = eq(a: "{{getPrefix}}", b: "growth_card_")
-      let getSuffix = slice(array: "{{getTargetId}}", start: -7)
-      let checkSuffix = eq(a: "{{getSuffix}}", b: "_delete")
-      let isGrowthDelete = and(a: "{{checkPrefix}}", b: "{{checkSuffix}}")
-      let handleGrowthDelete = if isGrowthDelete {
-        let execAction = execFile(file: "growth/delete-growth")
       }
     }
     let checkGrowthOverlay = if getTargetId {

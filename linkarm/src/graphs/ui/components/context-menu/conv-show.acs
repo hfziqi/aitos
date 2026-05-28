@@ -1,0 +1,37 @@
+graph conv-show {
+  meta: { description: "Show context menu for conversation list item at mouse position", type: "component", category: "context-menu", author: "AITOS Team" }
+
+  let getEvent = get(key: "_contextMenuEvent")
+  let mouseX = getProp(obj: "{{getEvent}}", key: "x")
+  let mouseY = getProp(obj: "{{getEvent}}", key: "y")
+  let targetId = getProp(obj: "{{getEvent}}", key: "targetId")
+  let findConvItem = closest(id: "{{targetId}}", selector: ".sidebar-item")
+  let getConvId = getAttribute(id: "{{findConvItem}}", name: "data-conv-id")
+  let storeConvDelId = setGlobal(key: "_convDelId", value: "{{getConvId}}")
+
+  let getConvTitle = getAttribute(id: "{{findConvItem}}", name: "data-conv-title")
+  let storeConvTitle = setGlobal(key: "_convRenameTitle", value: "{{getConvTitle}}")
+  let storeConvItemId = setGlobal(key: "_convRenameItemId", value: "{{findConvItem}}")
+
+  let createMenu = createElement(tag: "div", id: "contextMenu")
+  let setMenuStyles = setStyles(id: "contextMenu", styles: { position: "fixed", left: "{{mouseX}}px", top: "{{mouseY}}px", background: "#fff", border: "1px solid #e0e0e0", borderRadius: "8px", boxShadow: "0 4px 12px rgba(0,0,0,0.12)", padding: "0", zIndex: "2000", minWidth: "160px" })
+  let appendMenu = appendChild(parentId: "appContainer", childId: "contextMenu")
+
+  let setMenuItemStyles = injectCSS(id: "contextMenuItemHover", css: "#contextMenu .ctx-menu-item:hover { background: #e8e8e8; } #contextMenu .ctx-menu-item { margin: 0; }")
+
+  let createRenameItem = createElement(tag: "div", id: "contextMenuConvRename")
+  let setRenameItemStyles = setStyles(id: "contextMenuConvRename", styles: { padding: "8px 16px", fontSize: "14px", cursor: "default", color: "#333", display: "flex", alignItems: "center", gap: "8px" })
+  let setRenameItemText = setTextContent(id: "contextMenuConvRename", text: "Rename")
+  let setRenameItemClass = setAttribute(id: "contextMenuConvRename", name: "class", value: "ctx-menu-item")
+  let appendRenameItem = appendChild(parentId: "contextMenu", childId: "contextMenuConvRename")
+
+  let createDeleteItem = createElement(tag: "div", id: "contextMenuConvDelete")
+  let setDeleteItemStyles = setStyles(id: "contextMenuConvDelete", styles: { padding: "8px 16px", fontSize: "14px", cursor: "default", color: "#d32f2f", display: "flex", alignItems: "center", gap: "8px" })
+  let setDeleteItemText = setTextContent(id: "contextMenuConvDelete", text: "Delete")
+  let setDeleteItemClass = setAttribute(id: "contextMenuConvDelete", name: "class", value: "ctx-menu-item")
+  let appendDeleteItem = appendChild(parentId: "contextMenu", childId: "contextMenuConvDelete")
+
+  let createOverlay = createElement(tag: "div", id: "contextMenuOverlay")
+  let setOverlayStyles = setStyles(id: "contextMenuOverlay", styles: { position: "fixed", top: "0", left: "0", right: "0", bottom: "0", zIndex: "1999" })
+  let appendOverlay = appendChild(parentId: "appContainer", childId: "contextMenuOverlay")
+}

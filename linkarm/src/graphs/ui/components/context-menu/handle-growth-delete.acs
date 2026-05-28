@@ -1,0 +1,9 @@
+graph handle-growth-delete {
+  meta: { description: "Delete growth from context menu", type: "action", category: "context-menu", author: "AITOS Team" }
+
+  let getGrowthIndex = get(key: "_contextMenuGrowthIndex")
+  let getCardId = concat(a: "growth_card_", b: "{{getGrowthIndex}}")
+  let setTargetId = set(key: "clickTargetId", value: "{{getCardId}}")
+  let hideMenu = execFile(file: "ui/components/context-menu/hide")
+  let execDelete = execFile(file: "growth/delete-growth")
+}

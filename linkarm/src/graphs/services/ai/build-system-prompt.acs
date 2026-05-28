@@ -8,6 +8,7 @@ graph build-system-prompt {
   let loadGrowthGuide = execFile(file: "services/ai/prompts/growth-guide")
   let loadExamples = execFile(file: "services/ai/prompts/examples")
   let loadCompileFeedback = execFile(file: "services/ai/prompts/compile-feedback")
+  let loadAgiGuide = execFile(file: "services/ai/prompts/agi-guide")
   let getBase = get(key: "_promptBase")
   let getSystemInfo = get(key: "_promptSystemInfo")
   let getAtomsGuide = get(key: "_promptAtomsGuide")
@@ -15,5 +16,6 @@ graph build-system-prompt {
   let getGrowthGuide = get(key: "_promptGrowthGuide")
   let getExamples = get(key: "_promptExamples")
   let getCompileFeedback = get(key: "_promptCompileFeedback")
-  let combineFinal = join(array: ["{{getBase}}", "{{getSystemInfo}}", "{{getAtomsGuide}}", "{{getAcsSyntax}}", "{{getGrowthGuide}}", "{{getExamples}}", "{{getCompileFeedback}}"], separator: "\n\n")
+  let getAgiGuide = get(key: "_promptAgiGuide")
+  let combineFinal = join(array: ["{{getBase}}", "{{getSystemInfo}}", "{{getAtomsGuide}}", "{{getAcsSyntax}}", "{{getGrowthGuide}}", "{{getExamples}}", "{{getCompileFeedback}}", "{{getAgiGuide}}"], separator: "\n\n")
 }
