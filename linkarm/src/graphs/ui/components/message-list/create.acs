@@ -1,5 +1,5 @@
 graph create {
-  meta: { description: "Create message list container (logic)", type: "component", category: "message-list", author: "AITOS Team" }
+  meta: { description: "Create message list container (logic)", type: "core", output: "messageList DOM" }
 
   let createMessageList = createElement(tag: "div", id: "messageList")
   let setLayoutStyles = setStyles(id: "messageList", styles: { flex: "1", overflowY: "auto", minHeight: "0", boxSizing: "border-box" })

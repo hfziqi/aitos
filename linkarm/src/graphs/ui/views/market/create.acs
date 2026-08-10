@@ -1,7 +1,7 @@
 graph create {
-  meta: { description: "Market view with grid layout", type: "view", category: "market", author: "AITOS Team" }
+  meta: { description: "Market view with grid layout", type: "core", input: "aiModelsList", output: "market DOM" }
 
-  let loadModels = execFile(file: "models/list-models")
+  let loadModels = execFile(file: "models/load-models")
   let loadGrowths = execFile(file: "growth/load-growths")
   let getActiveModel = execFile(file: "models/get-active-model")
   let createContainer = createElement(tag: "div", id: "marketContainer")

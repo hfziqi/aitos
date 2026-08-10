@@ -1,4 +1,7 @@
 graph openChat {
+  meta: { description: "Open chat view", type: "core", output: "currentView" }
+
   let setCurrentView = setGlobal(key: "currentView", value: "chat")
   let switchToChat = execFile(file: "ui/views/chat/switch-view")
+  let updateToolbar = execFile(file: "ui/layout/toolbar/update-active")
 }

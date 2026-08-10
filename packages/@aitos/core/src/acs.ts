@@ -30,7 +30,7 @@
 import { Graph, GraphNode } from './types';
 
 interface AcsNode {
-  type: 'let' | 'if' | 'loop' | 'forEach' | 'filter';
+  type: 'let' | 'if' | 'loop' | 'forEach' | 'filter' | 'map';
   id?: string;
   atom?: string;
   params?: Record<string, any>;
@@ -97,8 +97,10 @@ export class AcsParser {
         graph.nodes.push(this.parseForEach());
       } else if (this.peek('filter')) {
         graph.nodes.push(this.parseFilter());
+      } else if (this.peek('map')) {
+        graph.nodes.push(this.parseMap());
       } else {
-        throw new Error(`ACS parse error at pos ${this.pos}: unexpected "${this.src.slice(this.pos, this.pos + 20)}"`);
+        throw new Error(this.errorAt(this.pos, `unexpected "${this.src.slice(this.pos, this.pos + 20)}"`, 'Top-level statement must be let <name> = <atom>(...) or if/forEach/map/loop; bare comparisons (e.g. if a == b) use atom expressions instead (acs-syntax rule 3)'));
       }
 
       this.skipWhitespaceAndComments();
@@ -132,6 +134,11 @@ export class AcsParser {
       const filterNode = this.parseFilter();
       filterNode.id = id;
       return filterNode;
+    }
+    if (this.peek('map')) {
+      const mapNode = this.parseMap();
+      mapNode.id = id;
+      return mapNode;
     }
     const atom = this.readIdentifier();
     const params = this.parseParams();
@@ -247,6 +254,27 @@ export class AcsParser {
     return { type: 'filter', itemKey, indexKey, arrayRef, body };
   }
 
+  private parseMap(): AcsNode {
+    this.expect('map');
+    const itemKey = this.readIdentifier();
+    let indexKey: string | undefined;
+
+    this.skipWhitespaceAndComments();
+    if (this.peek('index:')) {
+      this.advance(6);
+      indexKey = this.readIdentifier();
+    }
+
+    this.expect('in');
+    const arrayRef = this.readIdentifier();
+
+    this.expect('{');
+    const body = this.parseBody();
+    this.expect('}');
+
+    return { type: 'map', itemKey, indexKey, arrayRef, body };
+  }
+
   private parseBody(): AcsNode[] {
     const nodes: AcsNode[] = [];
     this.skipWhitespaceAndComments();
@@ -257,6 +285,7 @@ export class AcsParser {
       else if (this.peek('loop')) nodes.push(this.parseLoop());
       else if (this.peek('forEach')) nodes.push(this.parseForEach());
       else if (this.peek('filter')) nodes.push(this.parseFilter());
+      else if (this.peek('map')) nodes.push(this.parseMap());
       else break;
       this.skipWhitespaceAndComments();
     }
@@ -387,10 +416,23 @@ export class AcsParser {
     return this.src.slice(this.pos, this.pos + s.length) === s;
   }
 
+  // Compile-error diagnostics: pos → line number + line content + rule/fix reference (actionable info for AI, not byte positions)
+  private errorAt(pos: number, message: string, rule?: string): string {
+    const upTo = this.src.slice(0, pos);
+    const line = upTo.split('\n').length;
+    const lineStart = upTo.lastIndexOf('\n') + 1;
+    const lineEnd = this.src.indexOf('\n', pos);
+    const lineText = this.src.slice(lineStart, lineEnd === -1 ? this.src.length : lineEnd).trim();
+    let out = `ACS error at line ${line}: ${message}`;
+    if (lineText) out += `\n  line: ${lineText}`;
+    if (rule) out += `\n  ref: ${rule}`;
+    return out;
+  }
+
   private expect(s: string): void {
     this.skipWhitespaceAndComments();
     if (!this.peek(s)) {
-      throw new Error(`ACS parse error at pos ${this.pos}: expected "${s}", got "${this.src.slice(this.pos, this.pos + 10)}"`);
+      throw new Error(this.errorAt(this.pos, `expected "${s}", got "${this.src.slice(this.pos, this.pos + 10)}"`, `expected "${s}" here — check brackets/quotes are paired, or missing parameter`));
     }
     this.pos += s.length;
   }
@@ -403,7 +445,7 @@ export class AcsParser {
     this.skipWhitespaceAndComments();
     let start = this.pos;
     while (this.pos < this.src.length && /[a-zA-Z0-9_@\-/.]/.test(this.src[this.pos])) this.pos++;
-    if (this.pos === start) throw new Error(`ACS parse error at pos ${this.pos}: expected identifier`);
+    if (this.pos === start) throw new Error(this.errorAt(this.pos, 'expected identifier', 'expected identifier (node/atom/param name) — check missing let, = or param colon'));
     return this.src.slice(start, this.pos);
   }
 
@@ -418,7 +460,7 @@ export class AcsParser {
   private readString(): string {
     this.skipWhitespaceAndComments();
     const quote = this.src[this.pos];
-    if (quote !== '"' && quote !== "'") throw new Error(`ACS parse error at pos ${this.pos}: expected string`);
+    if (quote !== '"' && quote !== "'") throw new Error(this.errorAt(this.pos, 'expected string', 'string params must be quoted: atomName(param: "value") (acs-syntax rule 5)'));
     this.pos++;
     let result = '';
     while (this.pos < this.src.length && this.src[this.pos] !== quote) {
@@ -561,6 +603,22 @@ export class AcsCompiler {
           graph.nodes[fNodeId] = graphNode;
           break;
         }
+        case 'map': {
+          const mNodeId = node.id || `map_${graph.order.length}`;
+          const bodyGraph = this.compileSubGraph(node.body || []);
+
+          const graphNode: GraphNode = {
+            atom: 'map',
+            array: `{{${node.arrayRef}}}`,
+            nodes: bodyGraph,
+            itemKey: node.itemKey,
+          };
+          if (node.indexKey) graphNode.indexKey = node.indexKey;
+
+          graph.order.push(mNodeId);
+          graph.nodes[mNodeId] = graphNode;
+          break;
+        }
       }
     }
   }
@@ -650,6 +708,13 @@ export class AcsDecompiler {
       lines.push(`${fPrefix}filter ${node.itemKey || 'item'}${idx} in ${this.extractArrayRef(node.array)} {`);
       if (node.nodes) lines.push(...this.decompileSubGraph(node.nodes, indent + 1));
       lines.push(`${prefix}}`);
+    } else if (node.atom === 'map') {
+      const isNamedMap = nodeId && !nodeId.startsWith('map_');
+      const mPrefix = isNamedMap ? `${prefix}let ${nodeId} = ` : '';
+      const idx = node.indexKey ? ` index: ${node.indexKey}` : '';
+      lines.push(`${mPrefix}map ${node.itemKey || 'item'}${idx} in ${this.extractArrayRef(node.array)} {`);
+      if (node.nodes) lines.push(...this.decompileSubGraph(node.nodes, indent + 1));
+      lines.push(`${prefix}}`);
     } else {
       const params = this.formatParams(node);
       lines.push(`${prefix}let ${nodeId} = ${node.atom}(${params})`);
@@ -669,7 +734,7 @@ export class AcsDecompiler {
 
   private formatParams(node: GraphNode): string {
     const SKIP = new Set(['atom', 'nodes', 'then', 'else', 'cond', 'maxIterations', 'itemKey', 'maxItems']);
-    if (node.atom === 'forEach' || node.atom === 'filter') SKIP.add('array');
+    if (node.atom === 'forEach' || node.atom === 'filter' || node.atom === 'map') SKIP.add('array');
     const parts: string[] = [];
     for (const [key, value] of Object.entries(node)) {
       if (SKIP.has(key)) continue;

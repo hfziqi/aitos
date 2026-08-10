@@ -1,5 +1,5 @@
 graph build-chat-request {
-  meta: { description: "Build chat API request body", type: "service", category: "ai", author: "AITOS Team" }
+  meta: { description: "Build chat API request body", type: "core", input: "activeModelConfig, _apiContext, aiToolsConfig" }
 
   let getModelConfig = get(key: "activeModelConfig")
   let getModelName = getProp(obj: "{{getModelConfig}}", key: "modelName")

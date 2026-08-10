@@ -1,10 +1,9 @@
 graph update-title {
-  meta: { description: "Update conversation title based on first message", type: "domain", category: "conversation", author: "AITOS Team" }
+  meta: { description: "Update conversation title based on first message", type: "core", input: "_convId, conversations, _titleMsg", output: "conversations" }
 
   let getConvId = get(key: "_convId")
   let getConversations = get(key: "conversations")
-  let initNewConvs = set(key: "_newConvs", value: [])
-  let forEachConv = forEach conv, idx in getConversations {
+  let getUpdatedConvs = map conv in getConversations {
     let getCurConvId = getProp(obj: "{{conv}}", key: "id")
     let isMatch = eq(a: "{{getCurConvId}}", b: "{{getConvId}}")
     let handleMatch = if isMatch {
@@ -14,21 +13,13 @@ graph update-title {
         let getTitleMsg = get(key: "_titleMsg")
         let getFirstChars = slice(array: "{{getTitleMsg}}", start: 0, end: 9)
         let setNewTitle = setProp(obj: "{{conv}}", key: "title", value: "{{getFirstChars}}")
-        let getNewConvs = get(key: "_newConvs")
-        let pushNew = push(array: "{{getNewConvs}}", value: "{{setNewTitle}}")
-        let saveNewConvs = set(key: "_newConvs", value: "{{pushNew}}")
       } else {
-        let getNewConvs = get(key: "_newConvs")
-        let pushSame = push(array: "{{getNewConvs}}", value: "{{conv}}")
-        let saveNewConvs = set(key: "_newConvs", value: "{{pushSame}}")
+        let keepConv = merge(a: "{{conv}}", b: {})
       }
     } else {
-      let getNewConvs = get(key: "_newConvs")
-      let pushSame = push(array: "{{getNewConvs}}", value: "{{conv}}")
-      let saveNewConvs = set(key: "_newConvs", value: "{{pushSame}}")
+      let keepConv = merge(a: "{{conv}}", b: {})
     }
   }
-  let getUpdatedConvs = get(key: "_newConvs")
   let saveUpdated = setGlobal(key: "conversations", value: "{{getUpdatedConvs}}")
   let persistConvs = execFile(file: "conversations/save-conversations")
 }

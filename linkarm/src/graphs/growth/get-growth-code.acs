@@ -1,5 +1,6 @@
 graph get-growth-code {
-  meta: { description: "Get the ACS source code for a growth", type: "core", category: "growth", author: "AITOS Team" }
+  meta: { description: "Get the ACS source code for a growth", type: "tool", input: "name", output: "growthCodeResult" }
+  out: getResult
 
   let getName = get(key: "name")
   let isSubGraph = contains(text: "{{getName}}", search: "/")

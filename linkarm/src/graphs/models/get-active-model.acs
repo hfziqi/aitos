@@ -1,5 +1,5 @@
 graph get-active-model {
-  meta: { description: "Get active AI model configuration", type: "service", category: "ai-models", author: "AITOS Team" }
+  meta: { description: "Get active AI model configuration", type: "core", output: "activeModel, activeModelConfig, activeModelId" }
 
   let getActiveId = readLocal(key: "models/active-model-id.json")
   let loadModels = readLocal(key: "models/ai-models.json")

@@ -43,8 +43,8 @@ export const getMonthDaysAtom: Atom = {
   version: '1.0.0',
   meta: {
     input: [
-      { name: 'year', type: 'number' },
-      { name: 'month', type: 'number' }
+      { name: 'year', type: 'number', description: 'Year' },
+      { name: 'month', type: 'number', description: 'Month (0-11)' }
     ],
     output: { type: 'object', description: '{ firstDay, daysInMonth }' }
   },

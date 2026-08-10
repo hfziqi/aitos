@@ -73,12 +73,13 @@ linkarm-desktop/
 | Atom | Function |
 |-----|----------|
 | exec | Execute system command |
-| minimizeWindow | Minimize window |
-| maximizeWindow | Maximize window |
-| closeWindow | Close window |
+| readLocal / writeLocal / listLocal / removeLocal | Local file I/O (user data directory) |
+| minimizeWindow / maximizeWindow / closeWindow | Window control |
+| startWindowDrag | Start window drag |
 
 ## Design Principles
 
 1. **Pure C++ + Windows API**: No frameworks used
 2. **Minimal design**: Only provides the most basic capabilities
 3. **Follows AITOS principles**: Other functionality achieved through atom composition
+4. **Contract-driven**: Implements the bridge ABI defined in [SHELL_CONTRACT.md](../SHELL_CONTRACT.md)

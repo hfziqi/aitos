@@ -1,8 +1,9 @@
 graph check-lock {
-  meta: { description: "Check if a growth is locked. Returns { locked: bool }. Checks index.json first, falls back to _lock marker file.", type: "core", category: "growth", author: "AITOS Team" }
+  meta: { description: "Check if a growth is locked. Returns { locked: bool }. Checks index.json first, falls back to _lock marker file.", type: "core", input: "name", output: "checkLockResult" }
 
   let getName = get(key: "name")
-  let readIndex = readLocal(key: "growths/index.json")
+  // Read the growth index through the interface graph (list-growths), not the raw file
+  let readIndex = execFile(file: "growth/list-growths")
   let indexIsArr = isArr(value: "{{readIndex}}")
   let initIndex = if indexIsArr {
     let keep = set(key: "_growthIndex", value: "{{readIndex}}")

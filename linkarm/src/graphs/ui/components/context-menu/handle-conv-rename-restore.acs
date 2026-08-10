@@ -1,5 +1,5 @@
 graph handle-conv-rename-restore {
-  meta: { description: "Restore title span after rename cancelled or unchanged", type: "action", category: "context-menu", author: "AITOS Team" }
+  meta: { description: "Restore title span after rename cancelled or unchanged", type: "core", input: "_renameInputId, _convRenameItemId, _convRenameTitle", output: "restored title DOM" }
 
   let getInputId = get(key: "_renameInputId")
   let removeInput = removeElement(id: "{{getInputId}}")

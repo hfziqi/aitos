@@ -1,0 +1,22 @@
+graph _create-folder {
+  meta: { description: "Shared: Create a folder directory in the knowledge base", type: "core", input: "_itemName, _folderPath", output: "_operationResult" }
+
+  let getName = get(key: "_itemName")
+  let getFolderPath = get(key: "_folderPath")
+  let nameNil = isNil(value: "{{getName}}")
+  let handleName = if nameNil {
+    let setError = set(key: "_operationResult", value: { success: false, error: "Missing folder name" })
+  } else {
+    let pathNil = isNil(value: "{{getFolderPath}}")
+    let buildKey = if pathNil {
+      let rootKey = set(key: "_mkdirKey", value: "folders/{{getName}}")
+    } else {
+      let subKey = concat(a: "folders/", b: "{{getFolderPath}}")
+      let fullKey = concat(a: "{{subKey}}", b: "/{{getName}}")
+      let setKey = set(key: "_mkdirKey", value: "{{fullKey}}")
+    }
+    let getKey = get(key: "_mkdirKey")
+    let createDir = mkdirLocal(key: "{{getKey}}")
+    let setResult = set(key: "_operationResult", value: { success: true, name: "{{getName}}", type: "folder" })
+  }
+}

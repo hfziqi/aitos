@@ -1,5 +1,5 @@
 graph handle-growth-click {
-  meta: { description: "Handle click inside growth popup", type: "action", category: "growth", author: "AITOS Team" }
+  meta: { description: "Handle click inside growth popup", type: "core", input: "activeGrowthName" }
 
   let getActiveGrowth = get(key: "activeGrowthName")
   let isActiveNil = isNil(value: "{{getActiveGrowth}}")

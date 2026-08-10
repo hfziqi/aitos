@@ -1,0 +1,9 @@
+graph open-folder {
+  meta: { description: "Open folder/knowledge view", type: "core", output: "currentView, _folderPath" }
+
+  let setView = setGlobal(key: "currentView", value: "folder")
+  let resetPath = set(key: "_folderPath", value: null)
+  let clearMainView = clearElement(id: "mainViewContainer")
+  let execFolderView = execFile(file: "ui/views/folder/create")
+  let updateToolbar = execFile(file: "ui/layout/toolbar/update-active")
+}

@@ -1,5 +1,5 @@
 graph compile-feedback {
-  meta: { description: "Compile feedback prompt from recent failures", type: "prompt", category: "ai", author: "AITOS Team" }
+  meta: { description: "Compile feedback prompt from recent failures", type: "core", output: "_promptCompileFeedback" }
 
   let readRecentFailures = readLocal(key: "growths/logs/recent-failures.json")
   let isNilResult = isNil(value: "{{readRecentFailures}}")

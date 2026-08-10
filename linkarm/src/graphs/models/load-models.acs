@@ -1,5 +1,5 @@
 graph load-models {
-  meta: { description: "Load AI models from local storage", type: "core", category: "persistence", author: "AITOS Team" }
+  meta: { description: "Load AI models from local storage", type: "core", output: "aiModelsList" }
 
   let initDefault = set(key: "aiModelsList", value: [])
   let readFromLocal = readLocal(key: "models/ai-models.json")

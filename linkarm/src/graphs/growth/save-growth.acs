@@ -1,14 +1,9 @@
 graph save-growth {
-  meta: { description: "Save a growth graph - compile, validate, register, persist, index, log", type: "core", category: "growth", author: "AITOS Team" }
+  meta: { description: "Save a growth graph - compile, validate, register, persist, index, log", type: "tool", input: "name, acs", output: "createGrowthResult, createGrowthResult_success, createGrowthResult_error, createGrowthResult_path, __graph_*" }
+  out: getResult
 
   let getName = get(key: "name")
   let getAcs = get(key: "acs")
-  let getExplicitType = get(key: "type")
-  let getExplicitIcon = get(key: "icon")
-  let getExplicitDesc = get(key: "description")
-  let explicitTypeNil = isNil(value: "{{getExplicitType}}")
-  let explicitIconNil = isNil(value: "{{getExplicitIcon}}")
-  let explicitDescNil = isNil(value: "{{getExplicitDesc}}")
   let checkName = isNil(value: "{{getName}}")
   let checkAcs = isNil(value: "{{getAcs}}")
 
@@ -35,9 +30,17 @@ graph save-growth {
       let logFailure = execFile(file: "growth/log-growth-failure")
     } else {
       let compile = compileAcs(acs: "{{getAcs}}")
-      let compileErr = getProp(obj: "{{compile}}", key: "__error")
-      let compileOk = isNil(value: "{{compileErr}}")
-      let handleCompile = if compileOk {
+      let compileFailed = isError(value: "{{compile}}")
+      let compileOk = not(value: "{{compileFailed}}")
+      let checkBodyRef = contains(text: "{{getAcs}}", search: "parentId: \"body\"")
+      let handleBodyRef = if checkBodyRef {
+        let buildError = set(key: "_errorMsg", value: "Growth cannot append directly to body. Use get(key: \"growthContainerId\") as parentId.")
+        let setError = set(key: "createGrowthResult", value: { success: false, error: "{{_errorMsg}}" })
+        let logFailure = execFile(file: "growth/log-growth-failure")
+      }
+      let isBodyClean = not(value: "{{checkBodyRef}}")
+      let canSave = and(a: "{{compileOk}}", b: "{{isBodyClean}}")
+      let handleCompile = if canSave {
       let graphMeta = getProp(obj: "{{compile}}", key: "_meta")
       let metaType = getProp(obj: "{{graphMeta}}", key: "type")
       let metaIcon = getProp(obj: "{{graphMeta}}", key: "icon")
@@ -45,39 +48,25 @@ graph save-growth {
       let metaTypeNil = isNil(value: "{{metaType}}")
       let metaIconNil = isNil(value: "{{metaIcon}}")
       let metaDescNil = isNil(value: "{{metaDesc}}")
-      let graphInterface = getProp(obj: "{{compile}}", key: "interface")
-      let graphOutputRef = getProp(obj: "{{compile}}", key: "outputRef")
-      let setGraphInput = set(key: "_graphInput", value: "{{graphInterface}}")
-      let setGraphOutputRef = set(key: "_graphOutputRef", value: "{{graphOutputRef}}")
-        let resolveType = if explicitTypeNil {
-          let useMetaType = if metaTypeNil {
-            let setDefaultType = set(key: "type", value: "tool")
-          } else {
-            let setTypeFromMeta = set(key: "type", value: "{{metaType}}")
-          }
+        let resolvedType = if metaTypeNil {
+          let t = concat(a: "tool", b: "")
         } else {
-          let keepExplicitType = set(key: "type", value: "{{getExplicitType}}")
+          let t = concat(a: "{{metaType}}", b: "")
         }
-        let resolveIcon = if explicitIconNil {
-          let useMetaIcon = if metaIconNil {
-            let setDefaultIcon = set(key: "icon", value: "🧩")
-          } else {
-            let setIconFromMeta = set(key: "icon", value: "{{metaIcon}}")
-          }
+        let resolvedIcon = if metaIconNil {
+          let i = concat(a: "🧩", b: "")
         } else {
-          let keepExplicitIcon = set(key: "icon", value: "{{getExplicitIcon}}")
+          let i = concat(a: "{{metaIcon}}", b: "")
         }
-        let resolveDesc = if explicitDescNil {
-          let useMetaDesc = if metaDescNil {
-            let setDefaultDesc = set(key: "description", value: "")
-          } else {
-            let setDescFromMeta = set(key: "description", value: "{{metaDesc}}")
-          }
+        let resolvedDesc = if metaDescNil {
+          let d = concat(a: "", b: "")
         } else {
-          let keepExplicitDesc = set(key: "description", value: "{{getExplicitDesc}}")
+          let d = concat(a: "{{metaDesc}}", b: "")
         }
         let storeKey = concat(a: "__graph_", b: "{{getName}}")
-        let register = set(key: "{{storeKey}}", value: "{{compile}}")
+        let buildMeta = merge(a: "{{graphMeta}}", b: { type: "{{resolvedType}}", icon: "{{resolvedIcon}}", description: "{{resolvedDesc}}" })
+        let buildFinalGraph = merge(a: "{{compile}}", b: { _meta: "{{buildMeta}}" })
+        let register = set(key: "{{storeKey}}", value: "{{buildFinalGraph}}")
         let filePath = concat(a: "growths/", b: "{{getName}}")
         let isSubGraph = contains(text: "{{getName}}", search: "/")
         let filePathAcs = if isSubGraph {
@@ -94,12 +83,21 @@ graph save-growth {
         }
         let setResult = set(key: "createGrowthResult", value: { success: true, path: "{{filePathAcs}}", name: "{{getName}}" })
       } else {
-        let buildError = set(key: "_errorMsg", value: "{{compileErr}}")
-        let setError = set(key: "createGrowthResult", value: { success: false, error: "{{compileErr}}" })
-        let logFailure = execFile(file: "growth/log-growth-failure")
+        let handleCompileError = if not(value: "{{compileOk}}") {
+          let buildError = set(key: "_errorMsg", value: "{{compile.__error}}")
+          let setError = set(key: "createGrowthResult", value: { success: false, error: "{{compile.__error}}" })
+          let logFailure = execFile(file: "growth/log-growth-failure")
+        }
       }
     }
   }
     let getResult = get(key: "createGrowthResult")
+    // Explicit data flow: split result object into dedicated keys at the producer
+    let getResultSuccess = getProp(obj: "{{getResult}}", key: "success")
+    let getResultError = getProp(obj: "{{getResult}}", key: "error")
+    let getResultPath = getProp(obj: "{{getResult}}", key: "path")
+    let setResultSuccess = set(key: "createGrowthResult_success", value: "{{getResultSuccess}}")
+    let setResultError = set(key: "createGrowthResult_error", value: "{{getResultError}}")
+    let setResultPath = set(key: "createGrowthResult_path", value: "{{getResultPath}}")
   }
 }

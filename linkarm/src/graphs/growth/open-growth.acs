@@ -1,5 +1,5 @@
 graph open-growth {
-  meta: { description: "Open growth - parse index and dispatch by type", type: "action", category: "growth", author: "AITOS Team" }
+  meta: { description: "Open growth - parse index and dispatch by type", type: "core", input: "clickTargetId", output: "growthError, growthsListResult" }
 
   let getTargetId = get(key: "clickTargetId")
   let findCard = closest(id: "{{getTargetId}}", selector: ".growth-card")

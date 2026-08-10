@@ -1,5 +1,5 @@
 graph show-growth-card {
-  meta: { description: "Context menu items for growth card - Lock/Unlock, Delete", type: "component", category: "context-menu", author: "AITOS Team" }
+  meta: { description: "Context menu items for growth card - Lock/Unlock, Delete", type: "core", input: "_contextMenuGrowthIndex, growthsListResult", output: "_contextMenuGrowthName, context menu DOM" }
 
   let readGrowthIndex = execFile(file: "growth/list-growths")
   let getGrowths = get(key: "growthsListResult")

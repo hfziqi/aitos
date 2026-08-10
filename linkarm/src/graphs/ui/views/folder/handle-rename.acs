@@ -1,0 +1,32 @@
+graph handle-rename {
+  meta: { description: "Inline edit folder/file name - replace name with input", type: "core", input: "_ctxItemIndex, _folderItems", output: "_renameItemName, _renameItemType, _renameItemIndex, _renameDisplayName, _renameInputId" }
+
+  let hideMenu = execFile(file: "ui/components/context-menu/hide")
+  let getIndex = get(key: "_ctxItemIndex")
+  let getIndexNum = toNum(value: "{{getIndex}}")
+  let getItems = get(key: "_folderItems")
+  let getItem = getAt(array: "{{getItems}}", index: "{{getIndexNum}}")
+  let getItemName = getProp(obj: "{{getItem}}", key: "name")
+  let getItemType = getProp(obj: "{{getItem}}", key: "type")
+  let storeRenameName = set(key: "_renameItemName", value: "{{getItemName}}")
+  let storeRenameType = set(key: "_renameItemType", value: "{{getItemType}}")
+  let storeRenameIndex = set(key: "_renameItemIndex", value: "{{getIndex}}")
+  let isFolderType = eq(a: "{{getItemType}}", b: "folder")
+  let displayName = if isFolderType {
+    let folderName = set(key: "_renameDisplayName", value: "{{getItemName}}")
+  } else {
+    let fileName = replace(text: "{{getItemName}}", search: ".txt", replacement: "")
+    let setDisplay = set(key: "_renameDisplayName", value: "{{fileName}}")
+  }
+  let getDisplayName = get(key: "_renameDisplayName")
+  let inputId = concat(a: "folderRenameInput-", b: "{{getIndex}}")
+  let storeInputId = set(key: "_renameInputId", value: "{{inputId}}")
+  let removeName = removeElement(id: "folderName-{{getIndex}}")
+  let createInput = createElement(tag: "input", id: "{{inputId}}")
+  let appendInput = appendChild(parentId: "folderItem-{{getIndex}}", childId: "{{inputId}}")
+  let setInputValue = setValue(id: "{{inputId}}", value: "{{getDisplayName}}")
+  let setInputStyles = setStyles(id: "{{inputId}}", styles: { width: "100%", border: "1px solid #4a90d9", borderRadius: "4px", padding: "4px 4px", fontSize: "11px", outline: "none", background: "#fff", textAlign: "center", boxSizing: "border-box", color: "#333" })
+  let focusInput = focus(id: "{{inputId}}")
+  let registerBlur = addEventListener(id: "{{inputId}}", event: "blur", storeKey: "_renameFolderBlur", action: "ui/views/folder/handle-rename-save")
+  let registerKeydown = addEventListener(id: "{{inputId}}", event: "keydown", storeKey: "_renameFolderKey", action: "ui/views/folder/handle-rename-keydown", preventDefault: true)
+}

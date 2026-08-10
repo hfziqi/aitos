@@ -1,5 +1,5 @@
 graph generate-id {
-  meta: { description: "Generate unique ID", type: "service", category: "utils", author: "AITOS Team" }
+  meta: { description: "Generate unique ID", type: "core", input: "idPrefix" }
 
   let getPrefix = get(key: "idPrefix")
   let genRandom = random(min: 100000, max: 999999)

@@ -5,7 +5,7 @@ export const getTelemetryStatsAtom: Atom = {
   version: '1.0.0',
   meta: {
     input: [],
-    output: { type: 'array', description: 'Aggregated telemetry statistics per atom' }
+    output: { type: 'array', description: '[{ atom: string, count: number, avgDuration: number, maxDuration: number, errorCount: number, errorRate: number, lastCalled: number, graphs: string[] }]' }
   },
   characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (_input: any, context: Context): Promise<Result> => {
@@ -36,18 +36,28 @@ export const resetTelemetryAtom: Atom = {
 
 export const flushTelemetryAtom: Atom = {
   name: 'flushTelemetry',
-  version: '1.0.0',
+  version: '1.2.0',
   meta: {
-    input: [],
-    output: { type: 'object', description: 'Flush result with snapshot info' }
+    input: [
+      { name: 'kind', type: 'string', description: 'What to flush (optional): "stats" | "traces" | (default: all)' }
+    ],
+    output: { type: 'object', description: 'kind=stats: { timestamp: number, stats: [{ atom, count, avgDuration, maxDuration, errorCount, errorRate, lastCalled, graphs }] }; kind=traces: { timestamp: number, traces: [{ traceChainId, timestamp, graph, nodeId, atom, input, duration, success, error? }] }; default: { timestamp, stats, traces }' }
   },
   characteristics: { stateless: false, atomic: true, composable: true },
-  execute: async (_input: any, context: Context): Promise<Result> => {
+  execute: async (input: { kind?: string }, context: Context): Promise<Result> => {
     if (!context.runtime) {
       return { success: false, error: 'Runtime not available' };
     }
+    if (input.kind === 'stats') {
+      const stats = context.runtime.flushStats();
+      return { success: true, data: { timestamp: Date.now(), stats } };
+    }
+    if (input.kind === 'traces') {
+      const snapshot = context.runtime.flushTelemetry();
+      return { success: true, data: { timestamp: snapshot.timestamp, traces: snapshot.traces } };
+    }
     const snapshot = context.runtime.flushTelemetry();
-    return { success: true, data: { flushed: true, timestamp: snapshot.timestamp } };
+    return { success: true, data: snapshot };
   }
 };
 
@@ -62,7 +72,7 @@ export const getTraceLogAtom: Atom = {
       { name: 'success', type: 'boolean', description: 'Filter by success/failure' },
       { name: 'limit', type: 'number', description: 'Max entries to return (default 100)' }
     ],
-    output: { type: 'array', description: 'Filtered execution trace log' }
+    output: { type: 'array', description: '[{ traceChainId: string, timestamp: number, graph: string, nodeId: string, atom: string, input: any, duration: number, success: boolean, error?: string }]' }
   },
   characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: any, context: Context): Promise<Result> => {
@@ -96,7 +106,7 @@ export const analyzeTelemetryAtom: Atom = {
   version: '1.0.0',
   meta: {
     input: [],
-    output: { type: 'object', description: 'Telemetry analysis with summary, top atoms, error hotspots, and graph usage' }
+    output: { type: 'object', description: '{ found: boolean, message?: string, summary: string, topAtoms: [{ atom: string, count: number }], errorHotspots: string[], graphUsage: [{ graph: string, count: number }] }' }
   },
   characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (_input: any, context: Context): Promise<Result> => {

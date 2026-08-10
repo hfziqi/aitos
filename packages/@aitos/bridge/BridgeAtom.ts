@@ -10,7 +10,7 @@ export abstract class BridgeAtom implements Atom {
     output: { type: string; description?: string };
   };
   public characteristics = {
-    stateless: true,
+    stateless: false,
     atomic: true,
     composable: true
   };

@@ -1,5 +1,5 @@
 graph hide {
-  meta: { description: "Hide growth detail", type: "component", category: "growth-detail", author: "AITOS Team" }
+  meta: { description: "Hide growth detail", type: "core", output: "removes overlay DOM" }
 
   let removeOverlay = removeElement(id: "growthDetailOverlay")
 }

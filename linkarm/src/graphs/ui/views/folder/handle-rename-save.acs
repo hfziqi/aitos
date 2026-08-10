@@ -1,0 +1,38 @@
+graph handle-rename-save {
+  meta: { description: "Save rename via shared graph", type: "core", input: "_renameInputId, _renameItemName, _renameItemType", output: "_oldItemName, _newItemName, _finalNewName" }
+
+  let getInputId = get(key: "_renameInputId")
+  let getNewName = getValue(id: "{{getInputId}}")
+  let inputFailed = isError(value: "{{getNewName}}")
+  let inputExists = not(value: "{{inputFailed}}")
+  let branchExists = if inputExists {
+    let nameLen = len(value: "{{getNewName}}")
+    let isNotEmpty = gt(a: "{{nameLen}}", b: 0)
+    let handleNotEmpty = if isNotEmpty {
+      let getOldName = get(key: "_renameItemName")
+      let getItemType = get(key: "_renameItemType")
+      let isFolderType = eq(a: "{{getItemType}}", b: "folder")
+      let isSame = eq(a: "{{getNewName}}", b: "{{getOldName}}")
+      let handleNotSame = if isSame {
+        let skip = set(key: "_renameSkip", value: true)
+      } else {
+        let hasTxt = contains(text: "{{getNewName}}", search: ".txt")
+        let finalName = if isFolderType {
+          let keepName = set(key: "_finalNewName", value: "{{getNewName}}")
+        } else {
+          let addTxt = if hasTxt {
+            let keepName = set(key: "_finalNewName", value: "{{getNewName}}")
+          } else {
+            let withTxt = concat(a: "{{getNewName}}", b: ".txt")
+            let setName = set(key: "_finalNewName", value: "{{withTxt}}")
+          }
+        }
+        let getFinalName = get(key: "_finalNewName")
+        let getFolderPath = get(key: "_folderPath")
+        let renameItem = execFile(file: "ui/views/folder/_rename-item", store: { _oldItemName: "{{getOldName}}", _newItemName: "{{getFinalName}}", _folderPath: "{{getFolderPath}}" }, isolated: true)
+      }
+    }
+    // Refresh only while the input box still exists: do not rebuild the view concurrently after it is removed (e.g. blur during refresh)
+    let refreshView = execFile(file: "ui/views/folder/create")
+  }
+}

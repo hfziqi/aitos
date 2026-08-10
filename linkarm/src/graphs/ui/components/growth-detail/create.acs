@@ -1,5 +1,5 @@
 graph create {
-  meta: { description: "Create growth detail for tool-type growth", type: "component", category: "growth-detail", author: "AITOS Team" }
+  meta: { description: "Create growth detail for tool-type growth", type: "core", input: "clickedGrowth", output: "growth detail DOM" }
 
   let getGrowthData = get(key: "clickedGrowth")
   let getGrowthName = getProp(obj: "{{getGrowthData}}", key: "name")
@@ -13,7 +13,7 @@ graph create {
   }
   let isDescNil = isNil(value: "{{getGrowthDesc}}")
   let resolveDesc = if isDescNil {
-    let setDefaultDesc = set(key: "_detailDesc", value: "暂无描述")
+    let setDefaultDesc = set(key: "_detailDesc", value: "No description")
   } else {
     let setMetaDesc = set(key: "_detailDesc", value: "{{getGrowthDesc}}")
   }
@@ -50,7 +50,7 @@ graph create {
   let appendTypeRow = appendChild(parentId: "growthDetailBody", childId: "growthDetailTypeRow")
   let createTypeLabel = createElement(tag: "span", id: "growthDetailTypeLabel")
   let setTypeLabelClass = setAttribute(id: "growthDetailTypeLabel", name: "class", value: "growth-detail-type-label")
-  let setTypeLabelText = setTextContent(id: "growthDetailTypeLabel", text: "类型：")
+  let setTypeLabelText = setTextContent(id: "growthDetailTypeLabel", text: "Type: ")
   let appendTypeLabel = appendChild(parentId: "growthDetailTypeRow", childId: "growthDetailTypeLabel")
   let createTypeValue = createElement(tag: "span", id: "growthDetailTypeValue")
   let setTypeValueClass = setAttribute(id: "growthDetailTypeValue", name: "class", value: "growth-detail-type-value")
@@ -61,7 +61,7 @@ graph create {
   let appendDescRow = appendChild(parentId: "growthDetailBody", childId: "growthDetailDescRow")
   let createDescLabel = createElement(tag: "span", id: "growthDetailDescLabel")
   let setDescLabelClass = setAttribute(id: "growthDetailDescLabel", name: "class", value: "growth-detail-desc-label")
-  let setDescLabelText = setTextContent(id: "growthDetailDescLabel", text: "描述：")
+  let setDescLabelText = setTextContent(id: "growthDetailDescLabel", text: "Description: ")
   let appendDescLabel = appendChild(parentId: "growthDetailDescRow", childId: "growthDetailDescLabel")
   let createDescValue = createElement(tag: "span", id: "growthDetailDescValue")
   let setDescValueClass = setAttribute(id: "growthDetailDescValue", name: "class", value: "growth-detail-desc-value")

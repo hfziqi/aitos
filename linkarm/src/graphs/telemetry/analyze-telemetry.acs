@@ -1,0 +1,8 @@
+graph analyze-telemetry {
+  meta: { description: "Analyze telemetry for error hotspots and performance metrics", type: "tool", output: "analyzeResult" }
+  out: analyzeResult
+
+  let analyze = analyzeTelemetry()
+  let save = set(key: "analyzeResult", value: "{{analyze}}")
+  let analyzeResult = get(key: "analyzeResult")
+}

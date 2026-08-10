@@ -1,5 +1,5 @@
 graph hide {
-  meta: { description: "Hide add model form", type: "component", category: "add-model-form", author: "AITOS Team" }
+  meta: { description: "Hide add model form", type: "core", output: "removes overlay DOM" }
 
   let removeOverlay = removeElement(id: "addModelOverlay")
 }

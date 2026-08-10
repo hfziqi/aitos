@@ -91,7 +91,7 @@ class ReadZipFileAtom implements Atom {
     ],
     output: { type: 'array', description: 'Array of {name: string, content: string} entries' }
   };
-  characteristics = { stateless: true, atomic: true, composable: true };
+  characteristics = { stateless: false, atomic: true, composable: true };
 
   async execute(input: { data: ArrayBuffer }, context: Context): Promise<Result> {
     try {

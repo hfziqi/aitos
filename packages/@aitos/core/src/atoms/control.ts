@@ -11,12 +11,12 @@ export const branchAtom: Atom = {
   meta: {
     input: [
       { name: 'cond', type: 'boolean', description: 'Condition to evaluate' },
-      { name: 'then', type: 'object', description: 'Graph to execute if cond is true' },
-      { name: 'else', type: 'object', description: 'Graph to execute if cond is false' }
+      { name: 'then', type: 'any', description: 'Value returned (or graph executed) if cond is true' },
+      { name: 'else', type: 'any', description: 'Value returned (or graph executed) if cond is false' }
     ],
     output: { type: 'any' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { cond: boolean; then?: Graph; else?: Graph }, context: Context): Promise<Result> => {
     const condValue = !!input.cond;
     
@@ -26,15 +26,17 @@ export const branchAtom: Atom = {
       return { success: true, data: null };
     }
 
+    // Value then/else (AI's intuitive form: branch(cond, then: "x", else: "y")) → return the value directly.
+    // Graph then/else (compiled from `if cond { ... } else { ... }`) → execute the sub-graph below.
     if (!isGraph(branchInput)) {
-      return { success: false, error: 'Branch input must be a valid graph with order and nodes' };
+      return { success: true, data: branchInput };
     }
 
     if (!context.executeGraph) {
       return { success: false, error: 'executeGraph not available' };
     }
 
-    const results = await context.executeGraph(branchInput, context.currentScope);
+    const results = await context.executeGraph(branchInput, (input as any).__scope ?? context.currentScope);
     const lastNodeId = branchInput.order[branchInput.order.length - 1];
     return { success: true, data: results[lastNodeId] };
   },
@@ -45,12 +47,12 @@ export const loopAtom: Atom = {
   version: '1.0.0',
   meta: {
     input: [
-      { name: 'nodes', type: 'object' },
-      { name: 'condKey', type: 'string' }
+      { name: 'nodes', type: 'object', description: 'Graph body to execute repeatedly' },
+      { name: 'condKey', type: 'string', description: 'Store key that must be truthy to continue the loop' }
     ],
-    output: { type: 'void' }
+    output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { nodes: Graph; condKey?: string }, context: Context): Promise<Result> => {
     const { nodes, condKey } = input;
 
@@ -64,7 +66,7 @@ export const loopAtom: Atom = {
         if (!shouldContinue) break;
       }
 
-      await context.executeGraph(nodes, context.currentScope);
+      await context.executeGraph(nodes, (input as any).__scope ?? context.currentScope);
     }
 
     return { success: true, data: { done: true } };
@@ -83,7 +85,7 @@ export const forEachAtom: Atom = {
     ],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { 
     array: any[]; 
     nodes: Graph; 
@@ -103,7 +105,7 @@ export const forEachAtom: Atom = {
       if (input.indexKey) {
         context.store.set(input.indexKey, i);
       }
-      await context.executeGraph(input.nodes, context.currentScope);
+      await context.executeGraph(input.nodes, (input as any).__scope ?? context.currentScope);
     }
 
     return { success: true, data: { done: true } };
@@ -115,56 +117,18 @@ export const execAtom: Atom = {
   version: '1.0.0',
   meta: {
     input: [
-      { name: 'nodes', type: 'object' }
+      { name: 'nodes', type: 'object', description: 'Graph body to execute once' }
     ],
-    output: { type: 'any' }
+    output: { type: 'any', description: 'Result of the last node' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { nodes: Graph }, context: Context): Promise<Result> => {
     if (!context.executeGraph) {
       return { success: true, data: null };
     }
 
-    const results = await context.executeGraph(input.nodes, context.currentScope);
+    const results = await context.executeGraph(input.nodes, (input as any).__scope ?? context.currentScope);
     const lastNodeId = input.nodes.order[input.nodes.order.length - 1];
-    return { success: true, data: results[lastNodeId] };
-  },
-};
-
-export const execGraphAtom: Atom = {
-  name: 'execGraph',
-  version: '1.0.0',
-  meta: {
-    input: [
-      { name: 'graph', type: 'any', description: 'Graph object or ACS string' }
-    ],
-    output: { type: 'any', description: 'Result of the last node in the graph' }
-  },
-  characteristics: { stateless: true, atomic: true, composable: true },
-  execute: async (input: { graph: any }, context: Context): Promise<Result> => {
-    if (!context.executeGraph) {
-      return { success: false, error: 'executeGraph not available in context' };
-    }
-
-    let graph: Graph;
-    if (typeof input.graph === 'string') {
-      try {
-        graph = compileAcs(input.graph);
-      } catch (e: any) {
-        return { success: false, error: `Failed to compile ACS: ${e.message}` };
-      }
-    } else if (isGraph(input.graph)) {
-      graph = input.graph;
-    } else {
-      return { success: false, error: 'Invalid graph: must be a Graph object or ACS string' };
-    }
-
-    if (!graph.order || !graph.nodes) {
-      return { success: false, error: 'Invalid graph: missing order or nodes' };
-    }
-
-    const results = await context.executeGraph(graph, context.currentScope);
-    const lastNodeId = graph.order[graph.order.length - 1];
     return { success: true, data: results[lastNodeId] };
   },
 };
@@ -174,11 +138,11 @@ export const waitAtom: Atom = {
   version: '1.0.0',
   meta: {
     input: [
-      { name: 'ms', type: 'number' }
+      { name: 'ms', type: 'number', description: 'Milliseconds to wait' }
     ],
-    output: { type: 'void' }
+    output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { ms: number }, context: Context): Promise<Result> => {
     return new Promise(resolve => {
       setTimeout(() => resolve({ success: true, data: { done: true } }), input.ms);
@@ -188,15 +152,17 @@ export const waitAtom: Atom = {
 
 export const execFileAtom: Atom = {
   name: 'execFile',
-  version: '1.0.0',
+  version: '1.2.0',
   meta: {
     input: [
-      { name: 'file', type: 'string' }
+      { name: 'file', type: 'string', description: 'Graph file path, e.g. "growth-name/handle-xxx"' },
+      { name: 'store', type: 'object', description: 'Key-value pairs to inject into the target graph store (optional)' },
+      { name: 'isolated', type: 'boolean', description: 'If true, target graph can only read keys passed via store + system keys (optional, default false)' }
     ],
-    output: { type: 'any' }
+    output: { type: 'any', description: 'Output of the executed graph' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
-  execute: async (input: { file: string }, context: Context): Promise<Result> => {
+  characteristics: { stateless: false, atomic: true, composable: true },
+  execute: async (input: { file: string; store?: Record<string, any>; isolated?: boolean }, context: Context): Promise<Result> => {
     let graph = context.store.get(`__graph_${input.file}`);
     
     if (!graph) {
@@ -219,9 +185,54 @@ export const execFileAtom: Atom = {
       return { success: false, error: 'executeGraph not available in context' };
     }
 
-    const results = await context.executeGraph(graph, context.currentScope, input.file);
-    const output = context.runtime!.getGraphOutput(graph, results);
-    return { success: true, data: output };
+    // Validate: business params passed by the caller must be declared in the target graph's meta.input.
+    // This catches graphs that forgot to declare input (interface incomplete) — omission is only safe
+    // because undeclared params are surfaced here instead of silently mismatching. __/_ prefixed keys
+    // are system/session helpers — skipped.
+    const declaredInputs = String((graph as any)?._meta?.input || '')
+      .split(',').map((s: string) => s.trim()).filter(Boolean);
+    for (const key of Object.keys(input.store || {})) {
+      if (key.startsWith('__') || key.startsWith('_')) continue;
+      if (!declaredInputs.includes(key)) {
+        return { success: false, error: `Parameter "${key}" passed to "${input.file}" is not declared in its meta.input — the graph forgot to declare input, or the caller passed an undeclared parameter` };
+      }
+    }
+
+    // Inject store parameters into the target graph's store before execution
+    if (input.store) {
+      for (const [key, value] of Object.entries(input.store)) {
+        context.store.set(key, value);
+      }
+    }
+
+    // isolated mode: target graph can read store params + system keys (__ prefix) + session helpers (_ prefix) + keys it sets itself
+    let restoreStore: (() => void) | null = null;
+    if (input.isolated) {
+      const originalGet = context.store.get.bind(context.store);
+      const originalSet = context.store.set.bind(context.store);
+      const allowedKeys = new Set(Object.keys(input.store || {}));
+      const selfSetKeys = new Set<string>();
+      context.store.get = (key: string) => {
+        if (allowedKeys.has(key) || key.startsWith('__') || key.startsWith('_') || selfSetKeys.has(key)) return originalGet(key);
+        return undefined;
+      };
+      context.store.set = (key: string, value: any) => {
+        selfSetKeys.add(key);
+        return originalSet(key, value);
+      };
+      restoreStore = () => {
+        context.store.get = originalGet;
+        context.store.set = originalSet;
+      };
+    }
+
+    try {
+      const results = await context.executeGraph(graph, (input as any).__scope ?? context.currentScope, input.file);
+      const output = context.runtime!.getGraphOutput(graph, results);
+      return { success: true, data: output };
+    } finally {
+      if (restoreStore) restoreStore();
+    }
   },
 };
 
@@ -230,12 +241,12 @@ export const logAtom: Atom = {
   version: '1.0.0',
   meta: {
     input: [
-      { name: 'message', type: 'string' },
-      { name: 'data', type: 'any' }
+      { name: 'message', type: 'string', description: 'Log message' },
+      { name: 'data', type: 'any', description: 'Optional data to log alongside the message' }
     ],
-    output: { type: 'any' }
+    output: { type: 'any', description: 'Passes through the input data' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { message?: string; data?: any }, context: Context): Promise<Result> => {
     if (input.message && input.data !== undefined) {
       console.log(`[AITOS] ${input.message}:`, input.data);
@@ -255,7 +266,7 @@ export const getSkillSetAtom: Atom = {
     input: [],
     output: { type: 'string', description: 'JSON string containing all available atoms and graph format' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: {}, context: Context): Promise<Result> => {
     if (!context.runtime) {
       return { success: false, error: 'Runtime not available in context' };
@@ -273,9 +284,9 @@ export const compileAcsAtom: Atom = {
     input: [
       { name: 'acs', type: 'string', description: 'ACS string to compile' }
     ],
-    output: { type: 'object', description: 'Compiled Graph object or error' }
+    output: { type: 'object', description: 'Compiled graph { order: string[], nodes: object, _meta: { type, icon, description } } or { __error: string } on failure' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { acs: string }, context: Context): Promise<Result> => {
     if (typeof input.acs !== 'string') {
       return { success: false, error: 'Input must be a string' };
@@ -310,7 +321,7 @@ export const executeInContextAtom: Atom = {
     ],
     output: { type: 'any', description: 'Result of the last node in the executed graph' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { 
     contextKey: string; 
     graphKey: string; 
@@ -359,4 +370,28 @@ export const executeInContextAtom: Atom = {
   },
 };
 
+export const setIntervalAtom: Atom = {
+  name: 'setInterval',
+  version: '1.0.0',
+  meta: {
+    input: [
+      { name: 'ms', type: 'number', description: 'Interval in milliseconds' },
+      { name: 'graph', type: 'string', description: 'Graph file path to execute periodically' }
+    ],
+    output: { type: 'object', description: '{ timerId: number }' }
+  },
+  characteristics: { stateless: false, atomic: true, composable: true },
+  execute: async (input: { ms: number; graph: string }, context: Context): Promise<Result> => {
+    const timerId = setInterval(async () => {
+      let graph = context.store.get(`__graph_${input.graph}`);
+      if (typeof graph === 'string') {
+        try { graph = compileAcs(graph); } catch { return; }
+      }
+      if (graph && context.executeGraph) {
+        await context.executeGraph(graph, context.currentScope, input.graph);
+      }
+    }, input.ms);
+    return { success: true, data: { timerId } };
+  },
+};
 

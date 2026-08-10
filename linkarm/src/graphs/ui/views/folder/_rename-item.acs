@@ -1,0 +1,36 @@
+graph _rename-item {
+  meta: { description: "Shared: Rename a file or folder in the knowledge base", type: "core", input: "_oldItemName, _newItemName, _folderPath", output: "_operationResult" }
+
+  let getOldName = get(key: "_oldItemName")
+  let getNewName = get(key: "_newItemName")
+  let getFolderPath = get(key: "_folderPath")
+  let oldNil = isNil(value: "{{getOldName}}")
+  let handleOld = if oldNil {
+    let setError = set(key: "_operationResult", value: { success: false, error: "Missing old name" })
+  } else {
+    let newNil = isNil(value: "{{getNewName}}")
+    let handleNew = if newNil {
+      let setError = set(key: "_operationResult", value: { success: false, error: "Missing new name" })
+    } else {
+      let pathNil = isNil(value: "{{getFolderPath}}")
+      let buildOld = if pathNil {
+        let rootOld = set(key: "_oldKey", value: "folders/{{getOldName}}")
+      } else {
+        let subOld = concat(a: "folders/", b: "{{getFolderPath}}")
+        let fullOld = concat(a: "{{subOld}}", b: "/{{getOldName}}")
+        let setOld = set(key: "_oldKey", value: "{{fullOld}}")
+      }
+      let getOldKey = get(key: "_oldKey")
+      let buildNew = if pathNil {
+        let newRoot = set(key: "_newKey", value: "folders/{{getNewName}}")
+      } else {
+        let newSub = concat(a: "folders/", b: "{{getFolderPath}}")
+        let newFull = concat(a: "{{newSub}}", b: "/{{getNewName}}")
+        let setNew = set(key: "_newKey", value: "{{newFull}}")
+      }
+      let getNewKey = get(key: "_newKey")
+      let renameItem = renameLocal(oldKey: "{{getOldKey}}", newKey: "{{getNewKey}}")
+      let setResult = set(key: "_operationResult", value: { success: true, oldName: "{{getOldName}}", newName: "{{getNewName}}" })
+    }
+  }
+}

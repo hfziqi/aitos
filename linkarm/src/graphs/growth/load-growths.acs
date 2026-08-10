@@ -1,5 +1,5 @@
 graph load-growths {
-  meta: { description: "Load growths (generated graphs) from index", type: "core", category: "graph", author: "AITOS Team" }
+  meta: { description: "Load growths (generated graphs) from index", type: "core", output: "growths, __graph_*" }
 
   let checkGrowths = get(key: "growths")
   let shouldLoadGrowths = not(value: "{{checkGrowths}}")

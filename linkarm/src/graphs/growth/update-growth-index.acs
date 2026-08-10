@@ -1,12 +1,15 @@
 graph update-growth-index {
-  meta: { description: "Update growth index file", type: "core", category: "growth", author: "AITOS Team" }
+  meta: { description: "Update growth index file", type: "core", input: "name, __graph_*", output: "growths/index.json" }
 
   let getName = get(key: "name")
-  let getType = get(key: "type")
-  let getIcon = get(key: "icon")
-  let getDesc = get(key: "description")
-  let getGraphInput = get(key: "_graphInput")
-  let getGraphOutputRef = get(key: "_graphOutputRef")
+  let buildGraphKey = concat(a: "__graph_", b: "{{getName}}")
+  let getGraph = get(key: "{{buildGraphKey}}")
+  let getGraphMeta = getProp(obj: "{{getGraph}}", key: "_meta")
+  let getType = getProp(obj: "{{getGraphMeta}}", key: "type")
+  let getIcon = getProp(obj: "{{getGraphMeta}}", key: "icon")
+  let getDesc = getProp(obj: "{{getGraphMeta}}", key: "description")
+  let getGraphInput = getProp(obj: "{{getGraph}}", key: "interface")
+  let getGraphOutputRef = getProp(obj: "{{getGraph}}", key: "outputRef")
   let filePath = concat(a: "growths/", b: "{{getName}}")
   let filePathAcs = concat(a: "{{filePath}}", b: "/main.acs")
   let readIndex = readLocal(key: "growths/index.json")

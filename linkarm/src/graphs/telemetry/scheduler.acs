@@ -1,0 +1,6 @@
+graph telemetry/scheduler {
+  meta: { description: "Drive telemetry recording: periodically trigger telemetry/stats and telemetry/traces. Distributable: this graph is the periodic driver of the telemetry package", type: "core", output: "registers periodic stats/traces execution" }
+
+  let schedStats = setInterval(ms: 30000, graph: "telemetry/stats")
+  let schedTraces = setInterval(ms: 120000, graph: "telemetry/traces")
+}

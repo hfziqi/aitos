@@ -1,5 +1,5 @@
 graph add-model {
-  meta: { description: "Add AI model", type: "action", category: "ai-models", author: "AITOS Team" }
+  meta: { description: "Add AI model", type: "core", input: "newModelInput, _providersMap, aiModelsList", output: "aiModelsList, addedModel, newModel" }
 
   let getInput = get(key: "newModelInput")
   let getInputName = getProp(obj: "{{getInput}}", key: "name")
@@ -9,7 +9,10 @@ graph add-model {
   let getInputBaseUrl = getProp(obj: "{{getInput}}", key: "baseUrl")
   let setIdPrefix = set(key: "idPrefix", value: "model")
   let generateId = execFile(file: "models/generate-id")
-  let createModel = set(key: "newModel", value: { id: "{{generateId}}", name: "{{getInputName}}", provider: "{{getInputProvider}}", modelName: "{{getInputModelName}}", apiKey: "{{getInputApiKey}}", baseUrl: "{{getInputBaseUrl}}" })
+  let getProvidersMap = get(key: "_providersMap")
+  let getProviderInfo = getProp(obj: "{{getProvidersMap}}", key: "{{getInputProvider}}")
+  let getProviderLogo = getProp(obj: "{{getProviderInfo}}", key: "logo")
+  let createModel = set(key: "newModel", value: { id: "{{generateId}}", name: "{{getInputName}}", provider: "{{getInputProvider}}", modelName: "{{getInputModelName}}", apiKey: "{{getInputApiKey}}", baseUrl: "{{getInputBaseUrl}}", logo: "{{getProviderLogo}}" })
   let loadModels = execFile(file: "models/load-models")
   let getList = get(key: "aiModelsList")
   let checkModels = if getList {

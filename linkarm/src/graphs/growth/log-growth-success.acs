@@ -1,9 +1,12 @@
 graph log-growth-success {
-  meta: { description: "Log growth creation success", type: "core", category: "growth", author: "AITOS Team" }
+  meta: { description: "Log growth creation success", type: "core", input: "name, acs, __graph_*", output: "growth log files" }
 
   let getName = get(key: "name")
-  let getType = get(key: "type")
-  let getIcon = get(key: "icon")
+  let buildGraphKey = concat(a: "__graph_", b: "{{getName}}")
+  let getGraph = get(key: "{{buildGraphKey}}")
+  let getGraphMeta = getProp(obj: "{{getGraph}}", key: "_meta")
+  let getType = getProp(obj: "{{getGraphMeta}}", key: "type")
+  let getIcon = getProp(obj: "{{getGraphMeta}}", key: "icon")
   let getTimestamp = now()
   let getAcs = get(key: "acs")
   let buildEntry = merge(a: { name: "{{getName}}", type: "{{getType}}", icon: "{{getIcon}}" }, b: { acs: "{{getAcs}}", timestamp: "{{getTimestamp}}" })
@@ -40,7 +43,7 @@ graph log-growth-success {
     let setExistingPerLog = set(key: "_perGrowthLog", value: "{{readPerLog}}")
   }
   let getPerLog = get(key: "_perGrowthLog")
-  let perEntry = set(key: "_perEntry", value: { status: "success", timestamp: "{{getTimestamp}}" })
+  let perEntry = set(key: "_logEntry", value: { status: "success", timestamp: "{{getTimestamp}}" })
   let pushPerEntry = push(array: "{{getPerLog}}", value: "{{perEntry}}")
   let savePerLog = writeLocal(key: "{{perLogPathFinal}}", value: "{{pushPerEntry}}")
 }

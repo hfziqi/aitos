@@ -1,5 +1,5 @@
 graph create {
-  meta: { description: "Create growth popup for app-type growth", type: "component", category: "growth-popup", author: "AITOS Team" }
+  meta: { description: "Create growth popup for app-type growth", type: "core", input: "clickedGrowth", output: "growth popup DOM" }
 
   let getGrowthData = get(key: "clickedGrowth")
   let getGrowthName = getProp(obj: "{{getGrowthData}}", key: "name")

@@ -1,5 +1,5 @@
 graph log-growth-failure {
-  meta: { description: "Log growth creation failure for AI learning", type: "core", category: "growth", author: "AITOS Team" }
+  meta: { description: "Log growth creation failure for AI learning", type: "core", input: "name, _errorMsg, acs", output: "failure log file" }
 
   let getName = get(key: "name")
   let getError = get(key: "_errorMsg")
@@ -39,7 +39,7 @@ graph log-growth-failure {
     let setExistingPerLog = set(key: "_perGrowthLog", value: "{{readPerLog}}")
   }
   let getPerLog = get(key: "_perGrowthLog")
-  let perEntry = set(key: "_perEntry", value: { status: "fail", error: "{{getError}}", timestamp: "{{getTimestamp}}" })
+  let perEntry = set(key: "_logEntry", value: { status: "fail", error: "{{getError}}", timestamp: "{{getTimestamp}}" })
   let pushPerEntry = push(array: "{{getPerLog}}", value: "{{perEntry}}")
   let savePerLog = writeLocal(key: "{{perLogPathFinal}}", value: "{{pushPerEntry}}")
 }

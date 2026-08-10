@@ -1,5 +1,5 @@
 graph render-messages {
-  meta: { description: "Render messages in chat view", type: "view", category: "chat", author: "AITOS Team" }
+  meta: { description: "Render messages in chat view", type: "core", input: "messages, _streamContent", output: "messages DOM, streamElementId" }
 
   let loadMsgs = execFile(file: "messages/load-messages")
   let clearMessageList = clearElement(id: "messageList")

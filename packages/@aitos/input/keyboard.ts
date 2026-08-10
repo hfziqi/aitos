@@ -25,7 +25,7 @@ export const getKeyAtom: Atom = {
     ],
     output: { type: 'boolean', description: 'true if key is currently pressed' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { key: string }, context: Context): Promise<Result> => {
     const pressed = keyState.get(input.key) ?? false;
     return { success: true, data: pressed };

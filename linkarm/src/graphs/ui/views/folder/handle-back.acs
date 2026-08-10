@@ -1,0 +1,27 @@
+graph handle-back {
+  meta: { description: "Go back one level in folder hierarchy", type: "core", input: "_folderPath, _folderName", output: "_folderPath, _folderName" }
+
+  let getPath = get(key: "_folderPath")
+  let getName = get(key: "_folderName")
+  let pathNil = isNil(value: "{{getPath}}")
+  let handleBack = if pathNil {
+    let skip = set(key: "_backSkip", value: true)
+  } else {
+    let nameNil = isNil(value: "{{getName}}")
+    let doBack = if nameNil {
+      let clearPath = set(key: "_folderPath", value: null)
+    } else {
+      let hasSlash = contains(text: "{{getPath}}", search: "/")
+      let goUp = if hasSlash {
+        let searchStr = concat(a: "/", b: "{{getName}}")
+        let newPath = replace(text: "{{getPath}}", search: "{{searchStr}}", replacement: "")
+        let setPath = set(key: "_folderPath", value: "{{newPath}}")
+        let clearName = set(key: "_folderName", value: null)
+      } else {
+        let clearPath = set(key: "_folderPath", value: null)
+        let clearName = set(key: "_folderName", value: null)
+      }
+    }
+  }
+  let refreshView = execFile(file: "ui/views/folder/create")
+}

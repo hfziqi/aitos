@@ -188,7 +188,7 @@ Use `{{nodeId}}` or `{{nodeId.field}}` to reference another node's output.
 | **State** | `get`, `set`, `setGlobal` |
 | **Calculation** | `add`, `sub`, `mul`, `div`, `mod`, `random` |
 | **Judgment** | `eq`, `gt`, `lt`, `gte`, `lte`, `and`, `or`, `not`, `isNil`, `isNum`, `isStr`, `isArr`, `isObj` |
-| **Control** | `branch`, `loop`, `forEach`, `exec`, `execGraph`, `execFile`, `wait`, `log`, `getSkillSet`, `compileAcs`, `executeInContext` |
+| **Control** | `branch`, `loop`, `forEach`, `exec`, `execFile`, `wait`, `log`, `getSkillSet`, `compileAcs`, `executeInContext`, `collectTools` |
 | **Manipulation** | `concat`, `split`, `len`, `push`, `pop`, `slice`, `getProp`, `setProp`, `keys`, `values`, `merge`, `filter`, `format`, `toNum`, `contains`, `includes`, `startsWith`, `replace`, `trim`, `toLower`, `toUpper`, `getAt`, `join` |
 | **Time** | `now`, `timestampToDate`, `getMonthDays`, `isLeapYear` |
 | **Tool Calls** | `handleToolCalls` |
@@ -239,7 +239,7 @@ Use `{{nodeId}}` or `{{nodeId.field}}` to reference another node's output.
 
 ## Advanced Features
 
-### Growth System (后生图)
+### Growth System (Generated Graphs)
 
 Growths are self-evolving programs — AI-generated graphs that can be saved, shared, and reused.
 
@@ -248,13 +248,14 @@ Growths are self-evolving programs — AI-generated graphs that can be saved, sh
 | **`save-growth`** | Saves AI-generated graphs as reusable growths |
 | **`list-growths`** | Lists all available growths for reuse |
 | **`open-growth`** | Opens and activates a saved growth |
-| **`callGrowthTool`** | AI can dynamically invoke any tool-type growth without explicit configuration |
+| **`collectTools`** | Auto-collects all tool-type graphs (`type: "tool"`) into the AI's tool list — graphs declare themselves as tools |
 
-Growths come in two types:
-- **`app`** — User-facing UI applications (visible in sidebar)
-- **`tool`** — AI-callable functions (visible in the graph market)
+Graph types:
+- **`app`** — User-facing UI product (main graph; opened from the market)
+- **`tool`** — AI-callable capability (main graph of a standalone tool; auto-collected into the AI tool list)
+- **`core`** — Internal implementation (sub-graphs and system internals; never AI-callable)
 
-### Graph Market (图市场)
+### Graph Market
 
 A built-in marketplace where users can:
 - **Add Model** — Configure AI models (OpenAI-compatible APIs)
@@ -279,20 +280,20 @@ This transforms AITOS from a browser-only runtime to a **desktop operating envir
 
 AITOS is designed to work with any LLM that supports function calling:
 
-1. **`getSkillSet`** — Returns all available atoms as a JSON description. Give this to AI as a tool.
-2. **`handleToolCalls`** — Processes AI's tool_calls response, executes the requested atoms, and supports dynamic routing to tool-type growths via `callGrowthTool`.
-3. **`execGraph`** — AI can generate and execute entire graphs, not just single function calls.
+1. **`collectTools`** — Auto-collects all tool-type graphs (`type: "tool"`) into the AI's tool list. A graph declares itself a tool; the AI sees it automatically.
+2. **`getSkillSet`** — Returns all available atoms (names, params, rules) as text — what the AI can compose.
+3. **`handleToolCalls`** — Processes AI's tool_calls: executes tool graphs via the graph-execution path (isolated, whitelisted to `type: "tool"`).
 
 Example flow:
 ```
-User → AI → getSkillSet() → [AI sees all atoms + growth tools]
-User → AI → AI generates graph → execGraph(graph) → Result
-                              → callGrowthTool(name, args) → Execute pre-saved growth
+User → AI → getSkillSet() → [AI sees all atoms]
+User → AI → AI writes a graph (ACS) → save-growth(name, acs) → registered, persisted, reusable
+User → AI → AI calls a tool → handleToolCalls → executes the tool graph (isolated)
 ```
 
-### `callGrowthTool` — AI-callable Growths
+### Tools = Graphs
 
-Tool-type growths are automatically exposed to AI as callable tools. When the AI needs functionality implemented in a saved growth (e.g., "rain detection algorithm"), the runtime routes the request to the matching growth via `callGrowthTool`, executes it, and returns the result. This allows AI to **reuse pre-composed graphs** instead of generating them from scratch every time.
+Tool-type graphs are automatically exposed to AI as callable tools — the AI calls a tool exactly like the system calls a graph (`execFile` semantics: isolated, explicit params). When the AI needs functionality implemented in a saved graph, it invokes that graph as a tool. This lets AI **reuse composed graphs** as capabilities instead of regenerating them every time. Sub-graphs (app internals) are `type: "core"` — never AI-callable.
 
 ## Use Cases
 

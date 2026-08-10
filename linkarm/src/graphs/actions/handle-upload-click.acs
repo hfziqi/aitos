@@ -1,0 +1,17 @@
+graph handle-upload-click {
+  meta: { description: "Handle upload button click - open file picker for all file types", type: "core", output: "_uploadedFile, _uploadResult" }
+
+  let pickFile = showFilePicker(accept: "*/*", multiple: false)
+  let fileNil = isNil(value: "{{pickFile}}")
+  let handleFile = if fileNil {
+    let setCancelled = set(key: "_uploadResult", value: { success: false, error: "No file selected" })
+  } else {
+    let setFileData = set(key: "_uploadedFile", value: "{{pickFile}}")
+    let setSuccess = set(key: "_uploadResult", value: { success: true, file: "{{pickFile}}" })
+  }
+  let fileSelected = not(value: "{{fileNil}}")
+  let showPreview = if fileSelected {
+    let removeExisting = removeElement(id: "attachPreviewBar")
+    let createPreview = execFile(file: "ui/components/attachment-preview/create")
+  }
+}

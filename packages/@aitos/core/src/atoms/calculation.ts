@@ -5,10 +5,10 @@ export const addAtom: Atom = {
   version: '1.0.0',
   meta: {
     input: [
-      { name: 'a', type: 'number' },
-      { name: 'b', type: 'number' }
+      { name: 'a', type: 'number', description: 'First operand' },
+      { name: 'b', type: 'number', description: 'Second operand' }
     ],
-    output: { type: 'number' }
+    output: { type: 'number', description: 'Result of the operation' }
   },
   characteristics: { stateless: true, atomic: true, composable: true },
   execute: async (input: { a: number; b: number }, context: Context): Promise<Result> => {
@@ -21,10 +21,10 @@ export const subAtom: Atom = {
   version: '1.0.0',
   meta: {
     input: [
-      { name: 'a', type: 'number' },
-      { name: 'b', type: 'number' }
+      { name: 'a', type: 'number', description: 'First operand' },
+      { name: 'b', type: 'number', description: 'Second operand' }
     ],
-    output: { type: 'number' }
+    output: { type: 'number', description: 'Result of the operation' }
   },
   characteristics: { stateless: true, atomic: true, composable: true },
   execute: async (input: { a: number; b: number }, context: Context): Promise<Result> => {
@@ -37,10 +37,10 @@ export const mulAtom: Atom = {
   version: '1.0.0',
   meta: {
     input: [
-      { name: 'a', type: 'number' },
-      { name: 'b', type: 'number' }
+      { name: 'a', type: 'number', description: 'First operand' },
+      { name: 'b', type: 'number', description: 'Second operand' }
     ],
-    output: { type: 'number' }
+    output: { type: 'number', description: 'Result of the operation' }
   },
   characteristics: { stateless: true, atomic: true, composable: true },
   execute: async (input: { a: number; b: number }, context: Context): Promise<Result> => {
@@ -53,10 +53,10 @@ export const divAtom: Atom = {
   version: '1.0.0',
   meta: {
     input: [
-      { name: 'a', type: 'number' },
-      { name: 'b', type: 'number' }
+      { name: 'a', type: 'number', description: 'First operand' },
+      { name: 'b', type: 'number', description: 'Second operand' }
     ],
-    output: { type: 'number' }
+    output: { type: 'number', description: 'Result of the operation' }
   },
   characteristics: { stateless: true, atomic: true, composable: true },
   execute: async (input: { a: number; b: number }, context: Context): Promise<Result> => {
@@ -69,10 +69,10 @@ export const modAtom: Atom = {
   version: '1.0.0',
   meta: {
     input: [
-      { name: 'a', type: 'number' },
-      { name: 'b', type: 'number' }
+      { name: 'a', type: 'number', description: 'First operand' },
+      { name: 'b', type: 'number', description: 'Second operand' }
     ],
-    output: { type: 'number' }
+    output: { type: 'number', description: 'Result of the operation' }
   },
   characteristics: { stateless: true, atomic: true, composable: true },
   execute: async (input: { a: number; b: number }, context: Context): Promise<Result> => {
@@ -85,10 +85,10 @@ export const randomAtom: Atom = {
   version: '1.0.0',
   meta: {
     input: [
-      { name: 'min', type: 'number' },
-      { name: 'max', type: 'number' }
+      { name: 'min', type: 'number', description: 'Minimum value (inclusive)' },
+      { name: 'max', type: 'number', description: 'Maximum value (inclusive)' }
     ],
-    output: { type: 'number' }
+    output: { type: 'number', description: 'Random integer between min and max' }
   },
   characteristics: { stateless: true, atomic: true, composable: true },
   execute: async (input: { min: number; max: number }, context: Context): Promise<Result> => {

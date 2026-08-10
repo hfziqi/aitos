@@ -1,0 +1,16 @@
+graph create-knowledge-folder {
+  meta: { description: "Create a folder in the knowledge base", type: "tool", input: "name", output: "result" }
+  out: result
+
+  let getName = get(key: "name")
+  let nameNil = isNil(value: "{{getName}}")
+  let handleName = if nameNil {
+    let setError = set(key: "result", value: { success: false, error: "Missing name" })
+  } else {
+    let getFolderPath = get(key: "_folderPath")
+    let createFolder = execFile(file: "ui/views/folder/_create-folder", store: { _itemName: "{{getName}}", _folderPath: "{{getFolderPath}}" }, isolated: true)
+    let getResult = get(key: "_operationResult")
+    let setResult = set(key: "result", value: "{{getResult}}")
+  }
+  let result = get(key: "result")
+}

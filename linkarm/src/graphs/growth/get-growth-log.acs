@@ -1,5 +1,6 @@
 graph get-growth-log {
-  meta: { description: "Get creation log for a specific growth", type: "core", category: "growth", author: "AITOS Team" }
+  meta: { description: "Get creation log for a specific growth", type: "tool", input: "name", output: "growthLogResult" }
+  out: getResult
 
   let getName = get(key: "name")
   let isSubGraph = contains(text: "{{getName}}", search: "/")

@@ -232,40 +232,44 @@ export class AitosRuntime implements Runtime {
     context.currentScope = results;
     context.runtime = this;
 
-    for (const nodeId of graph.order) {
-      const node = graph.nodes[nodeId];
-      const input = this.resolveGraphInput(node, results, context);
-      const startTime = performance.now();
-      const result = await context.execute(node.atom, input);
-      const duration = Math.round(performance.now() - startTime);
+    try {
+      for (const nodeId of graph.order) {
+        const node = graph.nodes[nodeId];
+        const input = this.resolveGraphInput(node, results, context);
+        const startTime = performance.now();
+        const result = await context.execute(node.atom, input);
+        const duration = Math.round(performance.now() - startTime);
 
-      this.telemetryStore.record(node.atom, gName, duration, result.success);
+        this.telemetryStore.record(node.atom, gName, duration, result.success);
 
-      this.traceLog.push({
-        traceChainId,
-        timestamp: Date.now(),
-        graph: gName,
-        nodeId,
-        atom: node.atom,
-        input,
-        duration,
-        success: result.success,
-        error: result.error,
-      });
+        this.traceLog.push({
+          traceChainId,
+          timestamp: Date.now(),
+          graph: gName,
+          nodeId,
+          atom: node.atom,
+          input,
+          duration,
+          success: result.success,
+          error: result.error,
+        });
 
-      if (this.traceLog.length > 100000) {
-        this.traceLog.splice(0, this.traceLog.length - 100000);
+        if (this.traceLog.length > 100000) {
+          this.traceLog.splice(0, this.traceLog.length - 100000);
+        }
+
+        if (!result.success) {
+          results[nodeId] = { __error: result.error };
+          continue;
+        }
+
+        results[nodeId] = result.data;
       }
-
-      if (!result.success) {
-        results[nodeId] = { __error: result.error };
-        continue;
-      }
-
-      results[nodeId] = result.data;
+    } finally {
+      // Restore the scope slot even when an atom throws, so a failed execution
+      // never leaks its partial results as the next graph's inherited scope.
+      context.currentScope = previousScope;
     }
-
-    context.currentScope = previousScope;
 
     return results;
   }
@@ -315,17 +319,47 @@ export class AitosRuntime implements Runtime {
     return results[lastNodeId];
   }
 
+  // Data-flow error annotation: find available nodes/store keys close to the reference name (e.g. 12354 vs 12345 — let AI see the difference at a glance)
+  private findSimilarRefs(ref: string, candidates: string[]): string[] {
+    const out: string[] = [];
+    for (const c of candidates) {
+      if (c === ref) continue;
+      if (c.includes(ref) || ref.includes(c)) {
+        out.push(c);
+      } else {
+        const min = Math.min(c.length, ref.length);
+        let common = 0;
+        while (common < min && c[common] === ref[common]) common++;
+        if (common >= 3) out.push(c);
+      }
+      if (out.length >= 3) break;
+    }
+    return out;
+  }
+
   private resolveGraphInput(node: GraphNode, results: Record<string, any>, context: Context): any {
     const resolved: any = {};
     const SUBGRAPH_KEYS = new Set(['nodes', 'then', 'else']);
+    // Atoms that execute nested graphs inherit THIS graph's results as their scope.
+    // Inheriting context.currentScope (a single mutable slot) is unsafe when two
+    // graphs run concurrently (e.g. a blur re-fire during a refresh): a concurrent
+    // execution's partial results can be inherited, causing REFERENCE_NOT_FOUND.
+    const SCOPE_TAKING_ATOMS = new Set(['branch', 'loop', 'forEach', 'exec', 'execFile', 'filter', 'map']);
 
     for (const [key, value] of Object.entries(node)) {
       if (key === 'atom') continue;
       if (SUBGRAPH_KEYS.has(key)) {
-        resolved[key] = value;
+        // Graph (compiled from `if cond { ... } else { ... }`) → keep as-is (executed as a sub-graph).
+        // Value/reference (AI's direct branch call: then: "{{x}}") → resolve the reference to its value.
+        const isGraph = value !== null && typeof value === 'object' && Array.isArray((value as any).order) && typeof (value as any).nodes === 'object';
+        resolved[key] = isGraph ? value : this.resolveGraphValue(value, results, context);
       } else {
         resolved[key] = this.resolveGraphValue(value, results, context);
       }
+    }
+
+    if (SCOPE_TAKING_ATOMS.has(node.atom)) {
+      resolved.__scope = results;
     }
 
     return resolved;
@@ -348,12 +382,14 @@ export class AitosRuntime implements Runtime {
         } else if (context.store.has(nodeId)) {
           resolvedValue = context.store.get(nodeId);
         } else {
+          const storeKeys = Array.from(context.store.keys()).filter((k: string) => !k.startsWith('__'));
           throw new Error(JSON.stringify({
             code: 'REFERENCE_NOT_FOUND',
             ref: nodeId,
             message: `Reference {{${nodeId}}} not found in current scope or store`,
             availableInScope: Object.keys(results),
-            availableInStore: context.store.has(nodeId) ? [nodeId] : [],
+            availableInStore: storeKeys.slice(0, 30),
+            similar: this.findSimilarRefs(nodeId, [...Object.keys(results), ...storeKeys]),
             hint: 'Check if the reference is a node output or a store value.',
             fix: `Ensure the node "${nodeId}" is executed before this reference, or use { "atom": "set", "key": "${nodeId}", "value": ... } to store the value.`
           }));
@@ -373,12 +409,14 @@ export class AitosRuntime implements Runtime {
         } else if (context.store.has(nodeId)) {
           resolvedValue = context.store.get(nodeId);
         } else {
+          const storeKeys = Array.from(context.store.keys()).filter((k: string) => !k.startsWith('__'));
           throw new Error(JSON.stringify({
             code: 'REFERENCE_NOT_FOUND',
             ref: nodeId,
             message: `Reference {{${nodeId}}} not found in current scope or store`,
             availableInScope: Object.keys(results),
-            availableInStore: context.store.has(nodeId) ? [nodeId] : [],
+            availableInStore: storeKeys.slice(0, 30),
+            similar: this.findSimilarRefs(nodeId, [...Object.keys(results), ...storeKeys]),
             hint: 'Check if the reference is a node output or a store value.',
             fix: `Ensure the node "${nodeId}" is executed before this reference, or use { "atom": "set", "key": "${nodeId}", "value": ... } to store the value.`
           }));
@@ -436,60 +474,19 @@ export class AitosRuntime implements Runtime {
   getSkillSet(): string {
     const atoms = this.listAtoms();
 
-    const registry = {
-      aitos: {
-        version: '1.0.0',
-        type: 'graph-instruction-set',
-      },
-      graph: {
-        format: {
-          nodes: 'Record<nodeId, GraphNode>',
-          order: 'string[] (execution order)'
-        },
-        example: {
-          nodes: {
-            getY: { atom: 'get', key: 'fruitY' },
-            addFive: { atom: 'add', a: '{{getY}}', b: 5 },
-            saveY: { atom: 'set', key: 'fruitY', value: '{{addFive}}' }
-          },
-          order: ['getY', 'addFive', 'saveY']
-        }
-      },
-      node: {
-        format: { atom: 'string', '...params': 'per atom.input' },
-        example: { atom: 'add', a: '{{otherNodeId}}', b: 1 }
-      },
-      ref: {
-        format: '{{nodeId}} or {{nodeId.field}}',
-        rules: [
-          'Use nodeId to reference another node result',
-          'nodeId must be defined in nodes and appear earlier in order',
-          'Use {{nodeId.field}} to access nested properties',
-          'References are resolved before execution'
-        ]
-      },
-      atoms: atoms.map(a => ({
-        name: a.name,
-        version: a.version,
-        input: a.meta.input,
-        output: a.meta.output,
-      })),
-      validation: {
-        description: 'Validation checks node references and atom existence',
-        errorFormat: {
-          node: 'Node path',
-          code: 'Error code',
-          param: 'Parameter name',
-          ref: 'Invalid reference',
-          message: 'Error description',
-          suggestions: [
-            { id: 'Suggested nodeId', type: 'Output type', source: 'Atom name' }
-          ]
-        }
-      }
-    };
+    const lines = atoms.map(a => {
+      const params = (a.meta.input || [])
+        .map(i => {
+          const optional = i.type.endsWith('?') || (i as any).optional ? '?' : '';
+          return `${i.name}${optional}: ${i.type.replace(/\?$/, '')}`;
+        })
+        .join(', ');
+      const outType = a.meta.output?.type || 'any';
+      const outDesc = a.meta.output?.description ? ` — ${a.meta.output.description}` : '';
+      return `${a.name}(${params}) → ${outType}${outDesc}`;
+    });
 
-    return JSON.stringify(registry);
+    return `aitos atom registry (v1)\nUse {{nodeId}} to reference a node result, {{nodeId.field}} for nested fields.\nFailure convention: a failed node result is { __error: <message> }; detect it with isError / isSuccess.\nJudgment rule: if/loop conditions use JS truthiness - empty array/object and { __error } are truthy, 0 and "" are falsy; always build conditions with boolean atoms (eq/gt/isNil/isError/not/and/or/isArr/contains).\n\n${lines.join('\n')}`;
   }
 }
 

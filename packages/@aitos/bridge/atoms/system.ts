@@ -6,7 +6,7 @@ class GetSystemInfoAtom extends BridgeAtom {
   version = '1.0.0';
   meta = {
     input: [],
-    output: { type: 'object', description: 'System information including OS, platform, etc.' }
+    output: { type: 'object', description: '{ os: string, platform: string, shell: string, isDesktop: boolean, userAgent: string }' }
   };
 
   async execute(input: {}, context: Context): Promise<Result> {

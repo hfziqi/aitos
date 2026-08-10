@@ -1,3 +1,5 @@
 graph maximize-window {
+  meta: { description: "Maximize the application window", type: "core" }
+
   let maximize = maximizeWindow()
 }

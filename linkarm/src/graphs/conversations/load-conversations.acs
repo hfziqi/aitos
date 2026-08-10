@@ -1,5 +1,5 @@
 graph load-conversations {
-  meta: { description: "Load conversations index from local storage", type: "core", category: "persistence", author: "AITOS Team" }
+  meta: { description: "Load conversations index from local storage", type: "core", output: "conversations" }
 
   let initDefault = set(key: "conversations", value: [])
   let readFromLocal = readLocal(key: "chat/conversations.json")

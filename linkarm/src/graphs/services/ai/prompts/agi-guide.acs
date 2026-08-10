@@ -1,5 +1,5 @@
 graph agi-guide {
-  meta: { description: "AGI multi-model orchestration guide", type: "prompt", category: "ai", author: "AITOS Team" }
+  meta: { description: "AGI multi-model orchestration guide", type: "core", input: "aiModelsList, activeModelId", output: "AGI prompt text" }
 
   let getModels = get(key: "aiModelsList")
   let getActiveId = get(key: "activeModelId")
@@ -8,5 +8,5 @@ graph agi-guide {
     let isActive = eq(a: "{{itemId}}", b: "{{getActiveId}}")
     let isOther = not(value: "{{isActive}}")
   }
-  let setPrompt = set(key: "_promptAgiGuide", value: "【AGI 多模型协作能力】\n\n你可以调用其他 AI 模型来协助完成任务。当你遇到以下情况时，请考虑使用子模型：\n\n1. 需要专业知识（代码审查、翻译、写作等）\n2. 任务可以平行拆分\n3. 用户明确要求使用不同模型\n\n可用工具:\n  call-model(modelId, task)\n    - modelId: 目标模型ID\n    - task: 要委派的任务描述\n\n使用策略:\n- 简单问题直接用你自己回答，不需要子模型\n- 并行任务可以同时调用多个子模型\n- 子模型返回后，你负责汇总和优化最终输出")
+  let setPrompt = set(key: "_promptAgiGuide", value: "## AGI Multi-Model Collaboration\n\nYou can call other AI models to help complete tasks. Consider using a sub-model when:\n\n1. Specialized knowledge is needed (code review, translation, writing, etc.)\n2. The task can be split into parallel parts\n3. The user explicitly asks to use a different model\n\nAvailable tool:\n  call-model(modelId, task)\n    - modelId: target model ID\n    - task: description of the task to delegate\n\nUsage strategy:\n- Answer simple questions yourself - no sub-model needed\n- Parallel tasks can call multiple sub-models at once\n- After sub-models return, aggregate and optimize the final output")
 }

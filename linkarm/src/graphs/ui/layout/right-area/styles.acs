@@ -1,5 +1,5 @@
 graph styles {
-  meta: { description: "Right area appearance styles", type: "styles", category: "right-area", author: "AITOS Team" }
+  meta: { description: "Right area appearance styles", type: "core", output: "CSS styles" }
 
   let setAppearanceStyles = setStyles(id: "rightArea", styles: { backgroundColor: "#f1f1f1" })
 }

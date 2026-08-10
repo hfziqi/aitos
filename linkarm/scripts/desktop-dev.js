@@ -1,34 +1,38 @@
-import { spawn } from 'child_process';
+import { spawn, execSync } from 'child_process';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
-import { existsSync } from 'fs';
+import { existsSync, copyFileSync } from 'fs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const rootDir = resolve(__dirname, '..');
 const desktopDir = resolve(rootDir, '../linkarm-desktop');
 
-function printDesktopBuildGuide() {
+// Ensure native deps are in place: WebView2Loader.dll must be in the same directory as LinkArm.exe
+// consistent with how desktop-build.js deploys release
+function ensureNativeDeps() {
+  const srcDll = resolve(desktopDir, 'webview2/build/native/x64/WebView2Loader.dll');
+  const dstDll = resolve(desktopDir, 'build/bin/Release/WebView2Loader.dll');
+  if (existsSync(srcDll) && !existsSync(dstDll)) {
+    copyFileSync(srcDll, dstDll);
+    console.log('  Copied WebView2Loader.dll to build/bin/Release/');
+  }
+}
+
+// When LinkArm.exe is not found, auto-run cmake configure + build
+function autoBuildDesktop() {
   console.log('\n═══════════════════════════════════════════════════════════');
-  console.log('  LinkArm desktop app not built yet');
-  console.log('═══════════════════════════════════════════════════════════');
-  console.log('');
-  console.log('  Vite dev server is running. You can access it in browser:');
-  console.log('  http://localhost:7890');
-  console.log('');
-  console.log('  To build the desktop app:');
-  console.log('');
-  console.log('  Prerequisites: CMake 3.15+, Visual Studio 2022 (C++ desktop development)');
-  console.log('');
-  console.log('  cd linkarm-desktop');
-  console.log('  mkdir build && cd build');
-  console.log('  cmake ..');
-  console.log('  cmake --build . --config Release');
-  console.log('');
-  console.log('  Or use the one-click script:');
-  console.log('  cd linkarm && npm run desktop:build');
-  console.log('');
-  console.log('  After building, run npm run desktop:dev again');
+  console.log('  LinkArm desktop app not built yet. Building now...');
   console.log('═══════════════════════════════════════════════════════════\n');
+
+  console.log('[1/2] Running cmake configuration...');
+  execSync('cmake -B build -S .', { cwd: desktopDir, stdio: 'inherit', shell: true });
+
+  console.log('\n[2/2] Building LinkArm (this may take a few minutes)...');
+  execSync('cmake --build build --config Release', { cwd: desktopDir, stdio: 'inherit', shell: true });
+
+  ensureNativeDeps();
+
+  console.log('\n✅ Desktop app built successfully.\n');
 }
 
 async function main() {
@@ -52,11 +56,20 @@ async function main() {
       actualPort = parseInt(portMatch[1]);
 
       const exePath = resolve(desktopDir, 'build/bin/Release/LinkArm.exe');
-      
+
       if (!existsSync(exePath)) {
         console.log(`Detected Vite server on port: ${actualPort}`);
-        printDesktopBuildGuide();
-        return;
+        try {
+          autoBuildDesktop();
+        } catch (e) {
+          console.error('\n❌ Auto build failed:', e.message);
+          console.log('\n💡 Web version is still running at: http://localhost:' + actualPort);
+          console.log('   Run "npm run desktop:build" manually for details.\n');
+          return;
+        }
+      } else {
+        // exe exists but dll may be missing (common in dev mode); fill in deps before launch
+        ensureNativeDeps();
       }
 
       setTimeout(() => {

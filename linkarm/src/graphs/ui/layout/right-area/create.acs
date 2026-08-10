@@ -1,5 +1,5 @@
 graph create {
-  meta: { description: "Create right area container (logic)", type: "layout", category: "right-area", author: "AITOS Team" }
+  meta: { description: "Create right area container (logic)", type: "core", output: "rightArea DOM" }
 
   let checkRightArea = getElementById(domId: "rightArea", storeId: "existingRightArea")
   let shouldCreateRightArea = not(value: "{{checkRightArea}}")

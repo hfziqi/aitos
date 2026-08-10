@@ -9,7 +9,7 @@ export const showAlertAtom: Atom = {
     ],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { message: string }, context: Context): Promise<Result> => {
     if (typeof alert !== 'undefined') {
       alert(input.message);
@@ -28,7 +28,7 @@ export const showConfirmAtom: Atom = {
     ],
     output: { type: 'boolean', description: 'User choice (true = OK, false = Cancel)' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { message: string }, context: Context): Promise<Result> => {
     if (typeof confirm !== 'undefined') {
       return { success: true, data: confirm(input.message) };
@@ -47,7 +47,7 @@ export const showPromptAtom: Atom = {
     ],
     output: { type: 'string', description: 'User input or null if cancelled' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { message: string; default?: string }, context: Context): Promise<Result> => {
     if (typeof prompt !== 'undefined') {
       const result = prompt(input.message, input.default || '');
@@ -70,7 +70,7 @@ export const showNotificationAtom: Atom = {
     ],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { title: string; body: string }, context: Context): Promise<Result> => {
     if (typeof Notification !== 'undefined') {
       try {

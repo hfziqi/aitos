@@ -1,5 +1,5 @@
 graph hide {
-  meta: { description: "Hide context menu", type: "action", category: "context-menu", author: "AITOS Team" }
+  meta: { description: "Hide context menu", type: "core", output: "removes context menu DOM" }
 
   let removeMenu = removeElement(id: "contextMenu")
   let removeOverlay = removeElement(id: "contextMenuOverlay")

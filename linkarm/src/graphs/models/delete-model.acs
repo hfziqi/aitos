@@ -1,9 +1,9 @@
 graph delete-model {
-  meta: { description: "Delete AI model - parses model ID from clickTargetId", type: "action", category: "ai-models", author: "AITOS Team" }
+  meta: { description: "Delete AI model - parses model ID from clickTargetId", type: "core", input: "clickTargetId, aiModelsList, activeModelId", output: "aiModelsList" }
 
   let getTargetId = get(key: "clickTargetId")
   let findCard = closest(id: "{{getTargetId}}", selector: ".model-card")
-  let getModelId = slice(array: "{{findCard}}", start: 11)
+  let getModelId = getAttribute(id: "{{findCard}}", name: "data-model-id")
   let loadModels = execFile(file: "models/load-models")
   let getList = get(key: "aiModelsList")
   let filterModels = filter currentModel index: modelIndex in getList {

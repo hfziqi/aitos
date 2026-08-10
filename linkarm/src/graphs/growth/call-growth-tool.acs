@@ -1,5 +1,6 @@
 graph call-growth-tool {
-  meta: { description: "Execute a tool growth by name - dynamically loads args and runs the target graph", type: "action", category: "growth", author: "AITOS Team" }
+  meta: { description: "Execute a tool growth by name - dynamically loads args and runs the target graph", type: "tool", input: "name, args", output: "execTool" }
+  out: execTool
 
   let getName = get(key: "name")
   let getArgs = get(key: "args")

@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "WebView2.h"
+#include "HttpServer.h"
 
 template<typename T>
 class ComPtr {
@@ -63,6 +64,7 @@ private:
     HWND hWnd;
     ICoreWebView2Controller* webviewController;
     ICoreWebView2* webview;
+    HttpServer httpServer;
     bool devMode;
     int devPort;
 

@@ -1,5 +1,5 @@
 graph create {
-  meta: { description: "Create sidebar container (logic)", type: "layout", category: "sidebar", author: "AITOS Team" }
+  meta: { description: "Create sidebar container (logic)", type: "core", input: "conversations, currentConversationId", output: "sidebar DOM" }
 
   let checkSidebarContainer = getElementById(domId: "sidebarContainer", storeId: "existingSidebar")
   let shouldCreateSidebar = not(value: "{{checkSidebarContainer}}")
@@ -12,8 +12,8 @@ graph create {
   let clearSidebar = clearElement(id: "sidebarContainer")
   let createNewChatButton = createElement(tag: "button", id: "newChatButton")
   let setNewChatButtonClass = setAttribute(id: "newChatButton", name: "class", value: "btn-primary")
-  let setNewChatButtonCustomStyles = setStyles(id: "newChatButton", styles: { width: "calc(100% - 16px)", margin: "12px 8px 8px 8px" })
-  let setNewChatButtonText = setTextContent(id: "newChatButton", text: "+ New Chat")
+  let setNewChatButtonCustomStyles = setStyles(id: "newChatButton", styles: { display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", margin: "22px 18px 8px 18px", padding: "8px 20px", backgroundColor: "#4caf50", color: "#fff", border: "none", borderRadius: "4px", fontSize: "18px", fontWeight: "200", cursor: "default" })
+  let setNewChatButtonIcon = setInnerHTML(id: "newChatButton", html: "<svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><line x1=\"12\" y1=\"5\" x2=\"12\" y2=\"19\"/><line x1=\"5\" y1=\"12\" x2=\"19\" y2=\"12\"/></svg>")
   let appendNewChatButton = appendChild(parentId: "sidebarContainer", childId: "newChatButton")
   let createConvList = createElement(tag: "div", id: "conversationList")
   let setConvListStyles = setStyles(id: "conversationList", styles: { flex: "1", overflowY: "auto", minHeight: "0" })
@@ -35,7 +35,7 @@ graph create {
     let getConvTitle = getProp(obj: "{{conversation}}", key: "title")
     let setConvTitleAttr = setAttribute(id: "convItem-{{convIndex}}", name: "data-conv-title", value: "{{getConvTitle}}")
     let setTitleText = setTextContent(id: "convTitle-{{convIndex}}", text: "{{getConvTitle}}")
-    let setTitleStyles = setStyles(id: "convTitle-{{convIndex}}", styles: { overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: "1", minWidth: "0" })
+    let setTitleStyles = setStyles(id: "convTitle-{{convIndex}}", styles: { overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: "1", minWidth: "0", fontSize: "15px" })
     let appendTitleSpan = appendChild(parentId: "convItem-{{convIndex}}", childId: "convTitle-{{convIndex}}")
     let appendConvItem = appendChild(parentId: "conversationList", childId: "convItem-{{convIndex}}")
   }

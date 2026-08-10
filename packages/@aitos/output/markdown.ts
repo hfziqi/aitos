@@ -189,7 +189,7 @@ export const markdownToHtmlAtom: Atom = {
     ],
     output: { type: 'string', description: 'HTML string' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { text: string }, context: Context): Promise<Result> => {
     if (typeof input.text !== 'string') {
       return { success: true, data: '' };

@@ -57,7 +57,7 @@ export const createElementAtom: Atom = {
     ],
     output: { type: 'string', description: 'Element ID for later reference' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { tag: string; id?: string }, context: Context): Promise<Result> => {
     if (typeof document === 'undefined') {
       return { success: false, error: 'createElement requires browser environment' };
@@ -95,7 +95,7 @@ export const appendChildAtom: Atom = {
     ],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { parentId: string; childId: string }, context: Context): Promise<Result> => {
     if (typeof document === 'undefined') {
       return { success: false, error: 'appendChild requires browser environment' };
@@ -132,7 +132,7 @@ export const removeChildAtom: Atom = {
     ],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { parentId: string; childId: string }, context: Context): Promise<Result> => {
     if (typeof document === 'undefined') {
       return { success: false, error: 'removeChild requires browser environment' };
@@ -169,7 +169,7 @@ export const removeElementAtom: Atom = {
     ],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { id: string }, context: Context): Promise<Result> => {
     if (typeof document === 'undefined') {
       return { success: false, error: 'removeElement requires browser environment' };
@@ -199,7 +199,7 @@ export const setStyleAtom: Atom = {
     ],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { id: string; prop: string; value: string }, context: Context): Promise<Result> => {
     if (typeof document === 'undefined') {
       return { success: false, error: 'setStyle requires browser environment' };
@@ -229,7 +229,7 @@ export const setStylesAtom: Atom = {
     ],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { id: string; styles: Record<string, string> }, context: Context): Promise<Result> => {
     if (typeof document === 'undefined') {
       return { success: false, error: 'setStyles requires browser environment' };
@@ -261,7 +261,7 @@ export const injectCSSAtom: Atom = {
     ],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { css: string; id?: string }, context: Context): Promise<Result> => {
     if (typeof document === 'undefined') {
       return { success: false, error: 'injectCSS requires browser environment' };
@@ -297,7 +297,7 @@ export const setAttributeAtom: Atom = {
     ],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { id: string; name: string; value: string }, context: Context): Promise<Result> => {
     if (typeof document === 'undefined') {
       return { success: false, error: 'setAttribute requires browser environment' };
@@ -323,7 +323,7 @@ export const getAttributeAtom: Atom = {
     ],
     output: { type: 'string', description: 'Attribute value or null' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { id: string; name: string }, context: Context): Promise<Result> => {
     if (typeof document === 'undefined') {
       return { success: false, error: 'getAttribute requires browser environment' };
@@ -348,7 +348,7 @@ export const setTextContentAtom: Atom = {
     ],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { id: string; text: string }, context: Context): Promise<Result> => {
     if (typeof document === 'undefined') {
       return { success: false, error: 'setTextContent requires browser environment' };
@@ -374,7 +374,7 @@ export const getElementByIdAtom: Atom = {
     ],
     output: { type: 'string', description: 'Store ID or null if not found' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { domId: string; storeId?: string }, context: Context): Promise<Result> => {
     if (typeof document === 'undefined') {
       return { success: false, error: 'getElementById requires browser environment' };
@@ -401,7 +401,7 @@ export const querySelectorAtom: Atom = {
     ],
     output: { type: 'string', description: 'Store ID or null if not found' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { selector: string; storeId?: string }, context: Context): Promise<Result> => {
     if (typeof document === 'undefined') {
       return { success: false, error: 'querySelector requires browser environment' };
@@ -427,7 +427,7 @@ export const getBoundingClientRectAtom: Atom = {
     ],
     output: { type: 'object', description: '{ x, y, width, height, top, right, bottom, left }' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { id: string }, context: Context): Promise<Result> => {
     if (typeof document === 'undefined') {
       return { success: false, error: 'getBoundingClientRect requires browser environment' };
@@ -465,7 +465,7 @@ export const closestAtom: Atom = {
     ],
     output: { type: 'string', description: 'Element ID of closest ancestor or null' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { id: string; selector: string }, context: Context): Promise<Result> => {
     if (typeof document === 'undefined') {
       return { success: false, error: 'closest requires browser environment' };
@@ -498,7 +498,7 @@ export const getWindowSizeAtom: Atom = {
     input: [],
     output: { type: 'object', description: '{ width, height }' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: {}, context: Context): Promise<Result> => {
     if (typeof window === 'undefined') {
       return { success: false, error: 'getWindowSize requires browser environment' };
@@ -523,7 +523,7 @@ export const clearElementAtom: Atom = {
     ],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { id: string }, context: Context): Promise<Result> => {
     if (typeof document === 'undefined') {
       return { success: false, error: 'clearElement requires browser environment' };
@@ -551,7 +551,7 @@ export const focusAtom: Atom = {
     ],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { id: string }, context: Context): Promise<Result> => {
     if (typeof document === 'undefined') {
       return { success: false, error: 'focus requires browser environment' };
@@ -577,7 +577,7 @@ export const setValueAtom: Atom = {
     ],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { id: string; value: string }, context: Context): Promise<Result> => {
     if (typeof document === 'undefined') {
       return { success: false, error: 'setValue requires browser environment' };
@@ -602,7 +602,7 @@ export const getValueAtom: Atom = {
     ],
     output: { type: 'string', description: 'Element value' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { id: string }, context: Context): Promise<Result> => {
     if (typeof document === 'undefined') {
       return { success: false, error: 'getValue requires browser environment' };
@@ -626,7 +626,7 @@ export const setCanvasAtom: Atom = {
     ],
     output: { type: 'object', description: '{ width, height }' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { id: string }, context: Context): Promise<Result> => {
     if (typeof document === 'undefined') {
       return { success: false, error: 'setCanvas requires browser environment' };
@@ -655,7 +655,7 @@ export const getCanvasSizeAtom: Atom = {
     input: [],
     output: { type: 'object', description: '{ width, height }' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: {}, context: Context): Promise<Result> => {
     const canvas = getCanvas();
     if (!canvas) return { success: false, error: 'Canvas not initialized' };
@@ -680,7 +680,7 @@ export const setCanvasSizeAtom: Atom = {
     ],
     output: { type: 'object', description: '{ width, height }' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { width: number; height: number }, context: Context): Promise<Result> => {
     const canvas = getCanvas();
     if (!canvas) return { success: false, error: 'Canvas not initialized' };
@@ -705,7 +705,7 @@ export const clearCanvasAtom: Atom = {
     input: [],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: {}, context: Context): Promise<Result> => {
     const ctx = getCanvasContext();
     const canvas = getCanvas();
@@ -723,7 +723,7 @@ export const beginPathAtom: Atom = {
     input: [],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: {}, context: Context): Promise<Result> => {
     const ctx = getCanvasContext();
     if (!ctx) return { success: false, error: 'Canvas not initialized' };
@@ -742,7 +742,7 @@ export const moveToAtom: Atom = {
     ],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { x: number; y: number }, context: Context): Promise<Result> => {
     const ctx = getCanvasContext();
     if (!ctx) return { success: false, error: 'Canvas not initialized' };
@@ -761,7 +761,7 @@ export const lineToAtom: Atom = {
     ],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { x: number; y: number }, context: Context): Promise<Result> => {
     const ctx = getCanvasContext();
     if (!ctx) return { success: false, error: 'Canvas not initialized' };
@@ -784,7 +784,7 @@ export const arcAtom: Atom = {
     ],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { x: number; y: number; r: number; startAngle?: number; endAngle?: number; counterclockwise?: boolean }, context: Context): Promise<Result> => {
     const ctx = getCanvasContext();
     if (!ctx) return { success: false, error: 'Canvas not initialized' };
@@ -807,7 +807,7 @@ export const closePathAtom: Atom = {
     input: [],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: {}, context: Context): Promise<Result> => {
     const ctx = getCanvasContext();
     if (!ctx) return { success: false, error: 'Canvas not initialized' };
@@ -825,7 +825,7 @@ export const fillAtom: Atom = {
     ],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { fillRule?: 'nonzero' | 'evenodd' }, context: Context): Promise<Result> => {
     const ctx = getCanvasContext();
     if (!ctx) return { success: false, error: 'Canvas not initialized' };
@@ -845,7 +845,7 @@ export const strokeAtom: Atom = {
     input: [],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: {}, context: Context): Promise<Result> => {
     const ctx = getCanvasContext();
     if (!ctx) return { success: false, error: 'Canvas not initialized' };
@@ -866,7 +866,7 @@ export const fillRectAtom: Atom = {
     ],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { x: number; y: number; w: number; h: number }, context: Context): Promise<Result> => {
     const ctx = getCanvasContext();
     if (!ctx) return { success: false, error: 'Canvas not initialized' };
@@ -887,7 +887,7 @@ export const strokeRectAtom: Atom = {
     ],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { x: number; y: number; w: number; h: number }, context: Context): Promise<Result> => {
     const ctx = getCanvasContext();
     if (!ctx) return { success: false, error: 'Canvas not initialized' };
@@ -908,7 +908,7 @@ export const clearRectAtom: Atom = {
     ],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { x: number; y: number; w: number; h: number }, context: Context): Promise<Result> => {
     const ctx = getCanvasContext();
     if (!ctx) return { success: false, error: 'Canvas not initialized' };
@@ -929,7 +929,7 @@ export const fillTextAtom: Atom = {
     ],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { text: string; x: number; y: number; maxWidth?: number }, context: Context): Promise<Result> => {
     const ctx = getCanvasContext();
     if (!ctx) return { success: false, error: 'Canvas not initialized' };
@@ -954,7 +954,7 @@ export const strokeTextAtom: Atom = {
     ],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { text: string; x: number; y: number; maxWidth?: number }, context: Context): Promise<Result> => {
     const ctx = getCanvasContext();
     if (!ctx) return { success: false, error: 'Canvas not initialized' };
@@ -976,7 +976,7 @@ export const measureTextAtom: Atom = {
     ],
     output: { type: 'object', description: '{ width }' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { text: string }, context: Context): Promise<Result> => {
     const ctx = getCanvasContext();
     if (!ctx) return { success: false, error: 'Canvas not initialized' };
@@ -994,7 +994,7 @@ export const setFillStyleAtom: Atom = {
     ],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { style: string }, context: Context): Promise<Result> => {
     const ctx = getCanvasContext();
     if (!ctx) return { success: false, error: 'Canvas not initialized' };
@@ -1012,7 +1012,7 @@ export const setStrokeStyleAtom: Atom = {
     ],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { style: string }, context: Context): Promise<Result> => {
     const ctx = getCanvasContext();
     if (!ctx) return { success: false, error: 'Canvas not initialized' };
@@ -1030,7 +1030,7 @@ export const setLineWidthAtom: Atom = {
     ],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { width: number }, context: Context): Promise<Result> => {
     const ctx = getCanvasContext();
     if (!ctx) return { success: false, error: 'Canvas not initialized' };
@@ -1048,7 +1048,7 @@ export const setFontAtom: Atom = {
     ],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { font: string }, context: Context): Promise<Result> => {
     const ctx = getCanvasContext();
     if (!ctx) return { success: false, error: 'Canvas not initialized' };
@@ -1066,7 +1066,7 @@ export const setGlobalAlphaAtom: Atom = {
     ],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { alpha: number }, context: Context): Promise<Result> => {
     const ctx = getCanvasContext();
     if (!ctx) return { success: false, error: 'Canvas not initialized' };
@@ -1084,7 +1084,7 @@ export const setTextAlignAtom: Atom = {
     ],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { align: CanvasTextAlign }, context: Context): Promise<Result> => {
     const ctx = getCanvasContext();
     if (!ctx) return { success: false, error: 'Canvas not initialized' };
@@ -1102,7 +1102,7 @@ export const setTextBaselineAtom: Atom = {
     ],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { baseline: CanvasTextBaseline }, context: Context): Promise<Result> => {
     const ctx = getCanvasContext();
     if (!ctx) return { success: false, error: 'Canvas not initialized' };
@@ -1118,7 +1118,7 @@ export const saveAtom: Atom = {
     input: [],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: {}, context: Context): Promise<Result> => {
     const ctx = getCanvasContext();
     if (!ctx) return { success: false, error: 'Canvas not initialized' };
@@ -1134,7 +1134,7 @@ export const restoreAtom: Atom = {
     input: [],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: {}, context: Context): Promise<Result> => {
     const ctx = getCanvasContext();
     if (!ctx) return { success: false, error: 'Canvas not initialized' };
@@ -1153,7 +1153,7 @@ export const translateAtom: Atom = {
     ],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { x: number; y: number }, context: Context): Promise<Result> => {
     const ctx = getCanvasContext();
     if (!ctx) return { success: false, error: 'Canvas not initialized' };
@@ -1171,7 +1171,7 @@ export const rotateAtom: Atom = {
     ],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { angle: number }, context: Context): Promise<Result> => {
     const ctx = getCanvasContext();
     if (!ctx) return { success: false, error: 'Canvas not initialized' };
@@ -1190,7 +1190,7 @@ export const scaleAtom: Atom = {
     ],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { x: number; y: number }, context: Context): Promise<Result> => {
     const ctx = getCanvasContext();
     if (!ctx) return { success: false, error: 'Canvas not initialized' };
@@ -1212,7 +1212,7 @@ export const drawImageAtom: Atom = {
     ],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { image: HTMLImageElement | string; x: number; y: number; width?: number; height?: number }, context: Context): Promise<Result> => {
     const ctx = getCanvasContext();
     if (!ctx) return { success: false, error: 'Canvas not initialized' };
@@ -1250,7 +1250,7 @@ export const streamTextAtom: Atom = {
     ],
     output: { type: 'string', description: 'Current full text content' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { id: string; text: string; mode?: string }, context: Context): Promise<Result> => {
     if (typeof document === 'undefined') {
       return { success: false, error: 'streamText requires browser environment' };
@@ -1281,7 +1281,7 @@ export const setInnerHTMLAtom: Atom = {
     ],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { id: string; html: string }, context: Context): Promise<Result> => {
     if (typeof document === 'undefined') {
       return { success: false, error: 'setInnerHTML requires browser environment' };
@@ -1306,7 +1306,7 @@ export const screenshotAtom: Atom = {
     ],
     output: { type: 'void', description: 'Nothing, draws to current canvas' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { selector: string }, context: Context): Promise<Result> => {
     if (typeof document === 'undefined') {
       return { success: false, error: 'screenshot requires browser environment' };
@@ -1378,7 +1378,7 @@ export const canvasToDataURLAtom: Atom = {
     ],
     output: { type: 'string', description: 'Base64 encoded data URL' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { format?: string }, context: Context): Promise<Result> => {
     const canvas = getCanvas();
     if (!canvas) {
@@ -1400,7 +1400,7 @@ export const scrollToBottomAtom: Atom = {
     ],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { id: string }, context: Context): Promise<Result> => {
     if (typeof document === 'undefined') {
       return { success: false, error: 'scrollToBottom requires browser environment' };

@@ -1,9 +1,10 @@
 graph lock-growth {
-  meta: { description: "Lock or unlock a growth — only callable via right-click menu, NOT in AI tools", type: "action", category: "growth", author: "AITOS Team" }
+  meta: { description: "Lock or unlock a growth — only callable via right-click menu, NOT in AI tools", type: "core", input: "name, locked", output: "lockGrowthResult, _growthIndex" }
 
   let getName = get(key: "name")
   let getLocked = get(key: "locked")
-  let readIndex = readLocal(key: "growths/index.json")
+  // Read the growth index through the interface graph (list-growths), not the raw file
+  let readIndex = execFile(file: "growth/list-growths")
   let indexIsArr = isArr(value: "{{readIndex}}")
   let initIndex = if indexIsArr {
     let keep = set(key: "_growthIndex", value: "{{readIndex}}")
@@ -11,19 +12,18 @@ graph lock-growth {
     let empty = set(key: "_growthIndex", value: [])
   }
   let getIndex = get(key: "_growthIndex")
-  let filterOther = filter item in getIndex {
+  let rebuildIndex = map item in getIndex {
     let itemName = getProp(obj: "{{item}}", key: "name")
     let isTarget = eq(a: "{{itemName}}", b: "{{getName}}")
-    let isOther = not(value: "{{isTarget}}")
+    let mappedItem = if isTarget {
+      let updatedItem = setProp(obj: "{{item}}", key: "locked", value: {{getLocked}})
+    } else {
+      let originalItem = {{item}}
+    }
   }
-  let filterTarget = filter item in getIndex {
-    let itemName = getProp(obj: "{{item}}", key: "name")
-    let isTarget = eq(a: "{{itemName}}", b: "{{getName}}")
-  }
-  let getTargetItem = getAt(array: "{{filterTarget}}", index: 0)
-  let setNewLocked = setProp(obj: "{{getTargetItem}}", key: "locked", value: {{getLocked}})
-  let pushEntry = push(array: "{{filterOther}}", value: "{{setNewLocked}}")
-  let saveIndex = writeLocal(key: "growths/index.json", value: "{{pushEntry}}")
+  // Write the growth index through the interface graph (save-growth-index), not the raw file
+  let setIndexForSave = set(key: "growthsListResult", value: "{{rebuildIndex}}")
+  let saveIndex = execFile(file: "growth/save-growth-index")
   let lockFilePath = concat(a: "growths/", b: "{{getName}}")
   let lockFileFull = concat(a: "{{lockFilePath}}", b: "/_lock")
   let lockFileContent = if getLocked {

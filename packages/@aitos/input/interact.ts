@@ -8,13 +8,13 @@ export const showFilePickerAtom: Atom = {
       { name: 'accept', type: 'string', description: 'File types to accept (e.g. ".jpg,.png")' },
       { name: 'multiple', type: 'boolean', description: 'Allow multiple file selection' }
     ],
-    output: { type: 'object', description: 'Selected file(s) or FileList' }
+    output: { type: 'object', description: 'File { name, size, type, lastModified } | File[] (when multiple) | null (cancelled)' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { accept?: string; multiple?: boolean }, context: Context): Promise<Result> => {
     return new Promise((resolve) => {
-      if (typeof document === 'undefined') {
-        resolve({ success: false, error: 'File picker not available' });
+      if (typeof document === 'undefined' || typeof window === 'undefined') {
+        resolve({ success: true, data: null });
         return;
       }
 
@@ -23,7 +23,36 @@ export const showFilePickerAtom: Atom = {
       if (input.accept) inputEl.accept = input.accept;
       if (input.multiple) inputEl.multiple = true;
 
+      inputEl.style.display = 'none';
+      document.body.appendChild(inputEl);
+
+      let resolved = false;
+
+      const cleanup = () => {
+        window.removeEventListener('focus', focusHandler);
+        if (inputEl.parentNode) {
+          inputEl.parentNode.removeChild(inputEl);
+        }
+      };
+
+      const resolveCancel = () => {
+        if (!resolved) {
+          resolved = true;
+          cleanup();
+          // Note: do not call document.body.focus() — avoid stealing focus
+          resolve({ success: true, data: null });
+        }
+      };
+
+      const focusHandler = () => {
+        setTimeout(resolveCancel, 200);
+      };
+
       inputEl.onchange = () => {
+        if (resolved) return;
+        resolved = true;
+        cleanup();
+
         if (inputEl.files && inputEl.files.length > 0) {
           if (input.multiple) {
             resolve({ success: true, data: Array.from(inputEl.files) });
@@ -31,9 +60,13 @@ export const showFilePickerAtom: Atom = {
             resolve({ success: true, data: inputEl.files[0] });
           }
         } else {
-          resolve({ success: false, error: 'No file selected' });
+          resolve({ success: true, data: null });
         }
       };
+
+      setTimeout(() => {
+        window.addEventListener('focus', focusHandler);
+      }, 100);
 
       inputEl.click();
     });
@@ -50,7 +83,7 @@ export const readFileAtom: Atom = {
     ],
     output: { type: 'string', description: 'File content' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { file: File; encoding?: string }, context: Context): Promise<Result> => {
     return new Promise((resolve) => {
       if (!input.file) {

@@ -1,5 +1,5 @@
 graph create {
-  meta: { description: "Create main view container (logic)", type: "layout", category: "main-view", author: "AITOS Team" }
+  meta: { description: "Create main view container (logic)", type: "core", output: "mainViewContainer DOM" }
 
   let checkMainViewContainer = getElementById(domId: "mainViewContainer", storeId: "existingMainViewContainer")
   let shouldCreateMainView = not(value: "{{checkMainViewContainer}}")

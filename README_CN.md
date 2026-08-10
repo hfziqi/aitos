@@ -188,7 +188,7 @@ graph chat {
 | **状态** | `get`, `set`, `setGlobal` |
 | **计算** | `add`, `sub`, `mul`, `div`, `mod`, `random` |
 | **判断** | `eq`, `gt`, `lt`, `gte`, `lte`, `and`, `or`, `not`, `isNil`, `isNum`, `isStr`, `isArr`, `isObj` |
-| **控制** | `branch`, `loop`, `forEach`, `exec`, `execGraph`, `execFile`, `wait`, `log`, `getSkillSet`, `compileAcs`, `executeInContext` |
+| **控制** | `branch`, `loop`, `forEach`, `exec`, `execFile`, `wait`, `log`, `getSkillSet`, `compileAcs`, `executeInContext`, `collectTools` |
 | **操作** | `concat`, `split`, `len`, `push`, `pop`, `slice`, `getProp`, `setProp`, `keys`, `values`, `merge`, `filter`, `format`, `toNum`, `contains`, `includes`, `startsWith`, `replace`, `trim`, `toLower`, `toUpper`, `getAt`, `join` |
 | **时间** | `now`, `timestampToDate`, `getMonthDays`, `isLeapYear` |
 | **工具调用** | `handleToolCalls` |
@@ -248,11 +248,12 @@ graph chat {
 | **`save-growth`** | 保存 AI 生成的图为可复用的后生图 |
 | **`list-growths`** | 列出所有可用的后生图 |
 | **`open-growth`** | 打开并激活已保存的后生图 |
-| **`callGrowthTool`** | AI 可以动态调用任意 tool 类型的后生图，无需显式配置 |
+| **`collectTools`** | 自动收集所有 tool 类型的图（`type: "tool"`）到 AI 工具清单——图声明自己为工具 |
 
-后生图分为两种类型：
-- **`app`** — 面向用户的 UI 应用（显示在侧边栏）
-- **`tool`** — AI 可调用的函数（显示在图市场中）
+图类型：
+- **`app`** — 面向用户的 UI 产品（主图；从市场打开）
+- **`tool`** — AI 可调用的能力（独立工具的主图；自动收集进 AI 工具清单）
+- **`core`** — 内部实现（子图和系统内部图；永不可被 AI 调用）
 
 ### 图市场 (Graph Market)
 
@@ -279,20 +280,20 @@ graph chat {
 
 AITOS 设计为与任何支持 Function Calling 的 LLM 配合使用：
 
-1. **`getSkillSet`** — 返回所有可用原子的 JSON 描述。将其作为工具提供给 AI。
-2. **`handleToolCalls`** — 处理 AI 的 tool_calls 响应，执行请求的原子，并支持通过 `callGrowthTool` 动态路由到 tool 类型的后生图。
-3. **`execGraph`** — AI 可以生成并执行完整的图，而不仅仅是单个函数调用。
+1. **`collectTools`** — 自动收集所有 tool 类型的图（`type: "tool"`）到 AI 工具清单。图声明自己为工具；AI 自动看到它。
+2. **`getSkillSet`** — 返回所有可用原子（名称、参数、规则）的文本——AI 可以组合什么。
+3. **`handleToolCalls`** — 处理 AI 的 tool_calls：通过图执行路径执行工具图（隔离，白名单限定 `type: "tool"`）。
 
 示例流程：
 ```
-用户 → AI → getSkillSet() → [AI 看到所有原子 + 后生图工具]
-用户 → AI → AI 生成图 → execGraph(graph) → 结果
-                              → callGrowthTool(名称, 参数) → 执行已保存的后生图
+用户 → AI → getSkillSet() → [AI 看到所有原子]
+用户 → AI → AI 编写图（ACS）→ save-growth(名称, acs) → 注册、持久化、可复用
+用户 → AI → AI 调用工具 → handleToolCalls → 执行工具图（隔离）
 ```
 
-### `callGrowthTool` — AI 可调用的后生图
+### 工具 = 图
 
-Tool 类型的后生图会自动暴露为 AI 可调用的工具。当 AI 需要已保存后生图中实现的功能（如"雨天检测算法"）时，运行时通过 `callGrowthTool` 将请求路由到匹配的后生图，执行并返回结果。这使得 AI 可以**复用预先组合好的图**，而不是每次从零生成。
+Tool 类型的图会自动暴露为 AI 可调用的工具——AI 调用工具与系统调用图完全一致（`execFile` 语义：隔离、显式参数）。当 AI 需要已保存图中实现的功能时，它将该图作为工具调用。这使得 AI 可以**复用组合好的图**作为能力，而不是每次从零生成。子图（应用内部）是 `type: "core"`——永不可被 AI 调用。
 
 ## 使用场景
 
@@ -300,6 +301,15 @@ Tool 类型的后生图会自动暴露为 AI 可调用的工具。当 AI 需要�
 - **AI 桌面助手** — AI 控制窗口、读取文件、执行命令
 - **AI 驱动的应用** — AI 可以在运行时修改逻辑的应用
 - **快速原型开发** — 用原子构建功能性 UI，无需框架
+
+## 相关文档
+
+- `EXPLICIT_DATAFLOW.md` — 数据显式标准（名称即内容 / 文件即结构 / 原子失败约定）
+- `RUNTIME_SEMANTICS.md` — 引擎语义（判真规则 / 引用解析 / 执行模型 / 风险）
+- `STORE_KEYS.md` — store key 命名约定与业务状态清单
+- `SHELL_CONTRACT.md` — 壳契约（桥协议 / 能力边界）
+
+---
 
 ## 许可证
 

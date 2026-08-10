@@ -1,0 +1,20 @@
+graph update-active {
+  meta: { description: "Update toolbar button active state - active icon turns green", type: "core", input: "currentView", output: "toolbar button styles" }
+
+  let getView = get(key: "currentView")
+  let isChat = eq(a: "{{getView}}", b: "chat")
+  let isFolder = eq(a: "{{getView}}", b: "folder")
+  let isMarket = eq(a: "{{getView}}", b: "market")
+  let resetChat = setStyles(id: "chatButton", styles: { color: "#666" })
+  let resetFolder = setStyles(id: "folderButton", styles: { color: "#666", marginTop: "10px" })
+  let resetAI = setStyles(id: "aiButton", styles: { color: "#666" })
+  let setChat = if isChat {
+    let active = setStyles(id: "chatButton", styles: { color: "#4caf50" })
+  }
+  let setFolder = if isFolder {
+    let active = setStyles(id: "folderButton", styles: { color: "#4caf50", marginTop: "10px" })
+  }
+  let setMarket = if isMarket {
+    let active = setStyles(id: "aiButton", styles: { color: "#4caf50" })
+  }
+}

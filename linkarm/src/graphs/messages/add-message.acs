@@ -1,5 +1,5 @@
 graph add-message {
-  meta: { description: "Add message to current conversation and save to separate file", type: "domain", category: "conversation", author: "AITOS Team" }
+  meta: { description: "Add message to current conversation and save to separate file", type: "core", input: "_convId, newMessage", output: "messages" }
 
   let getConversationId = get(key: "_convId")
   let getMessage = get(key: "newMessage")

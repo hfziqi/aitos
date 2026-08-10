@@ -1,0 +1,85 @@
+graph context-compress {
+  meta: { description: "Compress conversation context when near token limit - prune large tool outputs, summarize old history", type: "core", input: "_apiContext, _modelContextLength", output: "_apiContext, _headMsgs, _recentMsgs, _summaryMsg, _subMessages, _prunedMsg" }
+
+  // ---- 1. Load context and estimate tokens ----
+  let getCtx = get(key: "_apiContext")
+  let ctxStr = format(template: "{ctx}", ctx: "{{getCtx}}")
+  let ctxLen = len(value: "{{ctxStr}}")
+  let curTokens = div(a: "{{ctxLen}}", b: 4)
+
+  // ---- 2. Threshold check (75% of model window) ----
+  let winLen = get(key: "_modelContextLength")
+  let winNil = isNil(value: "{{winLen}}")
+  let useDefaultWin = if winNil {
+    let saveWin = set(key: "_contextWinLen", value: 128000)
+  }
+  let win = get(key: "_contextWinLen")
+  let threshold = mul(a: "{{win}}", b: 0.75)
+  let tooBig = gt(a: "{{curTokens}}", b: "{{threshold}}")
+
+  // ---- 3. Prune large tool outputs (placeholder replacement) ----
+  let pruned = map msg in getCtx {
+    let role = getProp(obj: "{{msg}}", key: "role")
+    let isTool = eq(a: "{{role}}", b: "tool")
+    let content = getProp(obj: "{{msg}}", key: "content")
+    let cLen = len(value: "{{content}}")
+    let isLong = gt(a: "{{cLen}}", b: 3000)
+    let shouldPrune = and(a: "{{isTool}}", b: "{{isLong}}")
+    let prunedMsg = if shouldPrune {
+      let newMsg = setProp(obj: "{{msg}}", key: "content", value: "[Old tool output cleared to save context space]")
+      let keep = set(key: "_prunedMsg", value: "{{newMsg}}")
+    } else {
+      let keep = set(key: "_prunedMsg", value: "{{msg}}")
+    }
+    let getNew = get(key: "_prunedMsg")
+  }
+
+  // ---- 4. History split: keep recent messages, summarize the rest ----
+  let totalCount = len(value: "{{pruned}}")
+  let keepRecent = 20
+  let oldCount = sub(a: "{{totalCount}}", b: "{{keepRecent}}")
+  let hasOld = gt(a: "{{oldCount}}", b: 0)
+  let splitOld = if hasOld {
+    let sliceOld = slice(array: "{{pruned}}", start: 0, end: "{{oldCount}}")
+    let setOld = set(key: "_oldHistory", value: "{{sliceOld}}")
+  }
+  let splitRecent = if hasOld {
+    let sliceRecent = slice(array: "{{pruned}}", start: "{{oldCount}}")
+    let setRecent = set(key: "_recentMsgs", value: "{{sliceRecent}}")
+  }
+
+  // ---- 5. Summarize old history via call-model ----
+  let doSummary = if tooBig {
+    let oldStr = format(template: "{old}", old: "{{_oldHistory}}")
+    let buildTask = set(key: "_summarizeTask", value: "Compress the following conversation history into a concise summary, keeping: 1) key decisions and conclusions 2) completed items 3) context still needed 4) important data. Output only the summary itself. History:\n\n{{oldStr}}")
+    let getModelId = get(key: "activeModelId")
+    let getModels = get(key: "aiModelsList")
+    let setModelId = set(key: "modelId", value: "{{getModelId}}")
+    let setTask = set(key: "task", value: "{{_summarizeTask}}")
+    let callModel = execFile(file: "services/ai/call-model", store: { modelId: "{{getModelId}}", task: "{{_summarizeTask}}", aiModelsList: "{{getModels}}" }, isolated: true)
+    let getResult = get(key: "callModelResult")
+    let summaryContent = getProp(obj: "{{getResult}}", key: "content")
+    let summaryNil = isNil(value: "{{summaryContent}}")
+    let buildSummary = if not(value: "{{summaryNil}}") {
+      let setMsg = set(key: "_summaryMsg", value: { role: "system", content: "[CONTEXT SUMMARY] {{summaryContent}}" })
+    }
+  }
+
+  // ---- 6. Rebuild: marker + summary + recent messages ----
+  let rebuild = if tooBig {
+    let buildMarker = set(key: "_ctxMarker", value: { role: "system", content: "[CONTEXT COMPRESSED — reference only] Old conversation has been compressed into a summary. Call the relevant tools again if you need the full data. Only respond to the latest messages that appear after this marker." })
+    let getMarker = get(key: "_ctxMarker")
+    let getSummary = get(key: "_summaryMsg")
+    let getRecent = get(key: "_recentMsgs")
+    let summaryNil2 = isNil(value: "{{getSummary}}")
+    let head = if summaryNil2 {
+      let keepOnlyMarker = set(key: "_headMsgs", value: ["{{getMarker}}"])
+    } else {
+      let markerAndSummary = set(key: "_headMsgs", value: ["{{getMarker}}", "{{getSummary}}"])
+    }
+    let getHead = get(key: "_headMsgs")
+    let combined = concat(a: "{{getHead}}", b: "{{getRecent}}")
+    let saveCtx = set(key: "_apiContext", value: "{{combined}}")
+    let markDone = set(key: "_ctxCompressed", value: true)
+  }
+}

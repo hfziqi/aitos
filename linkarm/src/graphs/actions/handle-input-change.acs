@@ -1,0 +1,19 @@
+graph handle-input-change {
+  meta: { description: "Toggle send button disabled state based on input content", type: "core", input: "inputValue_value", output: "send button DOM class" }
+
+  // Explicit data flow: read the raw input value directly from the
+  // <storeKey>_value key provided by addEventListener (no getProp needed).
+  let getValue = get(key: "inputValue_value")
+  let isNilValue = isNil(value: "{{getValue}}")
+  let isEmptyStr = eq(a: "{{getValue}}", b: "")
+  let isEmpty = or(a: "{{isNilValue}}", b: "{{isEmptyStr}}")
+
+  let disableBtn = if isEmpty {
+    let setDisabledClass = setAttribute(id: "sendButton", name: "class", value: "chat-input-send-btn disabled")
+  }
+
+  let notEmpty = not(value: "{{isEmpty}}")
+  let enableBtn = if notEmpty {
+    let setEnabledClass = setAttribute(id: "sendButton", name: "class", value: "chat-input-send-btn")
+  }
+}

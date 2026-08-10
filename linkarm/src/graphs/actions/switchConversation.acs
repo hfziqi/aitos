@@ -1,5 +1,5 @@
 graph switchConversation {
-  meta: { description: "Switch conversation - parses conversation ID from clickTargetId", type: "action", category: "conversation", author: "AITOS Team" }
+  meta: { description: "Switch conversation - parses conversation ID from clickTargetId", type: "core", input: "clickTargetId", output: "currentConversationId, _activeContext, currentView" }
 
   let getTargetId = get(key: "clickTargetId")
   let findItem = closest(id: "{{getTargetId}}", selector: ".sidebar-item")
@@ -9,4 +9,6 @@ graph switchConversation {
   let setActiveCtx = setGlobal(key: "_activeContext", value: "{{createCtx}}")
   let updateSidebar = executeInContext(contextKey: "_activeContext", graphKey: "__graph_ui/layout/sidebar/update")
   let switchToChat = executeInContext(contextKey: "_activeContext", graphKey: "__graph_ui/views/chat/switch-view")
+  let setView = setGlobal(key: "currentView", value: "chat")
+  let updateToolbar = execFile(file: "ui/layout/toolbar/update-active")
 }

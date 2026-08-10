@@ -1,5 +1,5 @@
 graph handle-growth-delete {
-  meta: { description: "Delete growth from context menu", type: "action", category: "context-menu", author: "AITOS Team" }
+  meta: { description: "Delete growth from context menu", type: "core", input: "_contextMenuGrowthIndex" }
 
   let getGrowthIndex = get(key: "_contextMenuGrowthIndex")
   let getCardId = concat(a: "growth_card_", b: "{{getGrowthIndex}}")

@@ -1,5 +1,5 @@
 graph import-package {
-  meta: { description: "Import a .zip package of ACS graphs", type: "action", category: "growth", author: "AITOS Team" }
+  meta: { description: "Import a .zip package of ACS graphs", type: "core", output: "_importResult" }
 
   let pickFile = showFilePicker(accept: ".zip")
   let fileNil = isNil(value: "{{pickFile}}")
@@ -28,34 +28,50 @@ graph import-package {
           let processEntry = if isAcs {
             let hasSlash = contains(text: "{{entry.name}}", search: "/")
             let isMainAcs = contains(text: "{{entry.name}}", search: "main.acs")
-            let resolveName = if hasSlash {
-              let handleMainOrSub = if isMainAcs {
-                let parts = split(text: "{{entry.name}}", separator: "/")
-                let firstName = getAt(array: "{{parts}}", index: 0)
-                let setGrowthName = set(key: "_growthName", value: "{{firstName}}")
+            let isNotMain = not(value: "{{isMainAcs}}")
+            let isSubGraph = and(a: "{{hasSlash}}", b: "{{isNotMain}}")
+
+            let handleSubGraph = if isSubGraph {
+              let stripAcs = replace(text: "{{entry.name}}", search: ".acs", replacement: "")
+              let buildKey = concat(a: "__graph_", b: "{{stripAcs}}")
+              let compileSub = compileAcs(acs: "{{entry.content}}")
+              let registerSub = set(key: "{{buildKey}}", value: "{{compileSub}}")
+              let getSubCount = get(key: "_importedCount")
+              let incSubCount = add(a: "{{getSubCount}}", b: 1)
+              let saveSubCount = set(key: "_importedCount", value: "{{incSubCount}}")
+            }
+
+            let isNotSubGraph = not(value: "{{isSubGraph}}")
+            let handleMainGraph = if isNotSubGraph {
+              let resolveName = if hasSlash {
+                let handleMainOrSub = if isMainAcs {
+                  let parts = split(text: "{{entry.name}}", separator: "/")
+                  let firstName = getAt(array: "{{parts}}", index: 0)
+                  let setGrowthName = set(key: "_growthName", value: "{{firstName}}")
+                } else {
+                  let stripAcs = replace(text: "{{entry.name}}", search: ".acs", replacement: "")
+                  let setSubName = set(key: "_growthName", value: "{{stripAcs}}")
+                }
               } else {
                 let stripAcs = replace(text: "{{entry.name}}", search: ".acs", replacement: "")
-                let setSubName = set(key: "_growthName", value: "{{stripAcs}}")
+                let setFlatName = set(key: "_growthName", value: "{{stripAcs}}")
               }
-            } else {
-              let stripAcs = replace(text: "{{entry.name}}", search: ".acs", replacement: "")
-              let setFlatName = set(key: "_growthName", value: "{{stripAcs}}")
-            }
-            let getGrowthName = get(key: "_growthName")
-            let setName = set(key: "name", value: "{{getGrowthName}}")
-            let setAcs = set(key: "acs", value: "{{entry.content}}")
-            let saveGraph = execFile(file: "growth/save-growth")
-            let getResult = get(key: "createGrowthResult")
-            let success = getProp(obj: "{{getResult}}", key: "success")
-            let handleResult = if success {
-              let getCount = get(key: "_importedCount")
-              let incCount = add(a: "{{getCount}}", b: 1)
-              let saveCount = set(key: "_importedCount", value: "{{incCount}}")
-            } else {
-              let getErrors = get(key: "_importErrors")
-              let getError = getProp(obj: "{{getResult}}", key: "error")
-              let pushError = push(array: "{{getErrors}}", value: "{{getError}}")
-              let saveErrors = set(key: "_importErrors", value: "{{pushError}}")
+              let getGrowthName = get(key: "_growthName")
+              let setName = set(key: "name", value: "{{getGrowthName}}")
+              let setAcs = set(key: "acs", value: "{{entry.content}}")
+              let saveGraph = execFile(file: "growth/save-growth")
+              let getResult = get(key: "createGrowthResult")
+              let success = getProp(obj: "{{getResult}}", key: "success")
+              let handleResult = if success {
+                let getCount = get(key: "_importedCount")
+                let incCount = add(a: "{{getCount}}", b: 1)
+                let saveCount = set(key: "_importedCount", value: "{{incCount}}")
+              } else {
+                let getErrors = get(key: "_importErrors")
+                let getError = getProp(obj: "{{getResult}}", key: "error")
+                let pushError = push(array: "{{getErrors}}", value: "{{getError}}")
+                let saveErrors = set(key: "_importErrors", value: "{{pushError}}")
+              }
             }
           }
         }

@@ -1,4 +1,5 @@
 graph main {
+  meta: { description: "Load styles and initialize layout (entry point from boot)", type: "core", output: "injected CSS styles" }
 
   let execGlobalStyles = execFile(file: "styles/global")
   let execModelCardStyles = execFile(file: "ui/components/model-card/styles")
@@ -7,6 +8,7 @@ graph main {
   let execGrowthPopupStyles = execFile(file: "ui/components/growth-popup/styles")
   let execGrowthDetailStyles = execFile(file: "ui/components/growth-detail/styles")
   let execGrowthCardStyles = execFile(file: "ui/views/market/growth-card/styles")
+  let execAttachPreviewStyles = execFile(file: "ui/components/attachment-preview/styles")
   let getWinSize = getWindowSize()
   let setWinW = set(key: "winW", value: "{{getWinSize.width}}")
   let setWinH = set(key: "winH", value: "{{getWinSize.height}}")

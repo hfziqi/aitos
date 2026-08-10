@@ -1,4 +1,6 @@
 graph init-top-bar {
+  meta: { description: "Create the top bar container (window title bar) if not present", type: "core", output: "topBarContainer DOM" }
+
   let checkTopBarContainer = getElementById(domId: "topBarContainer", storeId: "existingTopBar")
   let shouldCreateTopBar = not(value: "{{checkTopBarContainer}}")
   if shouldCreateTopBar {

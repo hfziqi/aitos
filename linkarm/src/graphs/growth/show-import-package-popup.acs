@@ -1,5 +1,5 @@
 graph show-import-package-popup {
-  meta: { description: "Show import package popup", type: "action", category: "growth", author: "AITOS Team" }
+  meta: { description: "Show import package popup", type: "core", output: "import package DOM" }
 
   let createPopup = execFile(file: "ui/components/import-package-form/create")
 }

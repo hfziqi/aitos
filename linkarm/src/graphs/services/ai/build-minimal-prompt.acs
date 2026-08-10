@@ -1,0 +1,30 @@
+graph build-minimal-prompt {
+  meta: { description: "Compose the complete system prompt (base + system-info + graph compilation rules)", type: "core", output: "_promptBase, _promptSystemInfo" }
+  out: combineMinimal
+
+  let loadBase = execFile(file: "services/ai/prompts/base")
+  let loadSystemInfo = execFile(file: "services/ai/prompts/system-info")
+  let getBase = get(key: "_promptBase")
+  let getSystemInfo = get(key: "_promptSystemInfo")
+
+  // Stable layer (cached): atoms-guide + acs-syntax + examples — AI always has full rules
+  let getCachedStable = get(key: "_promptStableCompilation")
+  let cacheNil = isNil(value: "{{getCachedStable}}")
+  let buildStable = if cacheNil {
+    let loadAtomsGuide = execFile(file: "services/ai/prompts/atoms-guide")
+    let loadAcsSyntax = execFile(file: "services/ai/prompts/acs-syntax")
+    let loadExamples = execFile(file: "services/ai/prompts/examples")
+    let getAtomsGuide = get(key: "_promptAtomsGuide")
+    let getAcsSyntax = get(key: "_promptAcsSyntax")
+    let getExamples = get(key: "_promptExamples")
+    let joinStable = join(array: ["{{getAtomsGuide}}", "{{getAcsSyntax}}", "{{getExamples}}"], separator: "\n\n")
+    let saveStable = set(key: "_promptStableCompilation", value: "{{joinStable}}")
+  }
+  let getStable = get(key: "_promptStableCompilation")
+
+  // Volatile layer: compile-feedback (refreshed every time)
+  let loadCompileFeedback = execFile(file: "services/ai/prompts/compile-feedback")
+  let getCompileFeedback = get(key: "_promptCompileFeedback")
+
+  let combineMinimal = join(array: ["{{getBase}}", "{{getSystemInfo}}", "{{getStable}}", "{{getCompileFeedback}}"], separator: "\n\n")
+}

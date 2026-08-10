@@ -1,5 +1,5 @@
 graph delete-growth {
-  meta: { description: "Delete growth - parses growth index from clickTargetId", type: "action", category: "growth", author: "AITOS Team" }
+  meta: { description: "Delete growth - parses growth index from clickTargetId", type: "core", input: "clickTargetId", output: "growthError, growthsListResult" }
 
   let getTargetId = get(key: "clickTargetId")
   let findCard = closest(id: "{{getTargetId}}", selector: ".growth-card")

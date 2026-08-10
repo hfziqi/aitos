@@ -5,10 +5,10 @@ export const concatAtom: Atom = {
   version: '1.0.0',
   meta: {
     input: [
-      { name: 'a', type: 'any' },
-      { name: 'b', type: 'any' }
+      { name: 'a', type: 'any', description: 'First value or array' },
+      { name: 'b', type: 'any', description: 'Second value or array' }
     ],
-    output: { type: 'any' }
+    output: { type: 'any', description: 'Concatenated string or array' }
   },
   characteristics: { stateless: true, atomic: true, composable: true },
   execute: async (input: { a: any; b: any }, context: Context): Promise<Result> => {
@@ -19,15 +19,40 @@ export const concatAtom: Atom = {
   },
 };
 
+export const rangeAtom: Atom = {
+  name: 'range',
+  version: '1.0.0',
+  meta: {
+    input: [
+      { name: 'start', type: 'number', description: 'Start of range (inclusive)' },
+      { name: 'end', type: 'number', description: 'End of range (exclusive)' },
+      { name: 'step', type: 'number', description: 'Step between values (optional, default 1)' }
+    ],
+    output: { type: 'array', description: 'Array of numbers from start to end' }
+  },
+  characteristics: { stateless: true, atomic: true, composable: true },
+  execute: async (input: { start: number; end: number; step?: number }, context: Context): Promise<Result> => {
+    const step = input.step ?? 1;
+    const arr: number[] = [];
+    if (step === 0) return { success: true, data: arr };
+    if (step > 0) {
+      for (let i = input.start; i < input.end; i += step) arr.push(i);
+    } else {
+      for (let i = input.start; i > input.end; i += step) arr.push(i);
+    }
+    return { success: true, data: arr };
+  },
+};
+
 export const splitAtom: Atom = {
   name: 'split',
   version: '1.0.0',
   meta: {
     input: [
-      { name: 'text', type: 'string' },
-      { name: 'separator', type: 'string' }
+      { name: 'text', type: 'string', description: 'Text to split' },
+      { name: 'separator', type: 'string', description: 'Separator string' }
     ],
-    output: { type: 'array' }
+    output: { type: 'array', description: 'Array of split parts' }
   },
   characteristics: { stateless: true, atomic: true, composable: true },
   execute: async (input: { text: string; separator: string }, context: Context): Promise<Result> => {
@@ -40,9 +65,9 @@ export const lenAtom: Atom = {
   version: '1.0.0',
   meta: {
     input: [
-      { name: 'value', type: 'any' }
+      { name: 'value', type: 'any', description: 'String or array to measure' }
     ],
-    output: { type: 'number' }
+    output: { type: 'number', description: 'Length of the value (0 if null/undefined)' }
   },
   characteristics: { stateless: true, atomic: true, composable: true },
   execute: async (input: { value: string | any[] | null | undefined }, context: Context): Promise<Result> => {
@@ -58,12 +83,12 @@ export const pushAtom: Atom = {
   version: '1.0.0',
   meta: {
     input: [
-      { name: 'array', type: 'array' },
-      { name: 'value', type: 'any' }
+      { name: 'array', type: 'array', description: 'Array to append to' },
+      { name: 'value', type: 'any', description: 'Value to append' }
     ],
-    output: { type: 'array' }
+    output: { type: 'array', description: 'New array with the value appended' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { array: any[]; value: any }, context: Context): Promise<Result> => {
     const arr = [...input.array, input.value];
     return { success: true, data: arr };
@@ -75,11 +100,11 @@ export const popAtom: Atom = {
   version: '1.0.0',
   meta: {
     input: [
-      { name: 'array', type: 'array' }
+      { name: 'array', type: 'array', description: 'Array to pop from' }
     ],
-    output: { type: 'any' }
+    output: { type: 'any', description: 'Last element removed from the array' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { array: any[] }, context: Context): Promise<Result> => {
     const arr = [...input.array];
     const value = arr.pop();
@@ -92,11 +117,11 @@ export const sliceAtom: Atom = {
   version: '1.0.0',
   meta: {
     input: [
-      { name: 'array', type: 'array|string' },
-      { name: 'start', type: 'number' },
-      { name: 'end', type: 'number' }
+      { name: 'array', type: 'array|string', description: 'Array or string to slice' },
+      { name: 'start', type: 'number', description: 'Start index (negative = from end)' },
+      { name: 'end', type: 'number', description: 'End index (exclusive, optional)' }
     ],
-    output: { type: 'array|string' }
+    output: { type: 'array|string', description: 'Sliced portion' }
   },
   characteristics: { stateless: true, atomic: true, composable: true },
   execute: async (input: { array: any[] | string; start: number; end?: number }, context: Context): Promise<Result> => {
@@ -112,10 +137,10 @@ export const getPropAtom: Atom = {
   version: '1.0.0',
   meta: {
     input: [
-      { name: 'obj', type: 'object' },
-      { name: 'key', type: 'any' }
+      { name: 'obj', type: 'object', description: 'Object to read from' },
+      { name: 'key', type: 'any', description: 'Property key to get' }
     ],
-    output: { type: 'any' }
+    output: { type: 'any', description: 'Property value (null if missing)' }
   },
   characteristics: { stateless: true, atomic: true, composable: true },
   execute: async (input: { obj: any; key: string | number }, context: Context): Promise<Result> => {
@@ -128,13 +153,13 @@ export const setPropAtom: Atom = {
   version: '1.0.0',
   meta: {
     input: [
-      { name: 'obj', type: 'object' },
-      { name: 'key', type: 'any' },
-      { name: 'value', type: 'any' }
+      { name: 'obj', type: 'object', description: 'Object or array to modify' },
+      { name: 'key', type: 'any', description: 'Property key to set' },
+      { name: 'value', type: 'any', description: 'Value to set' }
     ],
-    output: { type: 'any' }
+    output: { type: 'any', description: 'New object/array with the property set' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { obj: any; key: string | number; value: any }, context: Context): Promise<Result> => {
     if (Array.isArray(input.obj)) {
       const arr = [...input.obj];
@@ -153,9 +178,9 @@ export const keysAtom: Atom = {
   version: '1.0.0',
   meta: {
     input: [
-      { name: 'obj', type: 'object' }
+      { name: 'obj', type: 'object', description: 'Object to get keys from' }
     ],
-    output: { type: 'array' }
+    output: { type: 'array', description: 'Array of property keys' }
   },
   characteristics: { stateless: true, atomic: true, composable: true },
   execute: async (input: { obj: any }, context: Context): Promise<Result> => {
@@ -168,9 +193,9 @@ export const valuesAtom: Atom = {
   version: '1.0.0',
   meta: {
     input: [
-      { name: 'obj', type: 'object' }
+      { name: 'obj', type: 'object', description: 'Object to get values from' }
     ],
-    output: { type: 'array' }
+    output: { type: 'array', description: 'Array of property values' }
   },
   characteristics: { stateless: true, atomic: true, composable: true },
   execute: async (input: { obj: any }, context: Context): Promise<Result> => {
@@ -183,10 +208,10 @@ export const mergeAtom: Atom = {
   version: '1.0.0',
   meta: {
     input: [
-      { name: 'a', type: 'object' },
-      { name: 'b', type: 'object' }
+      { name: 'a', type: 'object', description: 'Base object' },
+      { name: 'b', type: 'object', description: 'Object to merge in (overrides a)' }
     ],
-    output: { type: 'object' }
+    output: { type: 'object', description: 'Merged object' }
   },
   characteristics: { stateless: true, atomic: true, composable: true },
   execute: async (input: { a: any; b: any }, context: Context): Promise<Result> => {
@@ -206,7 +231,7 @@ export const filterAtom: Atom = {
     ],
     output: { type: 'array', description: 'Filtered array' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { 
     array: any[]; 
     nodes: Graph; 
@@ -229,7 +254,7 @@ export const filterAtom: Atom = {
         context.store.set(input.indexKey, i);
       }
       
-      const results = await context.executeGraph(input.nodes, context.currentScope);
+      const results = await context.executeGraph(input.nodes, (input as any).__scope ?? context.currentScope);
       const lastNodeId = input.nodes.order[input.nodes.order.length - 1];
       const shouldKeep = results[lastNodeId];
       
@@ -242,12 +267,56 @@ export const filterAtom: Atom = {
   },
 };
 
+export const mapAtom: Atom = {
+  name: 'map',
+  version: '1.0.0',
+  meta: {
+    input: [
+      { name: 'array', type: 'array', description: 'Array to map over' },
+      { name: 'nodes', type: 'object', description: 'Graph to execute for each item, return value becomes new item' },
+      { name: 'itemKey', type: 'string', description: 'Key to store current item in store' },
+      { name: 'indexKey', type: 'string', description: 'Optional key to store current index' }
+    ],
+    output: { type: 'array', description: 'New array with transformed items' }
+  },
+  characteristics: { stateless: false, atomic: true, composable: true },
+  execute: async (input: { 
+    array: any[]; 
+    nodes: Graph; 
+    itemKey: string;
+    indexKey?: string;
+  }, context: Context): Promise<Result> => {
+    if (!context.executeGraph) {
+      return { success: true, data: [] };
+    }
+
+    if (!Array.isArray(input.array)) {
+      return { success: false, error: 'Input is not an array' };
+    }
+
+    const result: any[] = [];
+    
+    for (let i = 0; i < input.array.length; i++) {
+      context.store.set(input.itemKey, input.array[i]);
+      if (input.indexKey) {
+        context.store.set(input.indexKey, i);
+      }
+      
+      const results = await context.executeGraph(input.nodes, (input as any).__scope ?? context.currentScope);
+      const lastNodeId = input.nodes.order[input.nodes.order.length - 1];
+      result.push(results[lastNodeId]);
+    }
+    
+    return { success: true, data: result };
+  },
+};
+
 export const formatAtom: Atom = {
   name: 'format',
   version: '1.0.0',
   meta: {
     input: [
-      { name: 'template', type: 'string', description: 'Template string with {placeholder} syntax' }
+      { name: 'template', type: 'string', description: 'Template with {placeholder} syntax' }
     ],
     output: { type: 'string', description: 'Formatted string with placeholders replaced' }
   },
@@ -288,7 +357,7 @@ export const containsAtom: Atom = {
   meta: {
     input: [
       { name: 'text', type: 'string', description: 'String to search in' },
-      { name: 'search', type: 'string', description: 'String to search for' }
+      { name: 'search', type: 'string', description: 'Substring to look for' }
     ],
     output: { type: 'boolean', description: 'True if text contains search' }
   },
@@ -323,7 +392,7 @@ export const startsWithAtom: Atom = {
   meta: {
     input: [
       { name: 'text', type: 'string', description: 'String to check' },
-      { name: 'prefix', type: 'string', description: 'Prefix to check for' }
+      { name: 'prefix', type: 'string', description: 'Prefix to test' }
     ],
     output: { type: 'boolean', description: 'True if text starts with prefix' }
   },

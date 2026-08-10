@@ -1,5 +1,5 @@
 graph create {
-  meta: { description: "Create top bar (logic)", type: "layout", category: "top-bar", author: "AITOS Team" }
+  meta: { description: "Create top bar (logic)", type: "core", input: "topH", output: "top bar DOM" }
 
   let getTopH = get(key: "topH")
   let setLayoutStyles = setStyles(id: "topBarContainer", styles: { display: "flex", flexDirection: "row", flexShrink: "0", width: "100%", height: "{{getTopH}}px" })

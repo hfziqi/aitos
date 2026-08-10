@@ -1,0 +1,6 @@
+graph telemetry/stats {
+  meta: { description: "Record telemetry stats: flush stats → write stats.json. Graph naming equals function: this graph records stats", type: "core", output: "logs/telemetry/stats.json" }
+
+  let flush = flushTelemetry(kind: "stats")
+  let write = writeLocal(key: "logs/telemetry/stats.json", value: "{{flush}}")
+}

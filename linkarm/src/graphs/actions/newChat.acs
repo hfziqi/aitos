@@ -1,4 +1,6 @@
 graph newChat {
+  meta: { description: "Create a new chat conversation", type: "core", input: "conversations", output: "conversations, currentConversationId, _activeContext, _newConvId, newConversation" }
+
   let getConversations = get(key: "conversations")
   let setPrefix = set(key: "idPrefix", value: "conv")
   let genId = execFile(file: "models/generate-id")

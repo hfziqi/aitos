@@ -1,26 +1,50 @@
 graph chat-loop {
-  meta: { description: "AI chat loop coordinator - orchestrates sub-graphs", type: "service", category: "ai", author: "AITOS Team" }
+  meta: { description: "AI chat loop coordinator - orchestrates sub-graphs", type: "core", input: "activeModelConfig, messages, streamElementId, _pendingFileContent", output: "aiResponse, finalContent, _apiContext, continueLoop, _loopCount" }
 
   let getModelConfig = get(key: "activeModelConfig")
   let getApiKey = getProp(obj: "{{getModelConfig}}", key: "apiKey")
   let getBaseUrl = getProp(obj: "{{getModelConfig}}", key: "baseUrl")
-  let buildSystemPrompt = execFile(file: "services/ai/build-system-prompt")
+  let buildSystemPrompt = execFile(file: "services/ai/build-minimal-prompt")
   let getExistingMessages = get(key: "messages")
   let buildSystemMsg = set(key: "_sysMsg", value: { role: "system", content: "{{buildSystemPrompt}}" })
   let prependSystem = concat(a: ["{{buildSystemMsg}}"], b: "{{getExistingMessages}}")
   let initApiContext = set(key: "_apiContext", value: "{{prependSystem}}")
+  let getPendingFile = get(key: "_pendingFileContent")
+  let pendingExists = isStr(value: "{{getPendingFile}}")
+  let injectFile = if pendingExists {
+    let getContext = get(key: "_apiContext")
+    let buildFileMsg = set(key: "_fileMsg", value: { role: "system", content: "{{getPendingFile}}" })
+    let newContext = push(array: "{{getContext}}", value: "{{buildFileMsg}}")
+    let setNewContext = set(key: "_apiContext", value: "{{newContext}}")
+    let clearPending = set(key: "_pendingFileContent", value: null)
+  }
   let initLoop = set(key: "continueLoop", value: true)
+  let initLoopCount = set(key: "_loopCount", value: 0)
+  let diagLoopStart = log(message: "LOOP_DIAG loop about to start")
   let chatLoop = loop cond: "continueLoop" {
+    let getLoopCount = get(key: "_loopCount")
+    let incLoopCount = add(a: "{{getLoopCount}}", b: 1)
+    let saveLoopCount = set(key: "_loopCount", value: "{{incLoopCount}}")
+    let compressContext = execFile(file: "core/context-compress")
+    let diagCompress = log(message: "LOOP_DIAG compress done")
     let getElementId = get(key: "streamElementId")
     let buildRequest = execFile(file: "services/ai/build-chat-request")
     let buildApiUrl = concat(a: "{{getBaseUrl}}", b: "/chat/completions")
     let callAPI = httpStreamRequest(url: "{{buildApiUrl}}", method: "POST", headers: { Authorization: "Bearer {{getApiKey}}", "Content-Type": "application/json" }, body: "{{buildRequest}}", elementId: "{{getElementId}}", streamKey: "_streamContent")
+    let diagAPI = log(message: "LOOP_DIAG api done", data: "{{callAPI}}")
     let saveApiResponse = set(key: "apiResponse", value: "{{callAPI}}")
+    // Explicit data flow: split API response object into dedicated keys at the producer
+    let setApiError = set(key: "apiResponse_error", value: "{{callAPI.__error}}")
+    let setApiContent = set(key: "apiResponse_content", value: "{{callAPI.content}}")
+    let setApiToolCalls = set(key: "apiResponse_toolCalls", value: "{{callAPI.toolCalls}}")
     let handleResponse = execFile(file: "services/ai/handle-chat-response")
+    let getFinalCount = get(key: "_loopCount")
+    let limitReached = gt(a: "{{getFinalCount}}", b: 30)
+    let stopIfLimit = if limitReached {
+      let forceStop = set(key: "continueLoop", value: false)
+    }
   }
   let getFinalContent = get(key: "finalContent")
   let saveFinalResponse = set(key: "aiResponse", value: { role: "assistant", content: "{{getFinalContent}}" })
   let clearStreamContent = set(key: "_streamContent", value: null)
-  let getStreamElId = get(key: "streamElementId")
-  let removeStreamContainer = removeElement(id: "{{getStreamElId}}")
 }

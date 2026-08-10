@@ -1,18 +1,27 @@
 graph event-loop {
-  meta: { description: "Event dispatch loop - polls appClick and routes to active conversation context", type: "core", category: "event", author: "AITOS Team" }
+  meta: { description: "Event dispatch loop - polls appClick signal and routes to active conversation context", type: "core", input: "appClick_id, appClick_targetId, appClick_ancestorIds", output: "routes to click-delegate" }
 
   let eventLoop = loop {
-    let getEvent = get(key: "appClick")
-    let checkEvent = isObj(value: "{{getEvent}}")
-    let handleEvent = if checkEvent {
-      let getTargetId = getProp(obj: "{{getEvent}}", key: "targetId")
-      let getAncestors = getProp(obj: "{{getEvent}}", key: "ancestorIds")
+    // Explicit data flow: use the _id signal (provided by addEventListener)
+    // to detect a new event - no box object needed.
+    let getEventId = get(key: "appClick_id")
+    let checkEvent = isNil(value: "{{getEventId}}")
+    let hasEvent = not(value: "{{checkEvent}}")
+    let handleEvent = if hasEvent {
+      let getTargetId = get(key: "appClick_targetId")
+      let getAncestors = get(key: "appClick_ancestorIds")
       let execInCtx = executeInContext(
         contextKey: "_activeContext",
         graphKey: "__graph_core/click-delegate",
-        store: { appClick: "{{getEvent}}", clickTargetId: "{{getTargetId}}", ancestorIds: "{{getAncestors}}" }
+        store: { clickTargetId: "{{getTargetId}}", ancestorIds: "{{getAncestors}}" }
       )
-      let clearEvent = set(key: "appClick", value: null)
+      // Check whether a new event overwrote this one (compare _id signals)
+      let getCurrentEventId = get(key: "appClick_id")
+      let isSameEvent = eq(a: "{{getEventId}}", b: "{{getCurrentEventId}}")
+      let clearIfSame = if isSameEvent {
+        let clearEvent = set(key: "appClick", value: null)
+        let clearEventId = set(key: "appClick_id", value: null)
+      }
     }
     let yield = wait(ms: 50)
   }

@@ -1,5 +1,5 @@
 graph create {
-  meta: { description: "Create add model form (UI)", type: "component", category: "add-model-form", author: "AITOS Team" }
+  meta: { description: "Create add model form (UI)", type: "core", input: "providerConfig", output: "add model form DOM" }
 
   let loadConfig = execFile(file: "models/provider-config")
   let getConfig = get(key: "providerConfig")

@@ -1,3 +1,5 @@
 graph close-window {
+  meta: { description: "Close the application window", type: "core" }
+
   let close = closeWindow()
 }

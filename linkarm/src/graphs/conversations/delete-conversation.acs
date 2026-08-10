@@ -1,20 +1,13 @@
 graph delete-conversation {
-  meta: { description: "Delete a conversation by _convDelId from context menu", type: "action", category: "conversation", author: "AITOS Team" }
+  meta: { description: "Delete a conversation by _convDelId from context menu", type: "core", input: "_convDelId, conversations, currentConversationId", output: "conversations, currentConversationId, _activeContext, _delCtx" }
 
   let getConvId = get(key: "_convDelId")
   let getConversations = get(key: "conversations")
-  let initFiltered = set(key: "_filteredConvs", value: [])
-  let forEachConv = forEach conv, convIdx in getConversations  {
+  let getFilteredConvs = filter conv in getConversations {
     let getCurConvId = getProp(obj: "{{conv}}", key: "id")
     let compare = eq(a: "{{getCurConvId}}", b: "{{getConvId}}")
     let shouldKeep = not(value: "{{compare}}")
-    let handleKeep = if shouldKeep {
-      let getFiltered = get(key: "_filteredConvs")
-      let pushConv = push(array: "{{getFiltered}}", value: "{{conv}}")
-      let saveFiltered = set(key: "_filteredConvs", value: "{{pushConv}}")
-    }
   }
-  let getFilteredConvs = get(key: "_filteredConvs")
   let updateStore = setGlobal(key: "conversations", value: "{{getFilteredConvs}}")
   let saveConversations = execFile(file: "conversations/save-conversations")
   let createDelCtx = createConversationContext(convId: "{{getConvId}}")
@@ -23,11 +16,10 @@ graph delete-conversation {
   let checkCurrentConv = get(key: "currentConversationId")
   let isCurrentConvDeleted = eq(a: "{{checkCurrentConv}}", b: "{{getConvId}}")
   let handleCurrentConv = if isCurrentConvDeleted {
-    let getFiltered = get(key: "_filteredConvs")
-    let getFilteredLen = len(value: "{{getFiltered}}")
+    let getFilteredLen = len(value: "{{getFilteredConvs}}")
     let checkHasMore = gt(a: "{{getFilteredLen}}", b: 0)
     let setNewCurrentConv = if checkHasMore {
-      let getFirst = getProp(obj: "{{getFiltered}}", key: 0)
+      let getFirst = getProp(obj: "{{getFilteredConvs}}", key: 0)
       let getFirstId = getProp(obj: "{{getFirst}}", key: "id")
       let setCurrentId = setGlobal(key: "currentConversationId", value: "{{getFirstId}}")
       let createCtx = createConversationContext(convId: "{{getFirstId}}")

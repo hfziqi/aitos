@@ -11,7 +11,7 @@ export const getAccelerometerAtom: Atom = {
     ],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { xKey: string; yKey: string; zKey: string }, context: Context): Promise<Result> => {
     return new Promise((resolve) => {
       if (!('Accelerometer' in window)) {
@@ -48,7 +48,7 @@ export const getGyroscopeAtom: Atom = {
     ],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { xKey: string; yKey: string; zKey: string }, context: Context): Promise<Result> => {
     return new Promise((resolve) => {
       if (!('Gyroscope' in window)) {
@@ -84,7 +84,7 @@ export const getLocationAtom: Atom = {
     ],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { latKey: string; lonKey: string }, context: Context): Promise<Result> => {
     return new Promise((resolve) => {
       if (!navigator.geolocation) {
@@ -116,7 +116,7 @@ export const getBatteryAtom: Atom = {
     ],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { levelKey: string; chargingKey: string }, context: Context): Promise<Result> => {
     try {
       const battery = await (navigator as any).getBattery();
@@ -138,7 +138,7 @@ export const getNetworkStatusAtom: Atom = {
     ],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { onlineKey: string }, context: Context): Promise<Result> => {
     context.store.set(input.onlineKey, navigator.onLine);
     return { success: true, data: { done: true } };

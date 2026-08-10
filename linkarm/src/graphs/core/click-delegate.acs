@@ -1,10 +1,9 @@
 graph click-delegate {
-  meta: { description: "Click event delegation - pure router", type: "core", category: "event", author: "AITOS Team" }
+  meta: { description: "Click event delegation - pure router", type: "core", input: "clickTargetId, ancestorIds", output: "routes to action graphs" }
 
-  let getClickEvent = get(key: "appClick")
-  let getTargetId = getProp(obj: "{{getClickEvent}}", key: "targetId")
-  let getAncestorIds = getProp(obj: "{{getClickEvent}}", key: "ancestorIds")
-  let saveTargetId = set(key: "clickTargetId", value: "{{getTargetId}}")
+  // Explicit data flow: consume the dedicated keys provided by event-loop
+  let getTargetId = get(key: "clickTargetId")
+  let getAncestorIds = get(key: "ancestorIds")
   let routeAction = if getTargetId {
     let isModelsTab = eq(a: "{{getTargetId}}", b: "modelsTab")
     let branchModelsTab = if isModelsTab {
@@ -20,7 +19,7 @@ graph click-delegate {
     }
     let isChatBtn = eq(a: "{{getTargetId}}", b: "chatButton")
     let branchChatBtn = if isChatBtn {
-      let execAction = execFile(file: "actions/open-chat-sidebar")
+      let execAction = execFile(file: "actions/openChat")
     }
     let isAIBtn = eq(a: "{{getTargetId}}", b: "aiButton")
     let branchAIBtn = if isAIBtn {
@@ -30,9 +29,21 @@ graph click-delegate {
     let branchTerminalBtn = if isTerminalBtn {
       let execAction = execFile(file: "actions/open-terminal")
     }
+    let isFolderBtn = eq(a: "{{getTargetId}}", b: "folderButton")
+    let branchFolderBtn = if isFolderBtn {
+      let execAction = execFile(file: "actions/open-folder")
+    }
     let isSendBtn = eq(a: "{{getTargetId}}", b: "sendButton")
     let branchSendBtn = if isSendBtn {
       let execAction = execFile(file: "actions/send-message")
+    }
+    let isUploadBtn = eq(a: "{{getTargetId}}", b: "uploadBtn")
+    let branchUploadBtn = if isUploadBtn {
+      let execAction = execFile(file: "actions/handle-upload-click")
+    }
+    let isRemoveAttach = eq(a: "{{getTargetId}}", b: "removeAttachBtn")
+    let branchRemoveAttach = if isRemoveAttach {
+      let execAction = execFile(file: "actions/remove-attachment")
     }
     let isContextMenuAddModel = eq(a: "{{getTargetId}}", b: "contextMenuAddModel")
     let branchContextMenuAddModel = if isContextMenuAddModel {
@@ -73,6 +84,45 @@ graph click-delegate {
     let isContextMenuOverlay = eq(a: "{{getTargetId}}", b: "contextMenuOverlay")
     let branchContextMenuOverlay = if isContextMenuOverlay {
       let execAction = execFile(file: "ui/components/context-menu/hide")
+    }
+    let isFolderCtxNewFolder = eq(a: "{{getTargetId}}", b: "folderCtxNewFolder")
+    let branchFolderCtxNewFolder = if isFolderCtxNewFolder {
+      let execAction = execFile(file: "ui/views/folder/handle-new-folder")
+    }
+    let isFolderCtxNewFile = eq(a: "{{getTargetId}}", b: "folderCtxNewFile")
+    let branchFolderCtxNewFile = if isFolderCtxNewFile {
+      let execAction = execFile(file: "ui/views/folder/handle-new-file")
+    }
+    let isFolderBack = eq(a: "{{getTargetId}}", b: "folderBackBtn")
+    let branchFolderBack = if isFolderBack {
+      let execAction = execFile(file: "ui/views/folder/handle-back")
+    }
+    let isFileViewClose = eq(a: "{{getTargetId}}", b: "fileViewClose")
+    let branchFileViewClose = if isFileViewClose {
+      let removeOverlay = removeElement(id: "fileViewOverlay")
+    }
+    let isFileViewOverlay = eq(a: "{{getTargetId}}", b: "fileViewOverlay")
+    let branchFileViewOverlay = if isFileViewOverlay {
+      let removeOverlay = removeElement(id: "fileViewOverlay")
+    }
+    let isFolderCtxOpen = eq(a: "{{getTargetId}}", b: "folderCtxOpen")
+    let branchFolderCtxOpen = if isFolderCtxOpen {
+      let hideMenu = execFile(file: "ui/components/context-menu/hide")
+      let execDblClick = execFile(file: "ui/views/folder/handle-dblclick")
+    }
+    let isFolderCtxRename = eq(a: "{{getTargetId}}", b: "folderCtxRename")
+    let branchFolderCtxRename = if isFolderCtxRename {
+      let hideMenu = execFile(file: "ui/components/context-menu/hide")
+      let execRename = execFile(file: "ui/views/folder/handle-rename")
+    }
+    let isFolderCtxDelete = eq(a: "{{getTargetId}}", b: "folderCtxDelete")
+    let branchFolderCtxDelete = if isFolderCtxDelete {
+      let hideMenu = execFile(file: "ui/components/context-menu/hide")
+      let execDelete = execFile(file: "ui/views/folder/handle-delete")
+    }
+    let isFolderCtxUpload = eq(a: "{{getTargetId}}", b: "folderCtxUpload")
+    let branchFolderCtxUpload = if isFolderCtxUpload {
+      let execAction = execFile(file: "ui/views/folder/handle-upload")
     }
     let isImportStartBtn = eq(a: "{{getTargetId}}", b: "importPkgStartBtn")
     let branchImportStartBtn = if isImportStartBtn {
@@ -117,6 +167,13 @@ graph click-delegate {
       let checkPrefix = eq(a: "{{getPrefix}}", b: "convTitle-")
       let handleConvTitleClick = if checkPrefix {
         let execAction = execFile(file: "actions/switchConversation")
+      }
+    }
+    let checkCopyBtn = if getTargetId {
+      let getPrefix = slice(array: "{{getTargetId}}", start: 0, end: 8)
+      let checkPrefix = eq(a: "{{getPrefix}}", b: "copyBtn_")
+      let handleCopyClick = if checkPrefix {
+        let execAction = execFile(file: "actions/copy-message")
       }
     }
     let checkGrowthCard = if getTargetId {

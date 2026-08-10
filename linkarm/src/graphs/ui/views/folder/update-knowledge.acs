@@ -1,0 +1,23 @@
+graph update-knowledge {
+  meta: { description: "Update a file's content in the knowledge base", type: "tool", input: "name, content", output: "result" }
+  out: result
+
+  let getName = get(key: "name")
+  let getContent = get(key: "content")
+  let nameNil = isNil(value: "{{getName}}")
+  let handleName = if nameNil {
+    let setError = set(key: "result", value: { success: false, error: "Missing name" })
+  } else {
+    let filePath = concat(a: "folders/", b: "{{getName}}")
+    let contentNil = isNil(value: "{{getContent}}")
+    let fileContent = if contentNil {
+      let emptyContent = set(key: "_fileContent", value: "")
+    } else {
+      let useContent = set(key: "_fileContent", value: "{{getContent}}")
+    }
+    let getContent2 = get(key: "_fileContent")
+    let writeFile = writeLocal(key: "{{filePath}}", value: "{{getContent2}}")
+    let setResult = set(key: "result", value: { success: true, name: "{{getName}}" })
+  }
+  let result = get(key: "result")
+}

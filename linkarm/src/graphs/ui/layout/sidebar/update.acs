@@ -1,5 +1,5 @@
 graph update {
-  meta: { description: "Update sidebar active states and titles (no rebuild)", type: "layout", category: "sidebar", author: "AITOS Team" }
+  meta: { description: "Update sidebar active states and titles (no rebuild)", type: "core", input: "conversations, currentConversationId", output: "sidebar item DOM" }
 
   let getConversations = get(key: "conversations")
   let getCurrentConvId = get(key: "currentConversationId")

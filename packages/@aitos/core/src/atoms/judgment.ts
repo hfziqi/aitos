@@ -5,10 +5,10 @@ export const eqAtom: Atom = {
   version: '1.0.0',
   meta: {
     input: [
-      { name: 'a', type: 'any' },
-      { name: 'b', type: 'any' }
+      { name: 'a', type: 'any', description: 'First value to compare' },
+      { name: 'b', type: 'any', description: 'Second value to compare' }
     ],
-    output: { type: 'boolean' }
+    output: { type: 'boolean', description: 'True if a equals b' }
   },
   characteristics: { stateless: true, atomic: true, composable: true },
   execute: async (input: { a: any; b: any }, context: Context): Promise<Result> => {
@@ -21,10 +21,10 @@ export const gtAtom: Atom = {
   version: '1.0.0',
   meta: {
     input: [
-      { name: 'a', type: 'number' },
-      { name: 'b', type: 'number' }
+      { name: 'a', type: 'number', description: 'First number' },
+      { name: 'b', type: 'number', description: 'Second number' }
     ],
-    output: { type: 'boolean' }
+    output: { type: 'boolean', description: 'True if the comparison holds' }
   },
   characteristics: { stateless: true, atomic: true, composable: true },
   execute: async (input: { a: number; b: number }, context: Context): Promise<Result> => {
@@ -37,10 +37,10 @@ export const ltAtom: Atom = {
   version: '1.0.0',
   meta: {
     input: [
-      { name: 'a', type: 'number' },
-      { name: 'b', type: 'number' }
+      { name: 'a', type: 'number', description: 'First number' },
+      { name: 'b', type: 'number', description: 'Second number' }
     ],
-    output: { type: 'boolean' }
+    output: { type: 'boolean', description: 'True if the comparison holds' }
   },
   characteristics: { stateless: true, atomic: true, composable: true },
   execute: async (input: { a: number; b: number }, context: Context): Promise<Result> => {
@@ -53,10 +53,10 @@ export const gteAtom: Atom = {
   version: '1.0.0',
   meta: {
     input: [
-      { name: 'a', type: 'number' },
-      { name: 'b', type: 'number' }
+      { name: 'a', type: 'number', description: 'First number' },
+      { name: 'b', type: 'number', description: 'Second number' }
     ],
-    output: { type: 'boolean' }
+    output: { type: 'boolean', description: 'True if the comparison holds' }
   },
   characteristics: { stateless: true, atomic: true, composable: true },
   execute: async (input: { a: number; b: number }, context: Context): Promise<Result> => {
@@ -69,10 +69,10 @@ export const lteAtom: Atom = {
   version: '1.0.0',
   meta: {
     input: [
-      { name: 'a', type: 'number' },
-      { name: 'b', type: 'number' }
+      { name: 'a', type: 'number', description: 'First number' },
+      { name: 'b', type: 'number', description: 'Second number' }
     ],
-    output: { type: 'boolean' }
+    output: { type: 'boolean', description: 'True if the comparison holds' }
   },
   characteristics: { stateless: true, atomic: true, composable: true },
   execute: async (input: { a: number; b: number }, context: Context): Promise<Result> => {
@@ -85,10 +85,10 @@ export const andAtom: Atom = {
   version: '1.0.0',
   meta: {
     input: [
-      { name: 'a', type: 'boolean' },
-      { name: 'b', type: 'boolean' }
+      { name: 'a', type: 'boolean', description: 'First boolean' },
+      { name: 'b', type: 'boolean', description: 'Second boolean' }
     ],
-    output: { type: 'boolean' }
+    output: { type: 'boolean', description: 'Result of the logical operation' }
   },
   characteristics: { stateless: true, atomic: true, composable: true },
   execute: async (input: { a: boolean; b: boolean }, context: Context): Promise<Result> => {
@@ -101,10 +101,10 @@ export const orAtom: Atom = {
   version: '1.0.0',
   meta: {
     input: [
-      { name: 'a', type: 'boolean' },
-      { name: 'b', type: 'boolean' }
+      { name: 'a', type: 'boolean', description: 'First boolean' },
+      { name: 'b', type: 'boolean', description: 'Second boolean' }
     ],
-    output: { type: 'boolean' }
+    output: { type: 'boolean', description: 'Result of the logical operation' }
   },
   characteristics: { stateless: true, atomic: true, composable: true },
   execute: async (input: { a: boolean; b: boolean }, context: Context): Promise<Result> => {
@@ -117,9 +117,9 @@ export const notAtom: Atom = {
   version: '1.0.0',
   meta: {
     input: [
-      { name: 'value', type: 'boolean' }
+      { name: 'value', type: 'boolean', description: 'Boolean value to negate' }
     ],
-    output: { type: 'boolean' }
+    output: { type: 'boolean', description: 'Negated value' }
   },
   characteristics: { stateless: true, atomic: true, composable: true },
   execute: async (input: { value: boolean }, context: Context): Promise<Result> => {
@@ -132,13 +132,51 @@ export const isNilAtom: Atom = {
   version: '1.0.0',
   meta: {
     input: [
-      { name: 'value', type: 'any' }
+      { name: 'value', type: 'any', description: 'Value to check' }
     ],
-    output: { type: 'boolean' }
+    output: { type: 'boolean', description: 'True if the type check passes' }
   },
   characteristics: { stateless: true, atomic: true, composable: true },
   execute: async (input: { value: any }, context: Context): Promise<Result> => {
     return { success: true, data: input.value === null || input.value === undefined };
+  },
+};
+
+// Failure convention: when a node fails, the runtime converts its result to { __error: <message> }.
+// Detect failure with isError / isSuccess — do not read the __error field directly (explicit data-flow standard).
+export const isErrorAtom: Atom = {
+  name: 'isError',
+  version: '1.0.0',
+  meta: {
+    input: [
+      { name: 'value', type: 'any', description: 'Node result to check' }
+    ],
+    output: { type: 'boolean', description: 'True if the value is a failed node result ({ __error: ... })' }
+  },
+  characteristics: { stateless: true, atomic: true, composable: true },
+  execute: async (input: { value: any }, context: Context): Promise<Result> => {
+    const v = input.value;
+    return {
+      success: true,
+      data: !!(v && typeof v === 'object' && v.__error !== undefined && v.__error !== null)
+    };
+  },
+};
+
+export const isSuccessAtom: Atom = {
+  name: 'isSuccess',
+  version: '1.0.0',
+  meta: {
+    input: [
+      { name: 'value', type: 'any', description: 'Node result to check' }
+    ],
+    output: { type: 'boolean', description: 'True if the value is NOT a failed node result' }
+  },
+  characteristics: { stateless: true, atomic: true, composable: true },
+  execute: async (input: { value: any }, context: Context): Promise<Result> => {
+    const v = input.value;
+    const isErr = !!(v && typeof v === 'object' && v.__error !== undefined && v.__error !== null);
+    return { success: true, data: !isErr };
   },
 };
 
@@ -147,9 +185,9 @@ export const isNumAtom: Atom = {
   version: '1.0.0',
   meta: {
     input: [
-      { name: 'value', type: 'any' }
+      { name: 'value', type: 'any', description: 'Value to check' }
     ],
-    output: { type: 'boolean' }
+    output: { type: 'boolean', description: 'True if the type check passes' }
   },
   characteristics: { stateless: true, atomic: true, composable: true },
   execute: async (input: { value: any }, context: Context): Promise<Result> => {
@@ -162,9 +200,9 @@ export const isStrAtom: Atom = {
   version: '1.0.0',
   meta: {
     input: [
-      { name: 'value', type: 'any' }
+      { name: 'value', type: 'any', description: 'Value to check' }
     ],
-    output: { type: 'boolean' }
+    output: { type: 'boolean', description: 'True if the type check passes' }
   },
   characteristics: { stateless: true, atomic: true, composable: true },
   execute: async (input: { value: any }, context: Context): Promise<Result> => {
@@ -177,9 +215,9 @@ export const isArrAtom: Atom = {
   version: '1.0.0',
   meta: {
     input: [
-      { name: 'value', type: 'any' }
+      { name: 'value', type: 'any', description: 'Value to check' }
     ],
-    output: { type: 'boolean' }
+    output: { type: 'boolean', description: 'True if the type check passes' }
   },
   characteristics: { stateless: true, atomic: true, composable: true },
   execute: async (input: { value: any }, context: Context): Promise<Result> => {
@@ -192,9 +230,9 @@ export const isObjAtom: Atom = {
   version: '1.0.0',
   meta: {
     input: [
-      { name: 'value', type: 'any' }
+      { name: 'value', type: 'any', description: 'Value to check' }
     ],
-    output: { type: 'boolean' }
+    output: { type: 'boolean', description: 'True if the type check passes' }
   },
   characteristics: { stateless: true, atomic: true, composable: true },
   execute: async (input: { value: any }, context: Context): Promise<Result> => {

@@ -1,12 +1,12 @@
 graph select-model {
-  meta: { description: "Select AI model - finds parent card and extracts model ID", type: "action", category: "ai-models", author: "AITOS Team" }
+  meta: { description: "Select AI model - finds parent card and extracts model ID", type: "core", input: "clickTargetId", output: "activeModelId" }
 
   let getTargetId = get(key: "clickTargetId")
   let findCard = closest(id: "{{getTargetId}}", selector: ".model-card")
   let isCardNil = isNil(value: "{{findCard}}")
   let isCardFound = not(value: "{{isCardNil}}")
   let handleSelect = if isCardFound {
-    let getModelId = slice(array: "{{findCard}}", start: 11)
+    let getModelId = getAttribute(id: "{{findCard}}", name: "data-model-id")
     let setActiveId = set(key: "activeModelId", value: "{{getModelId}}")
     let saveSelection = execFile(file: "models/save-active-model")
     let clearMainView = clearElement(id: "mainViewContainer")

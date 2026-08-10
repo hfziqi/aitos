@@ -1,5 +1,5 @@
 graph create {
-  meta: { description: "Import package popup", type: "component", category: "import-package-form", author: "AITOS Team" }
+  meta: { description: "Import package popup", type: "core", output: "import package DOM" }
 
   let createOverlay = createElement(tag: "div", id: "importPkgOverlay")
   let setOverlayClass = setAttribute(id: "importPkgOverlay", name: "class", value: "overlay")

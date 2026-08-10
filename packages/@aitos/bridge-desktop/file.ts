@@ -93,7 +93,7 @@ class ListLocalAtom extends BridgeAtom {
     input: [
       { name: 'scope', type: 'string', description: 'Scope to list (empty for all)', optional: true }
     ],
-    output: { type: 'array', description: 'Array of available keys' }
+    output: { type: 'array', description: 'string[]' }
   };
 
   async execute(input: { scope?: string }, context: Context): Promise<Result> {
@@ -151,7 +151,81 @@ class RemoveLocalAtom extends BridgeAtom {
   }
 }
 
+class RenameLocalAtom extends BridgeAtom {
+  name = 'renameLocal';
+  version = '1.0.0';
+  meta = {
+    input: [
+      { name: 'oldKey', type: 'string', description: 'Current local data key (path relative to storage)' },
+      { name: 'newKey', type: 'string', description: 'New local data key (path relative to storage)' }
+    ],
+    output: { type: 'boolean', description: 'true if renamed successfully' }
+  };
+
+  async execute(input: { oldKey: string; newKey: string }, context: Context): Promise<Result> {
+    if (!this.isAvailable()) {
+      return { success: false, error: 'renameLocal requires native environment' };
+    }
+    try {
+      await this.callBridge('renameLocal', { oldKey: input.oldKey, newKey: input.newKey });
+      return { success: true, data: true };
+    } catch (error) {
+      return { success: false, error: `Failed to rename local data: ${error}` };
+    }
+  }
+}
+
+class MkdirLocalAtom extends BridgeAtom {
+  name = 'mkdirLocal';
+  version = '1.0.0';
+  meta = {
+    input: [
+      { name: 'key', type: 'string', description: 'Folder key to create (path relative to storage)' }
+    ],
+    output: { type: 'boolean', description: 'true if folder created' }
+  };
+
+  async execute(input: { key: string }, context: Context): Promise<Result> {
+    if (!this.isAvailable()) {
+      return { success: false, error: 'mkdirLocal requires native environment' };
+    }
+    try {
+      await this.callBridge('mkdirLocal', { key: input.key });
+      return { success: true, data: true };
+    } catch (error) {
+      return { success: false, error: `Failed to create folder: ${error}` };
+    }
+  }
+}
+
+class OpenFileAtom extends BridgeAtom {
+  name = 'openFile';
+  version = '1.0.0';
+  meta = {
+    input: [
+      { name: 'key', type: 'string', description: 'Local data key (path relative to storage)' },
+      { name: 'app', type: 'string', description: 'Application to open with (optional; default = system default)', optional: true }
+    ],
+    output: { type: 'boolean', description: 'true if opened successfully' }
+  };
+
+  async execute(input: { key: string; app?: string }, context: Context): Promise<Result> {
+    if (!this.isAvailable()) {
+      return { success: false, error: 'openFile requires native environment' };
+    }
+    try {
+      await this.callBridge('openFile', { key: input.key, app: input.app || null });
+      return { success: true, data: true };
+    } catch (error) {
+      return { success: false, error: `Failed to open file: ${error}` };
+    }
+  }
+}
+
 export const readLocalAtom = new ReadLocalAtom();
 export const writeLocalAtom = new WriteLocalAtom();
 export const listLocalAtom = new ListLocalAtom();
 export const removeLocalAtom = new RemoveLocalAtom();
+export const renameLocalAtom = new RenameLocalAtom();
+export const mkdirLocalAtom = new MkdirLocalAtom();
+export const openFileAtom = new OpenFileAtom();

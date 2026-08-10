@@ -13,7 +13,7 @@ export const getMousePositionAtom: Atom = {
     ],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { id: string; xKey: string; yKey: string }, context: Context): Promise<Result> => {
     if (typeof document === 'undefined') {
       return { success: false, error: 'Mouse position requires browser environment' };
@@ -47,7 +47,7 @@ export const getTouchAtom: Atom = {
     ],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { id: string; xKey: string; yKey: string }, context: Context): Promise<Result> => {
     if (typeof document === 'undefined') {
       return { success: false, error: 'Touch requires browser environment' };
@@ -85,7 +85,7 @@ export const addEventListenerAtom: Atom = {
     ],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { id: string; event: string; storeKey: string; action?: string; preventDefault?: boolean }, context: Context): Promise<Result> => {
     if (typeof document === 'undefined') {
       return { success: false, error: 'addEventListener requires browser environment' };
@@ -117,11 +117,17 @@ export const addEventListenerAtom: Atom = {
 
     const handler = async (e: Event) => {
       const eventData: any = { type: e.type };
+      // Explicit data flow: event identity signal so graphs can detect a new event
+      // without comparing whole objects (replaces isObj/eq on the box after removal).
+      context.store.set(`${input.storeKey}_id`, Date.now());
       
       if (e instanceof MouseEvent) {
         eventData.x = e.clientX;
         eventData.y = e.clientY;
         eventData.button = e.button;
+        // Explicit data flow: mouse coordinates consumed by context-menu graphs.
+        context.store.set(`${input.storeKey}_x`, e.clientX);
+        context.store.set(`${input.storeKey}_y`, e.clientY);
         if (e.type === 'contextmenu' && input.preventDefault) {
           e.preventDefault();
         }
@@ -131,11 +137,18 @@ export const addEventListenerAtom: Atom = {
         eventData.shiftKey = e.shiftKey;
         eventData.ctrlKey = e.ctrlKey;
         eventData.altKey = e.altKey;
+        // Explicit data flow: expose only the fields graphs actually consume
+        // (consumption-driven: key and shiftKey are read by keydown handlers).
+        context.store.set(`${input.storeKey}_key`, e.key);
+        context.store.set(`${input.storeKey}_shiftKey`, e.shiftKey);
         if (input.action && input.preventDefault && e.key === 'Enter') {
           e.preventDefault();
         }
       } else if (e instanceof Event && (e.target as any)?.value !== undefined) {
         eventData.value = (e.target as any).value;
+        // Explicit data flow: provide the raw input value under a dedicated key
+        // so graphs can read get(key: "<storeKey>_value") without getProp.
+        context.store.set(`${input.storeKey}_value`, (e.target as any).value);
       }
       
       if (e.target) {
@@ -149,13 +162,14 @@ export const addEventListenerAtom: Atom = {
         }
         eventData.targetId = ancestorIds.length > 0 ? ancestorIds[0] : null;
         eventData.ancestorIds = ancestorIds;
+        // Explicit data flow: target info consumed by click-delegate and event-loop.
+        context.store.set(`${input.storeKey}_targetId`, eventData.targetId);
+        context.store.set(`${input.storeKey}_ancestorIds`, ancestorIds);
       }
 
       if (e.target && (e.target as any).dataset) {
         eventData.targetData = (e.target as any).dataset;
       }
-      
-      context.store.set(input.storeKey, eventData);
       
       if (input.action && context.executeGraph) {
         const chainId = `chain_${++traceChainCounter}`;
@@ -184,7 +198,7 @@ export const removeEventListenerAtom: Atom = {
     ],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { id: string; event: string }, context: Context): Promise<Result> => {
     if (typeof document === 'undefined') {
       return { success: false, error: 'removeEventListener requires browser environment' };

@@ -1,0 +1,12 @@
+graph _next-counter {
+  meta: { description: "Increment and store the next sequential counter in _folderNewCounter", type: "core", input: "_folderNewCounter", output: "_folderNewCounter" }
+
+  let getCounter = get(key: "_folderNewCounter")
+  let counterNil = isNil(value: "{{getCounter}}")
+  let handleCounter = if counterNil {
+    let setInit = set(key: "_folderNewCounter", value: 1)
+  } else {
+    let addOne = add(a: "{{getCounter}}", b: 1)
+    let setInc = set(key: "_folderNewCounter", value: "{{addOne}}")
+  }
+}

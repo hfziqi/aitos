@@ -17,20 +17,22 @@ import { addAtom, subAtom, mulAtom, divAtom, modAtom, randomAtom } from './atoms
 import { 
   eqAtom, gtAtom, ltAtom, gteAtom, lteAtom, 
   andAtom, orAtom, notAtom,
-  isNilAtom, isNumAtom, isStrAtom, isArrAtom, isObjAtom 
+  isNilAtom, isNumAtom, isStrAtom, isArrAtom, isObjAtom,
+  isErrorAtom, isSuccessAtom 
 } from './atoms/judgment';
 import { 
-  branchAtom, loopAtom, forEachAtom, execAtom, execGraphAtom, waitAtom, execFileAtom, logAtom, getSkillSetAtom, compileAcsAtom, executeInContextAtom
+  branchAtom, loopAtom, forEachAtom, execAtom, waitAtom, execFileAtom, logAtom, getSkillSetAtom, compileAcsAtom, executeInContextAtom,
+  setIntervalAtom
 } from './atoms/control';
 import { 
   concatAtom, splitAtom, lenAtom, 
   pushAtom, popAtom, sliceAtom,
-  getPropAtom, setPropAtom, keysAtom, valuesAtom, mergeAtom, filterAtom, formatAtom,
+  getPropAtom, setPropAtom, keysAtom, valuesAtom, mergeAtom, filterAtom, mapAtom, formatAtom,
   toNumAtom, containsAtom, includesAtom, startsWithAtom, replaceAtom, trimAtom, toLowerAtom, toUpperAtom, getAtAtom,
-  joinAtom
+  joinAtom, rangeAtom
 } from './atoms/manipulation';
 import { nowAtom, timestampToDateAtom, getMonthDaysAtom, isLeapYearAtom } from './atoms/time';
-import { handleToolCallsAtom } from './atoms/tool-calls';
+import { handleToolCallsAtom, collectToolsAtom } from './atoms/tool-calls';
 import { getTelemetryStatsAtom, resetTelemetryAtom, flushTelemetryAtom, getTraceLogAtom, analyzeTelemetryAtom } from './atoms/telemetry';
 
 export const allAtoms: Atom[] = [
@@ -39,13 +41,16 @@ export const allAtoms: Atom[] = [
   eqAtom, gtAtom, ltAtom, gteAtom, lteAtom,
   andAtom, orAtom, notAtom,
   isNilAtom, isNumAtom, isStrAtom, isArrAtom, isObjAtom,
-  branchAtom, loopAtom, forEachAtom, execAtom, execGraphAtom, waitAtom, execFileAtom, logAtom, getSkillSetAtom, compileAcsAtom, executeInContextAtom,
+  isErrorAtom, isSuccessAtom,
+  branchAtom, loopAtom, forEachAtom, execAtom, waitAtom, execFileAtom, logAtom, getSkillSetAtom, compileAcsAtom, executeInContextAtom,
+  setIntervalAtom,
   concatAtom, splitAtom, lenAtom,
   pushAtom, popAtom, sliceAtom,
-  getPropAtom, setPropAtom, keysAtom, valuesAtom, mergeAtom, filterAtom, formatAtom,
+  getPropAtom, setPropAtom, keysAtom, valuesAtom, mergeAtom, filterAtom, mapAtom, formatAtom,
   toNumAtom, containsAtom, includesAtom, startsWithAtom, replaceAtom, trimAtom, toLowerAtom, toUpperAtom, getAtAtom,
-  joinAtom,
+  joinAtom, rangeAtom,
   nowAtom, timestampToDateAtom, getMonthDaysAtom, isLeapYearAtom,
   handleToolCallsAtom,
+  collectToolsAtom,
   getTelemetryStatsAtom, resetTelemetryAtom, flushTelemetryAtom, getTraceLogAtom, analyzeTelemetryAtom,
 ];

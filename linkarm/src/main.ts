@@ -93,6 +93,29 @@ async function main() {
       .catch(e => console.error('Event loop failed:', e))
   }
 
+  // 9. Telemetry: the scheduled driver lives in the telemetry/scheduler graph (distributable); main.ts only starts it (like event-loop).
+  const schedulerGraph = rootContext.store.get('__graph_telemetry/scheduler')
+  if (schedulerGraph) {
+    runtime.executeGraph(schedulerGraph as any, rootContext, undefined, 'telemetry/scheduler')
+      .catch(e => console.error('telemetry/scheduler failed:', e))
+  }
+
+  // Flushing before page close cannot reliably run graphs; keep a direct JS fallback (infrastructure exception)
+  if (typeof window !== 'undefined') {
+    window.addEventListener('beforeunload', () => {
+      try {
+        const bridge = (window as any).__aitos_bridge__
+        if (!bridge) return
+        const stats = runtime.flushStats()
+        bridge.writeLocal({ key: 'logs/telemetry/stats.json', value: JSON.stringify({ timestamp: Date.now(), stats }) })
+        const snapshot = runtime.flushTelemetry()
+        bridge.writeLocal({ key: 'logs/traces/traces.json', value: JSON.stringify({ timestamp: snapshot.timestamp, traces: snapshot.traces }) })
+      } catch (e) {
+        // fail silently
+      }
+    })
+  }
+
   console.log('LinkArm initialized')
 }
 

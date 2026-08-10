@@ -9,7 +9,7 @@ export const getItemAtom: Atom = {
     ],
     output: { type: 'any', description: 'Stored value (parsed from JSON) or null' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { key: string }, context: Context): Promise<Result> => {
     if (typeof localStorage === 'undefined') {
       return { success: false, error: 'localStorage not available' };
@@ -41,7 +41,7 @@ export const setItemAtom: Atom = {
     ],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { key: string; value: any }, context: Context): Promise<Result> => {
     if (typeof localStorage === 'undefined') {
       return { success: false, error: 'localStorage not available' };
@@ -67,7 +67,7 @@ export const removeItemAtom: Atom = {
     ],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { key: string }, context: Context): Promise<Result> => {
     if (typeof localStorage === 'undefined') {
       return { success: false, error: 'localStorage not available' };
@@ -88,7 +88,7 @@ export const clearStorageAtom: Atom = {
     input: [],
     output: { type: 'void', description: 'Nothing' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: {}, context: Context): Promise<Result> => {
     if (typeof localStorage === 'undefined') {
       return { success: false, error: 'localStorage not available' };
@@ -107,9 +107,9 @@ export const getKeysAtom: Atom = {
   version: '1.0.0',
   meta: {
     input: [],
-    output: { type: 'array', description: 'Array of storage keys' }
+    output: { type: 'array', description: 'string[]' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: {}, context: Context): Promise<Result> => {
     if (typeof localStorage === 'undefined') {
       return { success: false, error: 'localStorage not available' };

@@ -1,21 +1,62 @@
 graph create {
-  meta: { description: "Create message bubble (logic)", type: "component", category: "message-bubble", author: "AITOS Team" }
+  meta: { description: "Create message bubble (logic) - supports attachments", type: "core", input: "messageIndex, currentMessage", output: "msg_<idx> DOM element" }
 
   let getMsgIndex = get(key: "messageIndex")
   let getCurrentMsg = get(key: "currentMessage")
   let getMsgRole = getProp(obj: "{{getCurrentMsg}}", key: "role")
   let getMsgContent = getProp(obj: "{{getCurrentMsg}}", key: "content")
+  let getAttachments = getProp(obj: "{{getCurrentMsg}}", key: "attachments")
   let createMessageElement = createElement(tag: "div", id: "msg_{{getMsgIndex}}")
   let setMsgClass = setAttribute(id: "msg_{{getMsgIndex}}", name: "class", value: "msg-bubble")
-  let setLayoutStyles = setStyles(id: "msg_{{getMsgIndex}}", styles: { wordBreak: "break-word", flexShrink: "0" })
+  let setLayoutStyles = setStyles(id: "msg_{{getMsgIndex}}", styles: { wordBreak: "break-word", flexShrink: "0", fontSize: "16px" })
   let execStyles = execFile(file: "ui/components/message-bubble/styles")
   let isUserMessage = eq(a: "{{getMsgRole}}", b: "user")
   let checkMessageRole = if isUserMessage {
-    let execUserStyles = setStyles(id: "msg_{{getMsgIndex}}", styles: { alignSelf: "flex-end", backgroundColor: "#007aff", color: "#ffffff" })
+    let execUserStyles = setStyles(id: "msg_{{getMsgIndex}}", styles: { alignSelf: "flex-end", backgroundColor: "#4caf50", color: "#ffffff" })
   } else {
     let execAIStyles = setStyles(id: "msg_{{getMsgIndex}}", styles: { alignSelf: "flex-start", backgroundColor: "#ffffff", color: "#333333" })
   }
   let convertMarkdown = markdownToHtml(text: "{{getMsgContent}}")
-  let setMessageContent = setInnerHTML(id: "msg_{{getMsgIndex}}", html: "{{convertMarkdown}}")
+  let resetAttachHtml = set(key: "_attachHtml", value: null)
+  let attachIsArr = isArr(value: "{{getAttachments}}")
+  let attachName = if attachIsArr {
+    let getFirst = getAt(array: "{{getAttachments}}", index: 0)
+    let getName = getProp(obj: "{{getFirst}}", key: "name")
+    let getType = getProp(obj: "{{getFirst}}", key: "type")
+    let getData = getProp(obj: "{{getFirst}}", key: "data")
+    let setName = set(key: "_attachName", value: "{{getName}}")
+    let setType = set(key: "_attachType", value: "{{getType}}")
+    let setData = set(key: "_attachData", value: "{{getData}}")
+  }
+  let getAttachName = get(key: "_attachName")
+  let getAttachType = get(key: "_attachType")
+  let getAttachData = get(key: "_attachData")
+  let isImage = contains(text: "{{getAttachType}}", search: "image")
+  let attachHtml = if attachIsArr {
+    let htmlForImage = if isImage {
+      let imageTag = set(key: "_attachHtml", value: "<br/><img src='{{getAttachData}}' style='max-width:200px; max-height:200px; border-radius:8px;' />")
+    } else {
+      let fileTag = set(key: "_attachHtml", value: " <span style='display:inline-flex; align-items:center; gap:3px; padding:2px 6px; background:rgba(255,255,255,0.2); border-radius:4px; font-size:12px; white-space:nowrap; vertical-align:middle'><svg width=\"12\" height=\"12\" viewBox=\"0 0 32 40\" xmlns=\"http://www.w3.org/2000/svg\" style='vertical-align:middle'><path d=\"M4 1H20L28 9V39H4V1Z\" fill=\"white\"/><path d=\"M20 1V9H28\" fill=\"#E8E8E8\"/><rect x=\"6\" y=\"15\" width=\"8\" height=\"1.5\" rx=\"0.75\" fill=\"#C5C5C5\"/><rect x=\"6\" y=\"19\" width=\"8\" height=\"1.5\" rx=\"0.75\" fill=\"#C5C5C5\"/><rect x=\"6\" y=\"23\" width=\"8\" height=\"1.5\" rx=\"0.75\" fill=\"#C5C5C5\"/></svg><span style='overflow:hidden; text-overflow:ellipsis; max-width:100px; display:inline-block'>{{getAttachName}}</span></span>")
+    }
+  }
+  let getAttachHtml = get(key: "_attachHtml")
+  let attachHtmlNil = isNil(value: "{{getAttachHtml}}")
+  let combinedHtml = if attachHtmlNil {
+    let justContent = set(key: "_combinedHtml", value: "{{convertMarkdown}}")
+  } else {
+    let inlineAttach = replace(text: "{{convertMarkdown}}", search: "</p>", replacement: "{{getAttachHtml}}</p>")
+    let setCombined = set(key: "_combinedHtml", value: "{{inlineAttach}}")
+  }
+  let getCombined = get(key: "_combinedHtml")
+  let setMessageContent = setInnerHTML(id: "msg_{{getMsgIndex}}", html: "{{getCombined}}")
+  let createCopyBtn = createElement(tag: "span", id: "copyBtn_{{getMsgIndex}}")
+  let setCopyBtnIcon = setInnerHTML(id: "copyBtn_{{getMsgIndex}}", html: "<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='pointer-events:none'><rect x='9' y='9' width='13' height='13' rx='2' ry='2'></rect><path d='M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1'></path></svg>")
+  let setCopyBtnStyle = if isUserMessage {
+    let styleCopyBtn = setStyles(id: "copyBtn_{{getMsgIndex}}", styles: { border: "none", background: "transparent", color: "#999", cursor: "default", padding: "0", display: "inline-flex", alignItems: "center", justifyContent: "center", width: "24px", height: "24px", borderRadius: "4px", opacity: "0", position: "absolute", top: "calc(100% + 4px)", right: "0" })
+  } else {
+    let styleCopyBtn = setStyles(id: "copyBtn_{{getMsgIndex}}", styles: { border: "none", background: "transparent", color: "#999", cursor: "default", padding: "0", display: "inline-flex", alignItems: "center", justifyContent: "center", width: "24px", height: "24px", borderRadius: "4px", opacity: "0", position: "absolute", top: "calc(100% + 4px)", left: "0" })
+  }
+  let setBubbleRelative = setStyles(id: "msg_{{getMsgIndex}}", styles: { position: "relative" })
+  let appendCopyBtn = appendChild(parentId: "msg_{{getMsgIndex}}", childId: "copyBtn_{{getMsgIndex}}")
   let appendToMessageList = appendChild(parentId: "messageList", childId: "msg_{{getMsgIndex}}")
 }

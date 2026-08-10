@@ -1,5 +1,5 @@
 graph system-info {
-  meta: { description: "System information prompt", type: "prompt", category: "ai", author: "AITOS Team" }
+  meta: { description: "System information prompt", type: "core", output: "_promptSystemInfo" }
 
   let getSystemInfo = getSystemInfo()
   let getOs = getProp(obj: "{{getSystemInfo}}", key: "os")

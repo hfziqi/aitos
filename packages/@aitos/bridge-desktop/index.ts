@@ -8,7 +8,7 @@ export * from './file';
 export * from './exec';
 export * from './zip';
 
-import { readLocalAtom, writeLocalAtom, listLocalAtom, removeLocalAtom } from './file';
+import { readLocalAtom, writeLocalAtom, listLocalAtom, removeLocalAtom, renameLocalAtom, mkdirLocalAtom, openFileAtom } from './file';
 import { execCommandAtom } from './exec';
 import { readZipFileAtom } from './zip';
 
@@ -17,6 +17,9 @@ export const desktopAtoms: Atom[] = [
   writeLocalAtom,
   listLocalAtom,
   removeLocalAtom,
+  renameLocalAtom,
+  mkdirLocalAtom,
+  openFileAtom,
   execCommandAtom,
   readZipFileAtom,
 ];

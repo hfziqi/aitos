@@ -1,0 +1,6 @@
+graph styles {
+  meta: { description: "Folder view appearance styles", type: "core", output: "folder CSS styles" }
+
+  let setBoxStyles = setStyles(id: "folderContainer", styles: { width: "100%", height: "100%", overflow: "auto", padding: "0px 16px 16px 16px", backgroundColor: "#f1f1f1" })
+  let injectItemStyles = injectCSS(id: "folderItemStyles", css: ".folder-item { display: flex; flex-direction: column; align-items: center; padding: 8px; background-color: transparent; border-radius: 12px; transition: all 0.2s; cursor: default; } .folder-item:hover { background-color: rgba(0, 0, 0, 0.04); } .folder-item-icon { width: 72px; height: 72px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; cursor: default; } .folder-item-name { font-size: 11px; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 72px; color: #333; } #folderBackBtn:hover { background: #e5e5e5; }")
+}

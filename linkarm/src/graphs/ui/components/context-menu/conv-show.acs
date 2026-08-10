@@ -1,10 +1,9 @@
 graph conv-show {
-  meta: { description: "Show context menu for conversation list item at mouse position", type: "component", category: "context-menu", author: "AITOS Team" }
+  meta: { description: "Show context menu for conversation list item at mouse position", type: "core", input: "_contextMenuEvent_x, _contextMenuEvent_y, _contextMenuEvent_targetId", output: "_convDelId, _convRenameTitle, context menu DOM" }
 
-  let getEvent = get(key: "_contextMenuEvent")
-  let mouseX = getProp(obj: "{{getEvent}}", key: "x")
-  let mouseY = getProp(obj: "{{getEvent}}", key: "y")
-  let targetId = getProp(obj: "{{getEvent}}", key: "targetId")
+  let mouseX = get(key: "_contextMenuEvent_x")
+  let mouseY = get(key: "_contextMenuEvent_y")
+  let targetId = get(key: "_contextMenuEvent_targetId")
   let findConvItem = closest(id: "{{targetId}}", selector: ".sidebar-item")
   let getConvId = getAttribute(id: "{{findConvItem}}", name: "data-conv-id")
   let storeConvDelId = setGlobal(key: "_convDelId", value: "{{getConvId}}")

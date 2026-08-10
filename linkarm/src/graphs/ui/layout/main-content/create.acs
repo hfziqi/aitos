@@ -1,5 +1,5 @@
 graph create {
-  meta: { description: "Create main content area (logic)", type: "layout", category: "main-content", author: "AITOS Team" }
+  meta: { description: "Create main content area (logic)", type: "core", output: "mainContent DOM" }
 
   let checkMainContent = getElementById(domId: "mainContent", storeId: "existingMainContent")
   let shouldCreateMainContent = not(value: "{{checkMainContent}}")

@@ -1,5 +1,5 @@
 graph submit-add-form {
-  meta: { description: "Submit add model form (coordinator)", type: "action", category: "ai-models", author: "AITOS Team" }
+  meta: { description: "Submit add model form (coordinator)", type: "core", output: "aiModelsList, addedModel" }
 
   let getFormValues = execFile(file: "models/get-add-model-form-values")
   let addModel = execFile(file: "models/add-model")

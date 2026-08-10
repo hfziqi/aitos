@@ -10,9 +10,9 @@ export const httpRequestAtom: Atom = {
       { name: 'body', type: 'any', description: 'Request body' },
       { name: 'headers', type: 'object', description: 'Request headers' }
     ],
-    output: { type: 'object', description: 'Response data' }
+    output: { type: 'object', description: 'External API JSON response body - structure depends on the requested endpoint' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { 
     url: string; 
     method: string; 
@@ -53,9 +53,9 @@ export const httpStreamRequestAtom: Atom = {
       { name: 'elementId', type: 'string', description: 'Element ID for streaming display (optional)' },
       { name: 'streamKey', type: 'string', description: 'Store key to persist streaming content (optional)' }
     ],
-    output: { type: 'object', description: '{ role, content, toolCalls }' }
+    output: { type: 'object', description: '{ role: string, content: string, toolCalls: [{ id: string, type: string, function: { name: string, arguments: string } }] }' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { 
     url: string; 
     method: string; 
@@ -77,7 +77,21 @@ export const httpStreamRequestAtom: Atom = {
       const response = await fetch(input.url, options);
       
       if (!response.ok) {
-        return { success: false, error: `HTTP error: ${response.status}` };
+        // Read the response body so the specific API error (e.g. DeepSeek error.message)
+        // is included in the returned error — the AI needs the concrete reason to self-correct.
+        let detail = '';
+        try {
+          const errText = await response.text();
+          try {
+            const errJson = JSON.parse(errText);
+            detail = errJson?.error?.message || errText;
+          } catch {
+            detail = errText;
+          }
+        } catch {
+          detail = '';
+        }
+        return { success: false, error: `HTTP error: ${response.status}${detail ? `: ${detail}` : ''}` };
       }
       
       const reader = response.body?.getReader();

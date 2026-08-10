@@ -1,5 +1,5 @@
 graph on-provider-change {
-  meta: { description: "Handle provider selection change", type: "action", category: "ai-models", author: "AITOS Team" }
+  meta: { description: "Handle provider selection change", type: "core", input: "providerConfig", output: "form DOM values" }
 
   let getConfig = get(key: "providerConfig")
   let getSelectedProvider = getValue(id: "providerSelect")

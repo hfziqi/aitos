@@ -1,5 +1,5 @@
 graph handle-conv-rename {
-  meta: { description: "Inline edit conversation title - replace span with input", type: "action", category: "context-menu", author: "AITOS Team" }
+  meta: { description: "Inline edit conversation title - replace span with input", type: "core", input: "_convDelId, _convRenameTitle, _convRenameItemId", output: "_renameInputId, rename input DOM" }
 
   let hideMenu = execFile(file: "ui/components/context-menu/hide")
   let getConvId = get(key: "_convDelId")

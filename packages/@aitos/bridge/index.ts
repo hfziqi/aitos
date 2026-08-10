@@ -6,6 +6,8 @@ export * from './types';
 
 export * from './atoms/window';
 export * from './atoms/system';
+export * from './atoms/smtp';
+export * from './atoms/imap';
 
 import { allAtoms as bridgeAtoms } from './atoms';
 

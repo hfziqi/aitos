@@ -8,6 +8,10 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 add_executable(LinkArm WIN32
     src/main.cpp
+    src/Bridge.cpp
+    src/JsonHelpers.cpp
+    src/HttpServer.cpp
+    resources/app.rc
 )
 
 target_include_directories(LinkArm PRIVATE
@@ -18,7 +22,7 @@ target_include_directories(LinkArm PRIVATE
 target_compile_definitions(LinkArm PRIVATE
     UNICODE
     _UNICODE
-    WIN32_LEAN_AND_MEAN
+    SECURITY_WIN32
 )
 
 target_link_libraries(LinkArm PRIVATE
@@ -29,6 +33,8 @@ target_link_libraries(LinkArm PRIVATE
     user32
     gdi32
     advapi32
+    ws2_32
+    secur32
 )
 
 target_link_directories(LinkArm PRIVATE

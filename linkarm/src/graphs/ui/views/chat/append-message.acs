@@ -1,5 +1,5 @@
 graph append-message {
-  meta: { description: "Append single message bubble (no clear)", type: "view", category: "chat", author: "AITOS Team" }
+  meta: { description: "Append single message bubble (no clear)", type: "core", input: "messages", output: "currentMessage, messageIndex" }
 
   let getMessages = get(key: "messages")
   let getLen = len(value: "{{getMessages}}")

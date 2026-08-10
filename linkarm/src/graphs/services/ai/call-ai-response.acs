@@ -1,11 +1,15 @@
 graph call-ai-response {
-  meta: { description: "Call AI and save response to conversation", type: "action", category: "chat", author: "AITOS Team" }
+  meta: { description: "Call AI and save response to conversation", type: "core", output: "newMessage, streamElementId" }
 
-  let callAI = execFile(file: "services/ai/call-openai")
+  let callAI = execFile(file: "services/ai/call-ai")
   let getAIResponse = get(key: "aiResponse")
+  let diagAIResp = log(message: "MSG_DIAG aiResponse", data: "{{getAIResponse}}")
   let getAIContent = getProp(obj: {{getAIResponse}}, key: "content")
+  let diagAIContent = log(message: "MSG_DIAG aiContent", data: "{{getAIContent}}")
   let buildAIMessage = set(key: "_aiMessageObj", value: { role: "assistant", content: {{getAIContent}}, timestamp: "now" })
   let setNewMessage = set(key: "newMessage", value: {{buildAIMessage}})
   let addAIMessageToConversation = execFile(file: "messages/add-message")
   let appendBubble = execFile(file: "ui/views/chat/append-message")
+  let getStreamElId = get(key: "streamElementId")
+  let removeStreamContainer = removeElement(id: "{{getStreamElId}}")
 }

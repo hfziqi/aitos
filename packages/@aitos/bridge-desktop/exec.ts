@@ -6,11 +6,11 @@ class ExecCommandAtom extends BridgeAtom {
   version = '1.0.0';
   meta = {
     input: [
-      { name: 'command', type: 'string', description: 'Command to execute on the system' },
+      { name: 'command', type: 'string', description: 'Executable to run (e.g. cmd.exe, notepad.exe). Shell syntax such as Remove-Item or mkdir is NOT supported; use the dedicated file atoms instead.' },
       { name: 'args', type: 'array', description: 'Command arguments (optional)' },
       { name: 'cwd', type: 'string', description: 'Working directory (optional)' }
     ],
-    output: { type: 'object', description: 'Execution result with stdout, stderr, and exitCode' }
+    output: { type: 'object', description: '{ stdout: string, stderr: string, exitCode: number }' }
   };
 
   async execute(input: { command: string; args?: string[]; cwd?: string }, context: Context): Promise<Result> {

@@ -1,5 +1,5 @@
 graph tab-switch {
-  meta: { description: "Handle market tab switch click", type: "action", category: "click", author: "AITOS Team" }
+  meta: { description: "Handle market tab switch click", type: "core", input: "clickTargetId", output: "currentMarketTab" }
 
   let getTargetId = get(key: "clickTargetId")
   let isModelsTab = eq(a: "{{getTargetId}}", b: "modelsTab")

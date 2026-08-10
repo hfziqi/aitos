@@ -7,9 +7,9 @@ export const getGraphListAtom: Atom = {
     input: [
       { name: 'filter', type: 'string', description: 'Filter: all, native, generated' }
     ],
-    output: { type: 'array', description: 'Array of graph metadata' }
+    output: { type: 'array', description: '[{ name: string, type: string }]' }
   },
-  characteristics: { stateless: true, atomic: true, composable: true },
+  characteristics: { stateless: false, atomic: true, composable: true },
   execute: async (input: { filter?: string }, context: Context): Promise<Result> => {
     const filter = input.filter || 'all';
     const graphs: any[] = [];
