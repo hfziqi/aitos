@@ -1,6 +1,0 @@
-graph show-add-form {
-  meta: { description: "Show add model form (coordinator)", type: "core", output: "add model form DOM" }
-
-  let createOverlay = execFile(file: "ui/components/create-modal-overlay")
-  let createForm = execFile(file: "ui/components/add-model-form/create")
-}

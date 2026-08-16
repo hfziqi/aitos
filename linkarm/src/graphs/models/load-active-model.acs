@@ -1,6 +1,0 @@
-graph load-active-model {
-  meta: { description: "Load active model ID from local storage", type: "core", output: "activeModelId" }
-
-  let readFile = readLocal(key: "models/active-model-id.json")
-  let setStore = set(key: "activeModelId", value: "{{readFile}}")
-}

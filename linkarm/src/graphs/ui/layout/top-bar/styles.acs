@@ -1,5 +1,0 @@
-graph styles {
-  meta: { description: "Top bar appearance styles", type: "core", output: "CSS styles" }
-
-  let setAppearanceStyles = setStyles(id: "topBarContainer", styles: { backgroundColor: "#f1f1f1" })
-}

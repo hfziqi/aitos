@@ -1,5 +1,0 @@
-graph hide {
-  meta: { description: "Hide growth detail", type: "core", output: "removes overlay DOM" }
-
-  let removeOverlay = removeElement(id: "growthDetailOverlay")
-}

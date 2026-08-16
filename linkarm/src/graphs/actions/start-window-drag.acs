@@ -1,5 +1,0 @@
-graph start-window-drag {
-  meta: { description: "Start dragging the application window (custom title bar drag)", type: "core" }
-
-  let startDrag = startWindowDrag()
-}

@@ -1,5 +1,0 @@
-graph minimize-window {
-  meta: { description: "Minimize the application window", type: "core" }
-
-  let minimize = minimizeWindow()
-}

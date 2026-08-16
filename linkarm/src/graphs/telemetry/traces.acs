@@ -1,6 +1,0 @@
-graph telemetry/traces {
-  meta: { description: "Record telemetry traces: flush traces → write traces.json. Graph naming equals function: this graph records traces", type: "core", output: "logs/traces/traces.json" }
-
-  let flush = flushTelemetry(kind: "traces")
-  let write = writeLocal(key: "logs/traces/traces.json", value: "{{flush}}")
-}

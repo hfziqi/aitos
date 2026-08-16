@@ -1,8 +1,0 @@
-graph create {
-  meta: { description: "Create message list container (logic)", type: "core", output: "messageList DOM" }
-
-  let createMessageList = createElement(tag: "div", id: "messageList")
-  let setLayoutStyles = setStyles(id: "messageList", styles: { flex: "1", overflowY: "auto", minHeight: "0", boxSizing: "border-box" })
-  let execStyles = execFile(file: "ui/components/message-list/styles")
-  let appendMessageList = appendChild(parentId: "mainViewContainer", childId: "messageList")
-}

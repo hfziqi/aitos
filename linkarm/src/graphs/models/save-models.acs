@@ -1,6 +1,0 @@
-graph save-models {
-  meta: { description: "Save AI models to local storage", type: "core", input: "aiModelsList" }
-
-  let getModels = get(key: "aiModelsList")
-  let saveModels = writeLocal(key: "models/ai-models.json", value: "{{getModels}}")
-}

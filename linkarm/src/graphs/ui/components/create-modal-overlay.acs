@@ -1,7 +1,0 @@
-graph create-modal-overlay {
-  meta: { description: "Create modal overlay", type: "core", output: "addModelOverlay DOM" }
-
-  let createOverlay = createElement(tag: "div", id: "addModelOverlay")
-  let setOverlayClass = setAttribute(id: "addModelOverlay", name: "class", value: "overlay")
-  let appendOverlay = appendChild(parentId: "appContainer", childId: "addModelOverlay")
-}

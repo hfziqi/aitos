@@ -1,9 +1,0 @@
-graph handle-model-delete {
-  meta: { description: "Delete model from context menu", type: "core", input: "_contextMenuModelId" }
-
-  let getModelId = get(key: "_contextMenuModelId")
-  let getCardId = concat(a: "model_card_", b: "{{getModelId}}")
-  let setTargetId = set(key: "clickTargetId", value: "{{getCardId}}")
-  let hideMenu = execFile(file: "ui/components/context-menu/hide")
-  let execDelete = execFile(file: "models/delete-model")
-}

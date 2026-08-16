@@ -1,6 +1,0 @@
-graph handle-add-model {
-  meta: { description: "Handle context menu add model click - hide menu and show add model form", type: "core", output: "add model form DOM" }
-
-  let hideMenu = execFile(file: "ui/components/context-menu/hide")
-  let showForm = execFile(file: "models/show-add-form")
-}

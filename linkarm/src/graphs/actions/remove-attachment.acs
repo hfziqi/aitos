@@ -1,7 +1,0 @@
-graph remove-attachment {
-  meta: { description: "Remove attached file from chat input", type: "core", output: "_uploadedFile, _uploadResult" }
-
-  let removePreviewBar = removeElement(id: "attachPreviewBar")
-  let clearFile = set(key: "_uploadedFile", value: null)
-  let clearResult = set(key: "_uploadResult", value: null)
-}

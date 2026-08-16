@@ -1,9 +1,0 @@
-graph build-chat-request {
-  meta: { description: "Build chat API request body", type: "core", input: "activeModelConfig, _apiContext, aiToolsConfig" }
-
-  let getModelConfig = get(key: "activeModelConfig")
-  let getModelName = getProp(obj: "{{getModelConfig}}", key: "modelName")
-  let getMessages = get(key: "_apiContext")
-  let getTools = get(key: "aiToolsConfig")
-  let buildRequest = merge(a: { model: "{{getModelName}}", messages: "{{getMessages}}", stream: true, temperature: 0.7 }, b: { tools: "{{getTools}}" })
-}

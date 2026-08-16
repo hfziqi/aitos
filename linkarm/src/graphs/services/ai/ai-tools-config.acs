@@ -1,7 +1,0 @@
-graph ai-tools-config {
-  meta: { description: "Collect tool configs from all tool-type graphs (single shared tool list for all models)", type: "core", output: "_toolsConfig, aiToolsConfig" }
-
-  let collect = collectTools()
-  let saveTools = set(key: "_toolsConfig", value: "{{collect}}")
-  let initTools = set(key: "aiToolsConfig", value: "{{collect}}")
-}

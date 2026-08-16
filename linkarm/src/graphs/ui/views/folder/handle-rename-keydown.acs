@@ -1,9 +1,0 @@
-graph handle-rename-keydown {
-  meta: { description: "Handle keydown during folder rename - Enter to save, Escape to cancel", type: "core", input: "_renameFolderKey_key" }
-
-  let getKey = get(key: "_renameFolderKey_key")
-  let isEnter = eq(a: "{{getKey}}", b: "Enter")
-  let handleEnter = if isEnter {
-    let doSave = execFile(file: "ui/views/folder/handle-rename-save")
-  }
-}

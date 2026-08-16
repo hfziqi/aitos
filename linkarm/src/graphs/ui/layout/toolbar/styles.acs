@@ -1,6 +1,0 @@
-graph styles {
-  meta: { description: "Toolbar appearance styles", type: "core", output: "CSS styles" }
-
-  let getToolW = get(key: "toolW")
-  let setAppearanceStyles = setStyles(id: "toolbarContainer", styles: { width: "{{getToolW}}px", backgroundColor: "#f7f7f7", borderRight: "1px solid #e0e0e0" })
-}

@@ -1,5 +1,0 @@
-graph styles {
-  meta: { description: "Attachment preview styles", type: "core", output: "CSS styles" }
-
-  let injectStyles = injectCSS(id: "attachPreviewStyles", css: "#attachPreviewBar { display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0; padding: 2px 8px 2px 6px; background-color: #e8f0fe; border-radius: 12px; margin: 0 4px 0 0; order: -1; align-self: flex-start; animation: slideIn 0.15s ease; } #attachPreviewBar:hover { background-color: #d2e3fc; } #attachPreviewBar #removeAttachBtn:hover { background-color: rgba(0,0,0,0.1); color: #ff3b30; } @keyframes slideIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }")
-}

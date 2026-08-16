@@ -1,7 +1,0 @@
-graph delete-messages {
-  meta: { description: "Delete messages file for a conversation", type: "core", input: "_convId", output: "deletes messages file" }
-
-  let getConvId = get(key: "_convId")
-  let buildPath = set(key: "_msgPath", value: "chat/messages/{{getConvId}}.json")
-  let deleteFile = removeLocal(key: "{{buildPath}}")
-}

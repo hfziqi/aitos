@@ -1,5 +1,0 @@
-graph styles {
-  meta: { description: "Main view container appearance styles", type: "core", output: "CSS styles" }
-
-  let setAppearanceStyles = setStyles(id: "mainViewContainer", styles: { backgroundColor: "#f1f1f1" })
-}

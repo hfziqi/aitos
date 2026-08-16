@@ -1,8 +1,0 @@
-graph hide {
-  meta: { description: "Hide growth popup", type: "core", output: "activeGrowthName, growthContainerId, clickedGrowth" }
-
-  let removeOverlay = removeElement(id: "growthOverlay")
-  let clearActiveGrowth = set(key: "activeGrowthName", value: "")
-  let clearContainerId = set(key: "growthContainerId", value: "")
-  let clearGrowthData = set(key: "clickedGrowth", value: null)
-}

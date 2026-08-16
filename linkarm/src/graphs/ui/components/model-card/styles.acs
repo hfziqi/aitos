@@ -1,5 +1,0 @@
-graph styles {
-  meta: { description: "Model card styles", type: "core", output: "CSS styles" }
-
-  let injectStyles = injectCSS(id: "modelCardStyles", css: ".model-card { display: flex; flex-direction: column; align-items: center; padding: 8px; background-color: transparent; border-radius: 12px; transition: all 0.2s; position: relative; border: 1px solid transparent; } .model-card:hover { background-color: rgba(0, 0, 0, 0.06); } .model-card.selected .model-card-icon { background-color: #fff; border-color: #007aff; } .model-card-icon { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; background-color: #f0f0f0; border-radius: 12px; margin-bottom: 6px; font-size: 24px; color: #999; border: 2px solid #e0e0e0; } .model-card-name { font-size: 11px; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 64px; color: #333; } .model-card-add { order: 9999; cursor: default; } .model-card-add .model-card-icon { background-color: transparent; border: 2px dashed #007aff; color: #007aff; } .model-card-add:hover .model-card-icon { border-color: #007aff; color: #007aff; }")
-}

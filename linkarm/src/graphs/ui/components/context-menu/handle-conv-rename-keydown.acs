@@ -1,9 +1,0 @@
-graph handle-conv-rename-keydown {
-  meta: { description: "Handle keydown during rename - Enter to confirm save", type: "core", input: "_renameKeyEvent_key" }
-
-  let getKey = get(key: "_renameKeyEvent_key")
-  let isEnter = eq(a: "{{getKey}}", b: "Enter")
-  let handleEnter = if isEnter {
-    let doSave = execFile(file: "ui/components/context-menu/handle-conv-rename-save")
-  }
-}

@@ -1,5 +1,0 @@
-graph hide {
-  meta: { description: "Hide import package popup", type: "core", output: "removes overlay DOM" }
-
-  let removeOverlay = removeElement(id: "importPkgOverlay")
-}
